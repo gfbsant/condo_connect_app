@@ -74,7 +74,6 @@
 *Criação com atualização em tempo real da lista*
 
 ---
-
 ## Estratégia de Testes
 
 ### `test/core/`
@@ -110,7 +109,6 @@ Fluxos end-to-end
 - Integração entre módulos
 
 ---
-
 ## Como executar o projeto
 
 ### Pré-requisitos
@@ -160,6 +158,7 @@ flutter run --debug
 flutter run --release
 ```
 
+---
 ## Atualização de ícones
 
 Para atualizar os ícones do aplicativo Flutter, utilize o comando:
