@@ -5,21 +5,38 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "condo_connect_app",
+            "name": "Flutter App (Mock API)",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--dart-define",
+                "API_BASE_URL=http://10.0.0.158:8080"
+            ]
+        },
+        {
+            "name": "Flutter App (Default)",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "condo_connect_app (profile mode)",
+            "name": "Flutter App (Profile)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "condo_connect_app (release mode)",
+            "name": "Flutter App (Release)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Condo Connect (Run with Mock API)",
+            "configurations": ["Flutter App (Mock API)"],
+            "preLaunchTask": "Start Mock Server",
+            "stopAll": true
         }
     ]
 }

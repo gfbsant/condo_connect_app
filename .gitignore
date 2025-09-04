@@ -43,3 +43,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Mock Server (Node.js)
+/mock_server/node_modules/
+/mock_server/package-lock.json
+/mock_server/*.log
