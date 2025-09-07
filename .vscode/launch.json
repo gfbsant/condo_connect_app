@@ -31,12 +31,4 @@
             "flutterMode": "release"
         }
     ],
-    "compounds": [
-        {
-            "name": "Condo Connect (Run with Mock API)",
-            "configurations": ["Flutter App (Mock API)"],
-            "preLaunchTask": "Start Mock Server",
-            "stopAll": true
-        }
-    ]
 }
