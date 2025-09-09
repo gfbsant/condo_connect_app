@@ -1,6 +1,6 @@
 import 'package:condo_connect/app/data/models/user_role.dart';
 
-class UserModel {
+class User {
   final String id;
   final String name;
   final String email;
@@ -9,7 +9,7 @@ class UserModel {
   final bool isActive;
   final UserRole role;
 
-  const UserModel({
+  const User({
     required this.id,
     required this.name,
     required this.email,
@@ -19,17 +19,17 @@ class UserModel {
     this.role = UserRole.resident,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
       id: json['id'] as String,
-      name: json['name'],
-      email: json['email'],
+      name: json['name'] as String,
+      email: json['email'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: json['updated_at'] != null
           ? DateTime.parse(json['updated_at'] as String)
           : null,
       isActive: json['is_active'] as bool? ?? true,
-      role: UserRole.fromString(json['role'] as String? ?? 'morador'),
+      role: UserRole.fromString(json['role'] as String? ?? 'resident'),
     );
   }
 
@@ -45,7 +45,7 @@ class UserModel {
     };
   }
 
-  UserModel copyWith({
+  User copyWith({
     String? id,
     String? name,
     String? email,
@@ -54,7 +54,7 @@ class UserModel {
     bool? isActive,
     UserRole? role,
   }) {
-    return UserModel(
+    return User(
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
@@ -68,7 +68,7 @@ class UserModel {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is UserModel &&
+    return other is User &&
         other.id == id &&
         other.name == name &&
         other.email == email &&

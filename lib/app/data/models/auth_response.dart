@@ -3,7 +3,7 @@ import 'package:condo_connect/app/data/models/user_model.dart';
 class AuthResponse {
   final String token;
   final String refreshToken;
-  final UserModel user;
+  final User user;
   final DateTime expiresAt;
 
   bool get isExpired => DateTime.now().isAfter(expiresAt);
@@ -19,7 +19,7 @@ class AuthResponse {
     return AuthResponse(
       token: json['token'],
       refreshToken: json['refresh_token'],
-      user: UserModel.fromJson(json['user']),
+      user: User.fromJson(json['user']),
       expiresAt: DateTime.parse(json['expires_at']),
     );
   }
@@ -36,7 +36,7 @@ class AuthResponse {
   AuthResponse copyWith({
     String? token,
     String? refreshToken,
-    UserModel? user,
+    User? user,
     DateTime? expiresAt,
   }) {
     return AuthResponse(

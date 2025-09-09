@@ -25,7 +25,7 @@ class DashboardViewModel extends ChangeNotifier {
     _loadPreferences();
   }
 
-  UserModel? get currentUser => _authViewModel.authResponse?.user;
+  User? get currentUser => _authViewModel.authResponse?.user;
   String? get currentUserId => currentUser?.id;
   bool get isLoading => _isLoading;
   bool get isReorderMode => _isReorderMode;

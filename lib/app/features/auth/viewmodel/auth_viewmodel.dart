@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:condo_connect/app/core/storage/secure_storage.dart';
 import 'package:condo_connect/app/core/utils/validators.dart';
 import 'package:condo_connect/app/data/models/auth_response.dart';
 import 'package:condo_connect/app/data/models/auth_state.dart';
+import 'package:condo_connect/app/data/models/user_model.dart';
 import 'package:condo_connect/app/data/repositories/auth_repository_impl.dart';
 import 'package:flutter/material.dart';
 
@@ -51,13 +54,85 @@ class AuthViewModel extends ChangeNotifier {
 
       await _storage.saveToken(response.token);
       await _storage.saveRefreshToken(response.refreshToken);
+      await _storage.saveUserData(response.user.toJson());
+      await _storage.enableOfflineAuth();
 
       _setAuthState(AuthState.authenticated);
       return true;
     } on Exception catch (e) {
+      if (await _tryOfflineAuth(email, password)) {
+        return true;
+      }
       _setErrorMessage(e.toString());
       return false;
     }
+  }
+
+  Future<bool> _tryOfflineAuth(String email, String passwrod) async {
+    if (!await _storage.hasValidOfflineAuth()) return false;
+
+    final userData = await _storage.getUserData();
+    if (userData == null) return false;
+    if (userData['email'] != email) return false;
+
+    _authResponse = AuthResponse(
+      token: await _storage.getToken() ?? '',
+      refreshToken: await _storage.getRefreshToken() ?? '',
+      user: User.fromJson(userData),
+      expiresAt: DateTime.now().add(Duration(hours: 8)),
+    );
+
+    _setAuthState(AuthState.authenticated);
+    return true;
+  }
+
+  Future<void> checkAuthStatus() async {
+    final String? token = await _storage.getToken();
+    final String? refreshToken = await _storage.getRefreshToken();
+
+    if (token == null || refreshToken == null) {
+      if (await _storage.hasValidOfflineAuth()) {
+        await _loadOfflineAuth();
+        return;
+      }
+      _setAuthState(AuthState.initial);
+      return;
+    }
+
+    try {
+      final AuthResponse response =
+          await _authService.refreshToken(refreshToken);
+      _authResponse = response;
+
+      await _storage.saveToken(response.token);
+      await _storage.saveRefreshToken(response.refreshToken);
+      await _storage.saveUserData(response.user.toJson());
+
+      _setAuthState(AuthState.authenticated);
+    } on Exception catch (e) {
+      log('Erro ao checar status de autenticacao offline: $e');
+      if (await _storage.hasValidOfflineAuth()) {
+        await _loadOfflineAuth();
+      } else {
+        await logout();
+      }
+    }
+  }
+
+  Future<void> _loadOfflineAuth() async {
+    final userData = await _storage.getUserData();
+    final token = await _storage.getToken();
+    final refreshToken = await _storage.getRefreshToken();
+
+    if (userData == null || token == null || refreshToken == null) return;
+
+    _authResponse = AuthResponse(
+      token: token,
+      refreshToken: refreshToken,
+      user: User.fromJson(userData),
+      expiresAt: DateTime.now().add(Duration(hours: 24)),
+    );
+    _setAuthState(AuthState.authenticated);
   }
 
   Future<void> logout() async {
@@ -71,31 +146,28 @@ class AuthViewModel extends ChangeNotifier {
     }
 
     _authResponse = null;
-    await _storage.clearAll();
+    await _storage.clearSession();
+    await _storage.disableOfflineAuth();
     _setAuthState(AuthState.initial);
   }
 
-  Future<void> checkAuthStatus() async {
-    final String? token = await _storage.getToken();
-    final String? refreshToken = await _storage.getRefreshToken();
-
-    if (token == null || refreshToken == null) {
-      _setAuthState(AuthState.initial);
-      return;
-    }
+  Future<void> syncOnlineData() async {
+    if (!isAuthenticated) return;
 
     try {
-      final AuthResponse response =
-          await _authService.refreshToken(refreshToken);
-      _authResponse = response;
+      final refreshToken = await _storage.getRefreshToken();
+      if (refreshToken != null) {
+        final response = await _authService.refreshToken(refreshToken);
+        _authResponse = response;
 
-      await _storage.saveToken(response.token);
-      await _storage.saveRefreshToken(response.refreshToken);
+        await _storage.saveToken(response.token);
+        await _storage.saveRefreshToken(response.refreshToken);
+        await _storage.saveUserData(response.user.toJson());
 
-      _setAuthState(AuthState.authenticated);
+        notifyListeners();
+      }
     } on Exception catch (e) {
-      debugPrint('Erro ao checar status de autenticaçao: $e');
-      await logout();
+      log('Sync offline data error: $e', stackTrace: StackTrace.current);
     }
   }
 
