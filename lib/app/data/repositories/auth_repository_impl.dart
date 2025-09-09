@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:condo_connect/core/constants/api_constants.dart';
-import 'package:condo_connect/core/exceptions/api_exception.dart';
-import 'package:condo_connect/models/auth_response.dart';
+import 'package:condo_connect/app/core/constants/api_constants.dart';
+import 'package:condo_connect/app/core/exceptions/api_exception.dart';
+import 'package:condo_connect/app/data/models/auth_response.dart';
 import 'package:http/http.dart' as http;
 
 class AuthService {

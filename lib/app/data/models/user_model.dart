@@ -1,4 +1,4 @@
-import 'package:condo_connect/models/user_role.dart';
+import 'package:condo_connect/app/data/models/user_role.dart';
 
 class UserModel {
   final String id;

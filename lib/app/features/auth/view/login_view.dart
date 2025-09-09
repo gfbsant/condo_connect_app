@@ -1,5 +1,5 @@
-import 'package:condo_connect/core/utils/validators.dart';
-import 'package:condo_connect/viewmodels/auth_viewmodel.dart';
+import 'package:condo_connect/app/core/utils/validators.dart';
+import 'package:condo_connect/app/features/auth/viewmodel/auth_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,33 +15,33 @@ class _LoginViewState extends State<LoginView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  late AuthViewModel _authViewModel;
+
   @override
   void initState() {
     super.initState();
     _emailController.addListener(_clearErrorOnInteraction);
     _passwordController.addListener(_clearErrorOnInteraction);
-    final authViewModel = context.read<AuthViewModel>();
-    authViewModel.addListener(_showErrorSnackBar);
+    _authViewModel = context.read<AuthViewModel>();
+    _authViewModel.addListener(_showErrorSnackBar);
   }
 
   void _clearErrorOnInteraction() {
-    final authViewModel = context.read<AuthViewModel>();
-    if (authViewModel.errorMessage != null) {
-      authViewModel.clearError();
+    if (_authViewModel.errorMessage != null) {
+      _authViewModel.clearError();
     }
   }
 
   void _showErrorSnackBar() {
-    final authViewModel = context.read<AuthViewModel>();
-    if (authViewModel.errorMessage != null && mounted) {
+    if (_authViewModel.errorMessage != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(authViewModel.errorMessage!),
+          content: Text(_authViewModel.errorMessage!),
           backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
         ),
       );
-      authViewModel.clearError();
+      _authViewModel.clearError();
     }
   }
 
@@ -50,8 +50,7 @@ class _LoginViewState extends State<LoginView> {
 
     if (!_formKey.currentState!.validate()) return;
 
-    final authViewModel = context.read<AuthViewModel>();
-    final success = await authViewModel.login(
+    final success = await _authViewModel.login(
       _emailController.text.trim(),
       _passwordController.text,
     );
@@ -83,12 +82,12 @@ class _LoginViewState extends State<LoginView> {
                       const SizedBox(height: 32),
                       _EmailField(
                         controller: _emailController,
-                        isEnabled: !authViewModel.isLoading,
+                        isEnabled: !(authViewModel.isLoading),
                       ),
                       const SizedBox(height: 16),
                       _PasswordField(
                         controller: _passwordController,
-                        isEnabled: !authViewModel.isLoading,
+                        isEnabled: !(authViewModel.isLoading),
                       ),
                       const SizedBox(height: 8),
                       const _ForgotPasswordLink(),
@@ -115,7 +114,7 @@ class _LoginViewState extends State<LoginView> {
     // Boa prática: Remover listeners para evitar memory leaks.
     _emailController.removeListener(_clearErrorOnInteraction);
     _passwordController.removeListener(_clearErrorOnInteraction);
-    context.read<AuthViewModel>().removeListener(_showErrorSnackBar);
+    _authViewModel.removeListener(_showErrorSnackBar);
 
     _emailController.dispose();
     _passwordController.dispose();

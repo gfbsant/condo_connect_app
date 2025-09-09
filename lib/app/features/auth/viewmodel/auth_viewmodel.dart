@@ -1,8 +1,8 @@
-import 'package:condo_connect/core/storage/secure_storage.dart';
-import 'package:condo_connect/core/utils/validators.dart';
-import 'package:condo_connect/models/auth_response.dart';
-import 'package:condo_connect/models/auth_state.dart';
-import 'package:condo_connect/services/auth_service.dart';
+import 'package:condo_connect/app/core/storage/secure_storage.dart';
+import 'package:condo_connect/app/core/utils/validators.dart';
+import 'package:condo_connect/app/data/models/auth_response.dart';
+import 'package:condo_connect/app/data/models/auth_state.dart';
+import 'package:condo_connect/app/data/repositories/auth_repository_impl.dart';
 import 'package:flutter/material.dart';
 
 class AuthViewModel extends ChangeNotifier {

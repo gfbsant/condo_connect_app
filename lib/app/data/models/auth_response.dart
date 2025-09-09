@@ -1,4 +1,4 @@
-import 'package:condo_connect/models/user_model.dart';
+import 'package:condo_connect/app/data/models/user_model.dart';
 
 class AuthResponse {
   final String token;

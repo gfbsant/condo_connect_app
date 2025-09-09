@@ -1,19 +1,28 @@
-import 'package:condo_connect/core/storage/secure_storage.dart';
-import 'package:condo_connect/services/auth_service.dart';
-import 'package:condo_connect/core/theme/app_themes.dart';
-import 'package:condo_connect/viewmodels/auth_viewmodel.dart';
-import 'package:condo_connect/views/auth/login_view.dart';
+import 'package:condo_connect/app/core/storage/secure_storage.dart';
+import 'package:condo_connect/app/core/theme/app_themes.dart';
+import 'package:condo_connect/app/data/repositories/user_preferences_repository_impl.dart';
+import 'package:condo_connect/app/features/auth/view/auth_wrapper.dart';
+import 'package:condo_connect/app/features/auth/view/login_view.dart';
+import 'package:condo_connect/app/features/auth/viewmodel/auth_viewmodel.dart';
+import 'package:condo_connect/app/data/repositories/auth_repository_impl.dart';
+import 'package:condo_connect/app/features/dashboard/view/dashboard_view.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  runApp(MyApp(sharedPreferences: prefs));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final SharedPreferences sharedPreferences;
+
+  const MyApp({super.key, required this.sharedPreferences});
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +31,12 @@ class MyApp extends StatelessWidget {
         Provider<AuthService>(
           create: (_) => AuthService(client: http.Client()),
         ),
-        Provider(
+        Provider<SecureStorage>(
           create: (_) => SecureStorage(),
+        ),
+        Provider<UserPreferencesRepository>(
+          create: (_) =>
+              UserPreferencesRepository(preferences: sharedPreferences),
         ),
         ChangeNotifierProxyProvider2<AuthService, SecureStorage, AuthViewModel>(
             create: (context) => AuthViewModel(
@@ -39,54 +52,11 @@ class MyApp extends StatelessWidget {
         darkTheme: AppThemes.darkTheme,
         themeMode: ThemeMode.system,
         debugShowCheckedModeBanner: false,
-        home: const LoginView(),
-        routes: {},
-      ),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        home: const AuthWrapper(),
+        routes: {
+          '/login': (context) => const LoginView(),
+          '/dashboard': (context) => const DashboardView(),
+        },
       ),
     );
   }
