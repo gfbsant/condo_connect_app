@@ -40,20 +40,26 @@ class _DashboardViewState extends State<DashboardView> {
             appBar: _buildAppBar(context, viewModel),
             body: SafeArea(
               child: RefreshIndicator(
-                onRefresh: () async {
-                  await viewModel.refresh();
-                },
+                onRefresh: () => viewModel.refresh(),
                 child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      WelcomeCard(viewModel),
-                      const SizedBox(height: 16),
-                      QuickStatsRow(viewModel),
-                      const SizedBox(height: 16),
-                      DashboardGrid(viewModel),
-                    ],
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                        minHeight: MediaQuery.of(context).size.height -
+                            MediaQuery.of(context).padding.top -
+                            kToolbarHeight -
+                            32),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        WelcomeCard(viewModel),
+                        const SizedBox(height: 16),
+                        QuickStatsRow(viewModel),
+                        const SizedBox(height: 16),
+                        DashboardGrid(viewModel),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -147,6 +153,8 @@ class _DashboardViewState extends State<DashboardView> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
       builder: (context) =>
           DashboardSettingsBottomSheet(viewModel: _dashboardViewModel),
     );

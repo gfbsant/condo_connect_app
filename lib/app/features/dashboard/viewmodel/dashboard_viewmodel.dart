@@ -136,6 +136,7 @@ class DashboardViewModel extends ChangeNotifier {
   Future<void> updateDashboardViewType(DashboardViewType viewType) async {
     await _updatePreference(
         (prefs) => prefs.copyWith(dashboardViewType: viewType));
+    notifyListeners();
   }
 
   Future<void> updateItemsPerRow(int items) async {

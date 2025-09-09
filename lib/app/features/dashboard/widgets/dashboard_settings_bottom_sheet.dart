@@ -9,29 +9,34 @@ class DashboardSettingsBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _sheetHeader(context),
-            const SizedBox(height: 16),
-            _themeSelector(context),
-            _viewTypeSelector(context),
-            if (viewModel.dashboardViewType == DashboardViewType.grid)
-              _itemsPerRowSelector(context),
-            _languageSelector(context),
-            _showBadgesSwitch(context),
-            _enableSoundsSwitch(context),
-            const SizedBox(height: 16),
-            _hiddenItemsSelector(context),
-            const SizedBox(height: 16),
-            _actionsRow(context),
-          ],
-        ),
-      ),
+    return ListenableBuilder(
+      listenable: viewModel,
+      builder: (context, child) {
+        return SafeArea(
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _sheetHeader(context),
+                const SizedBox(height: 16),
+                _themeSelector(context),
+                _viewTypeSelector(context),
+                if (viewModel.dashboardViewType == DashboardViewType.grid)
+                  _itemsPerRowSelector(context),
+                _languageSelector(context),
+                _showBadgesSwitch(context),
+                _enableSoundsSwitch(context),
+                const SizedBox(height: 16),
+                _hiddenItemsSelector(context),
+                const SizedBox(height: 16),
+                _actionsRow(context),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -59,6 +64,7 @@ class DashboardSettingsBottomSheet extends StatelessWidget {
       leading: const Icon(Icons.palette),
       title: const Text('tema'),
       trailing: DropdownButton<ThemeMode>(
+          value: viewModel.themeMode,
           onChanged: (mode) {
             if (mode != null) {
               viewModel.updateThemeMode(mode);
@@ -77,6 +83,7 @@ class DashboardSettingsBottomSheet extends StatelessWidget {
       leading: const Icon(Icons.view_module),
       title: Text('Visualização'),
       trailing: DropdownButton<DashboardViewType>(
+          value: viewModel.dashboardViewType,
           onChanged: (type) {
             if (type != null) {
               viewModel.updateDashboardViewType(type);

@@ -59,13 +59,13 @@ class UserPreferences {
   Map<String, dynamic> toJson() {
     return {
       'userId': userId,
-      'lastUpdated': lastUpdated,
+      'lastUpdated': lastUpdated.toIso8601String(),
       'dashboardOrder': dashboardOrder,
       'themeMode': themeMode.name,
       'language': language,
       'showNotificationBadges': showNotificationBadges,
       'enableSounds': enableSounds,
-      'dashboardViewType': dashboardViewType,
+      'dashboardViewType': dashboardViewType.name,
       'itemsPerRow': itemsPerRow,
       'hiddenItems': hiddenItems,
       'notificationSettings': notificationSettings.toJson()
