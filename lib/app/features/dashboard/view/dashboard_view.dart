@@ -1,5 +1,5 @@
 import 'package:condo_connect/app/data/models/permission.dart';
-import 'package:condo_connect/app/data/repositories/user_preferences_repository_impl.dart';
+import 'package:condo_connect/app/data/repositories/user_preferences_repository.dart';
 import 'package:condo_connect/app/features/auth/viewmodel/auth_viewmodel.dart';
 import 'package:condo_connect/app/features/dashboard/viewmodel/dashboard_viewmodel.dart';
 import 'package:condo_connect/app/features/dashboard/widgets/dashboard_grid.dart';

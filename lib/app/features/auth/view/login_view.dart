@@ -111,7 +111,6 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   void dispose() {
-    // Boa prática: Remover listeners para evitar memory leaks.
     _emailController.removeListener(_clearErrorOnInteraction);
     _passwordController.removeListener(_clearErrorOnInteraction);
     _authViewModel.removeListener(_showErrorSnackBar);

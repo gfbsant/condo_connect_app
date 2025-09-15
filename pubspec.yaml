@@ -16,7 +16,6 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   shared_preferences: ^2.5.3
   json_annotation: ^4.9.0
-  br_validators: ^2.0.4
   mockito: ^5.5.0
   google_fonts: ^6.3.1
 

@@ -5,7 +5,7 @@ import 'package:condo_connect/app/data/models/permission.dart';
 import 'package:condo_connect/app/data/models/user_model.dart';
 import 'package:condo_connect/app/data/models/user_preferences.dart';
 import 'package:condo_connect/app/data/models/user_role.dart';
-import 'package:condo_connect/app/data/repositories/user_preferences_repository.dart';
+import 'package:condo_connect/app/data/interfaces/user_preferences_repository_interface.dart';
 import 'package:condo_connect/app/features/auth/viewmodel/auth_viewmodel.dart';
 import 'package:flutter/material.dart';
 

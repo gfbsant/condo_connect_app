@@ -4,6 +4,8 @@ class User {
   final String id;
   final String name;
   final String email;
+  final String cpf;
+  final String? phone;
   final DateTime createdAt;
   final DateTime? updatedAt;
   final bool isActive;
@@ -13,6 +15,8 @@ class User {
     required this.id,
     required this.name,
     required this.email,
+    required this.cpf,
+    this.phone,
     required this.createdAt,
     this.updatedAt,
     this.isActive = true,
@@ -24,6 +28,8 @@ class User {
       id: json['id'] as String,
       name: json['name'] as String,
       email: json['email'] as String,
+      cpf: json['cpf'] as String,
+      phone: json['phone'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: json['updated_at'] != null
           ? DateTime.parse(json['updated_at'] as String)
@@ -38,6 +44,8 @@ class User {
       'id': id,
       'name': name,
       'email': email,
+      'cpf': cpf,
+      'phone': phone,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
       'is_active': isActive,
@@ -49,6 +57,8 @@ class User {
     String? id,
     String? name,
     String? email,
+    String? cpf,
+    String? phone,
     DateTime? createdAt,
     DateTime? updatedAt,
     bool? isActive,
@@ -58,6 +68,8 @@ class User {
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
+      cpf: cpf ?? this.cpf,
+      phone: phone ?? this.phone,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isActive: isActive ?? this.isActive,
@@ -72,6 +84,8 @@ class User {
         other.id == id &&
         other.name == name &&
         other.email == email &&
+        other.cpf == cpf &&
+        other.phone == phone &&
         other.createdAt == createdAt &&
         other.updatedAt == updatedAt &&
         other.isActive == isActive &&
@@ -83,6 +97,8 @@ class User {
     return id.hashCode ^
         name.hashCode ^
         email.hashCode ^
+        cpf.hashCode ^
+        phone.hashCode ^
         createdAt.hashCode ^
         updatedAt.hashCode ^
         isActive.hashCode ^
@@ -91,6 +107,6 @@ class User {
 
   @override
   String toString() {
-    return 'UserModel (id: $id, name: $name, email: $email, role: $role)';
+    return 'UserModel (id: $id, name: $name, email: $email, cpf: $cpf, : $role)';
   }
 }

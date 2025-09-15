@@ -1,10 +1,13 @@
 import 'package:condo_connect/app/core/storage/secure_storage.dart';
 import 'package:condo_connect/app/core/theme/app_themes.dart';
-import 'package:condo_connect/app/data/repositories/user_preferences_repository_impl.dart';
+import 'package:condo_connect/app/data/interfaces/auth_repository_interface.dart';
+import 'package:condo_connect/app/data/repositories/user_preferences_repository.dart';
+import 'package:condo_connect/app/data/services/auth_service.dart';
 import 'package:condo_connect/app/features/auth/view/auth_wrapper.dart';
 import 'package:condo_connect/app/features/auth/view/login_view.dart';
+import 'package:condo_connect/app/features/auth/view/register_view.dart';
 import 'package:condo_connect/app/features/auth/viewmodel/auth_viewmodel.dart';
-import 'package:condo_connect/app/data/repositories/auth_repository_impl.dart';
+import 'package:condo_connect/app/data/repositories/auth_repository.dart';
 import 'package:condo_connect/app/features/dashboard/view/dashboard_view.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -28,8 +31,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<AuthService>(
-          create: (_) => AuthService(client: http.Client()),
+        Provider<http.Client>(
+          create: (_) => http.Client(),
+          dispose: (_, client) => client.close(),
         ),
         Provider<SecureStorage>(
           create: (_) => SecureStorage(),
@@ -38,13 +42,28 @@ class MyApp extends StatelessWidget {
           create: (_) =>
               UserPreferencesRepository(preferences: sharedPreferences),
         ),
+        Provider<AuthRepositoryInterface>(
+          create: (context) => AuthRepository(
+            client: context.read<http.Client>(),
+          ),
+        ),
+        Provider<AuthService>(
+          create: (context) => AuthService(
+            repository: context.read<AuthRepositoryInterface>(),
+          ),
+        ),
         ChangeNotifierProxyProvider2<AuthService, SecureStorage, AuthViewModel>(
-            create: (context) => AuthViewModel(
-                authService: context.read<AuthService>(),
-                storage: context.read<SecureStorage>()),
-            update: (context, authService, storage, previous) =>
-                previous ??
-                AuthViewModel(authService: authService, storage: storage))
+          create: (context) => AuthViewModel(
+            authService: context.read<AuthService>(),
+            storage: context.read<SecureStorage>(),
+          ),
+          update: (context, authService, storage, previous) =>
+              previous ??
+              AuthViewModel(
+                authService: authService,
+                storage: storage,
+              ),
+        ),
       ],
       child: MaterialApp(
         title: 'Condo Connect',
@@ -55,6 +74,7 @@ class MyApp extends StatelessWidget {
         home: const AuthWrapper(),
         routes: {
           '/login': (context) => const LoginView(),
+          '/register': (context) => const RegisterView(),
           '/dashboard': (context) => const DashboardView(),
         },
       ),
