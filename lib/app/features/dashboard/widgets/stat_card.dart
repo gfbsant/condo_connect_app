@@ -1,23 +1,24 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class StatCard extends StatelessWidget {
+  const StatCard({
+    required this.title,
+    required this.value,
+    required this.subtitle,
+    required this.icon,
+    required this.color,
+    super.key,
+  });
   final String title;
   final String value;
   final String subtitle;
   final IconData icon;
   final Color color;
 
-  const StatCard(
-      {super.key,
-      required this.title,
-      required this.value,
-      required this.subtitle,
-      required this.icon,
-      required this.color});
-
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+  Widget build(final BuildContext context) {
+    final ThemeData theme = Theme.of(context);
 
     return Container(
       width: 120,
@@ -29,34 +30,50 @@ class StatCard extends StatelessWidget {
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Row(
             spacing: 4,
             children: [
               Icon(icon, color: color, size: 16),
               Expanded(
-                  child: Text(title,
-                      style: theme.textTheme.labelSmall
-                          ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis))
+                child: Text(
+                  title,
+                  style: theme.textTheme.labelSmall
+                      ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 4),
           Flexible(
-            child: Text(value,
-                style: theme.textTheme.headlineSmall
-                    ?.copyWith(fontWeight: FontWeight.bold, color: color)),
+            child: Text(
+              value,
+              style: theme.textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold, color: color),
+            ),
           ),
           const SizedBox(height: 4),
           Flexible(
-            child: Text(subtitle,
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            child: Text(
+              subtitle,
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
           ),
         ],
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('title', title));
+    properties.add(StringProperty('value', value));
+    properties.add(StringProperty('subtitle', subtitle));
+    properties.add(DiagnosticsProperty<IconData>('icon', icon));
+    properties.add(ColorProperty('color', color));
   }
 }

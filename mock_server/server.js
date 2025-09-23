@@ -47,6 +47,8 @@ const credentials = {
   'admin@test.com': '123456'
 };
 
+const resetTokens = new Map();
+
 function isValidCPF(cpf) {
   cpf = cpf.replace(/[^\d]/g, '');
   
@@ -81,6 +83,95 @@ function isValidEmail(email) {
 function generateId() {
   return (users.length + 1).toString();
 }
+
+function generateResetToken() {
+  return Math.random().toString(36).substr(2, 8).toUpperCase();
+}
+
+app.post('/auth/reset-password', (req, res) => {
+  const { email } = req.body;
+  
+  console.log(`Password reset request for: ${email}`);
+  
+  if (!email || !isValidEmail(email)) {
+    return res.status(400).json({
+      message: 'Email é obrigatório e deve ser válido'
+    });
+  }
+  
+  const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+  if (!user) {
+    console.log(`⚠️ Email não encontrado: ${email}, mas retornando sucesso por segurança`);
+    return res.status(200).json({
+      message: 'Se o email estiver cadastrado, você receberá as instruções de recuperação'
+    });
+  }
+  
+  setTimeout(() => {
+    const resetToken = generateResetToken();
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 15); 
+    
+    resetTokens.set(resetToken, {
+      email: user.email,
+      userId: user.id,
+      expiresAt: expiresAt
+    });
+    
+    console.log(`✅ Reset token generated for ${user.email}: ${resetToken} (expires: ${expiresAt.toISOString()})`);
+    console.log(`📧 Simulating email sent to: ${user.email}`);
+    
+    res.status(200).json({
+      message: 'Email de recuperação enviado com sucesso',
+      debug_token: resetToken
+    });
+  }, 1200); 
+});
+
+app.post('/auth/reset-password/confirm', (req, res) => {
+  const { token, new_password } = req.body;
+  
+  console.log(`Password reset confirmation with token: ${token}`);
+  
+  if (!token || !new_password) {
+    return res.status(400).json({
+      message: 'Token e nova senha são obrigatórios'
+    });
+  }
+  
+  if (new_password.length < 6) {
+    return res.status(400).json({
+      message: 'Nova senha deve ter pelo menos 6 caracteres'
+    });
+  }
+  
+  const resetData = resetTokens.get(token);
+  if (!resetData) {
+    return res.status(400).json({
+      message: 'Token inválido ou expirado'
+    });
+  }
+  
+  if (new Date() > resetData.expiresAt) {
+    resetTokens.delete(token);
+    return res.status(400).json({
+      message: 'Token expirado'
+    });
+  }
+  
+  setTimeout(() => {
+    credentials[resetData.email] = new_password;
+    
+    resetTokens.delete(token);
+    
+    console.log(`✅ Password reset successful for: ${resetData.email}`);
+    console.log(`🔑 New password set for ${resetData.email}`);
+    
+    res.status(200).json({
+      message: 'Senha redefinida com sucesso'
+    });
+  }, 800);
+});
 
 app.post('/auth/register', (req, res) => {
   const { name, email, password, cpf, phone } = req.body;
@@ -225,13 +316,6 @@ app.post('/auth/refresh', (req, res) => {
   });
 });
 
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    timestamp: new Date().toISOString(),
-    users_count: users.length
-  });
-});
 
 app.get('/users', (req, res) => {
   res.json({
@@ -240,14 +324,6 @@ app.get('/users', (req, res) => {
   });
 });
 
-app.get('/debug/users-credentials', (req, res) => {
-  res.json({
-    users_with_credentials: users.map(user => ({
-      ...user,
-      password: credentials[user.email] || 'N/A'
-    }))
-  });
-});
 
 app.listen(PORT, () => {
   console.log(`🚀 Mock server running on http://localhost:${PORT}`);
@@ -256,13 +332,17 @@ app.listen(PORT, () => {
   console.log(`   POST /auth/register`); 
   console.log(`   POST /auth/logout`);
   console.log(`   POST /auth/refresh`);
-  console.log(`   GET /health`);
+  console.log(`   POST /auth/reset-password`);
+  console.log(`   POST /auth/reset-password/confirm`);
   console.log(`   GET /users`);
-  console.log(`   GET /debug/users-credentials`);
   console.log(`\n🔑 Test credentials:`);
   Object.entries(credentials).forEach(([email, password]) => {
     console.log(`   ${email} : ${password}`);
   });
   console.log(`\n📝 To test registration, send POST to /auth/register with:`);
   console.log(`   { "name": "Test User", "email": "test@example.com", "password": "12345678", "cpf": "12345678901", "phone": "(11) 99999-9999" }`);
+  console.log(`\n🔄 To test password reset:`);
+  console.log(`   1. POST /auth/reset-password with { "email": "joao@test.com" }`);
+  console.log(`   2. Check response for debug_token`);
+  console.log(`   3. POST /auth/reset-password/confirm with { "token": "TOKEN", "new_password": "newpass123" }`);
 });

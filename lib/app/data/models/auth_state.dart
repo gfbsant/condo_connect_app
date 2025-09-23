@@ -3,4 +3,5 @@ enum AuthState {
   loading,
   authenticated,
   error,
+  success, // for non auth operations, like reset-password
 }

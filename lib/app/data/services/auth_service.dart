@@ -1,16 +1,15 @@
 import 'dart:developer';
 
-import 'package:condo_connect/app/data/interfaces/auth_repository_interface.dart';
-import 'package:condo_connect/app/data/models/auth_response.dart';
-import 'package:condo_connect/app/data/models/user_model.dart';
+import '../interfaces/auth_repository_interface.dart';
+import '../models/auth_response.dart';
+import '../models/user_model.dart';
 
 class AuthService {
+  AuthService({required final AuthRepositoryInterface repository})
+      : _repository = repository;
   final AuthRepositoryInterface _repository;
 
-  AuthService({required AuthRepositoryInterface repository})
-      : _repository = repository;
-
-  Future<AuthResponse> login(String email, String password) {
+  Future<AuthResponse> login(final String email, final String password) {
     try {
       return _repository.login(email: email, password: password);
     } on Exception catch (e) {
@@ -19,7 +18,7 @@ class AuthService {
     }
   }
 
-  Future<void> logout(String token) {
+  Future<void> logout(final String token) {
     try {
       return _repository.logout(token);
     } on Exception catch (e) {
@@ -28,7 +27,7 @@ class AuthService {
     }
   }
 
-  Future<AuthResponse> refreshToken(String refreshToken) {
+  Future<AuthResponse> refreshToken(final String refreshToken) {
     try {
       return _repository.refreshToken(refreshToken);
     } on Exception catch (e) {
@@ -38,11 +37,11 @@ class AuthService {
   }
 
   Future<User> register({
-    required String name,
-    required String email,
-    required String password,
-    required String cpf,
-    String? phone,
+    required final String name,
+    required final String email,
+    required final String password,
+    required final String cpf,
+    final String? phone,
   }) {
     try {
       return _repository.register(
@@ -54,6 +53,28 @@ class AuthService {
       );
     } on Exception catch (e) {
       log('Error in AuthService.register: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> requestPasswordReset(final String email) {
+    try {
+      return _repository.requestPasswordReset(email);
+    } on Exception catch (e) {
+      log('Error in AuthService.requestPasswordReset: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> confirmPasswordReset(
+      final String token, final String newPassword) {
+    try {
+      return _repository.confirmPasswordReset(
+        token,
+        newPassword,
+      );
+    } on Exception catch (e) {
+      log('Error in AuthService.confirmPasswordReset: $e');
       rethrow;
     }
   }

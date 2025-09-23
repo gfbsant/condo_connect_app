@@ -11,9 +11,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Counter increments smoke test', (final tester) async {
     // Build our app and trigger a frame.
-    final sharedPreferences = await SharedPreferences.getInstance();
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
     await tester.pumpWidget(MyApp(sharedPreferences: sharedPreferences));
 
     // Verify that our counter starts at 0.

@@ -1,24 +1,24 @@
 import 'dart:convert';
 import 'dart:developer' show log;
 
-import 'package:condo_connect/app/data/models/user_preferences.dart';
-import 'package:condo_connect/app/data/interfaces/user_preferences_repository_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../interfaces/user_preferences_repository_interface.dart';
+import '../models/user_preferences.dart';
+
 class UserPreferencesRepository implements UserPreferencesRepositoryInterface {
-  final SharedPreferences _preferences;
-  static const String _keyPrefix = 'user_preferences_';
-
-  UserPreferencesRepository({required SharedPreferences preferences})
+  UserPreferencesRepository({required final SharedPreferences preferences})
       : _preferences = preferences;
+  final SharedPreferences _preferences;
+  static const _keyPrefix = 'user_preferences_';
 
-  String _getUserKey(String userId) => '$_keyPrefix$userId';
+  String _getUserKey(final String userId) => '$_keyPrefix$userId';
 
   @override
-  Future<UserPreferences?> getUserPreferences(String userId) async {
+  Future<UserPreferences?> getUserPreferences(final String userId) async {
     try {
-      final key = _getUserKey(userId);
-      final jsonString = _preferences.getString(key);
+      final String key = _getUserKey(userId);
+      final String? jsonString = _preferences.getString(key);
 
       if (jsonString == null) {
         log('No preferences found for user: $userId');
@@ -33,12 +33,12 @@ class UserPreferencesRepository implements UserPreferencesRepositoryInterface {
   }
 
   @override
-  Future<bool> saveUserPreferences(UserPreferences preferences) async {
+  Future<bool> saveUserPreferences(final UserPreferences preferences) async {
     try {
-      final key = _getUserKey(preferences.userId);
-      final jsonString = jsonEncode(preferences.toJson());
+      final String key = _getUserKey(preferences.userId);
+      final String jsonString = jsonEncode(preferences.toJson());
 
-      final success = await _preferences.setString(key, jsonString);
+      final bool success = await _preferences.setString(key, jsonString);
 
       if (success) {
         log('Preferences saved for user: ${preferences.userId}');
@@ -53,10 +53,10 @@ class UserPreferencesRepository implements UserPreferencesRepositoryInterface {
   }
 
   @override
-  Future<bool> clearUserPreferences(String userId) async {
+  Future<bool> clearUserPreferences(final String userId) async {
     try {
-      final key = _getUserKey(userId);
-      final success = await _preferences.remove(key);
+      final String key = _getUserKey(userId);
+      final bool success = await _preferences.remove(key);
 
       log('Preferences cleared for user: $userId');
       return success;

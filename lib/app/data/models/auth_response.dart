@@ -1,13 +1,6 @@
-import 'package:condo_connect/app/data/models/user_model.dart';
+import 'user_model.dart';
 
 class AuthResponse {
-  final String token;
-  final String refreshToken;
-  final User user;
-  final DateTime expiresAt;
-
-  bool get isExpired => DateTime.now().isAfter(expiresAt);
-
   const AuthResponse({
     required this.token,
     required this.refreshToken,
@@ -15,40 +8,42 @@ class AuthResponse {
     required this.expiresAt,
   });
 
-  factory AuthResponse.fromJson(Map<String, dynamic> json) {
-    return AuthResponse(
-      token: json['token'],
-      refreshToken: json['refresh_token'],
-      user: User.fromJson(json['user']),
-      expiresAt: DateTime.parse(json['expires_at']),
-    );
-  }
+  factory AuthResponse.fromJson(final Map<String, dynamic> json) =>
+      AuthResponse(
+        token: json['token'],
+        refreshToken: json['refresh_token'],
+        user: User.fromJson(json['user']),
+        expiresAt: DateTime.parse(json['expires_at']),
+      );
+  final String token;
+  final String refreshToken;
+  final User user;
+  final DateTime expiresAt;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'token': token,
-      'refresh_token': refreshToken,
-      'user': user.toJson(),
-      'expires_at': expiresAt.toIso8601String(),
-    };
-  }
+  bool get isExpired => DateTime.now().isAfter(expiresAt);
+
+  Map<String, dynamic> toJson() => {
+        'token': token,
+        'refresh_token': refreshToken,
+        'user': user.toJson(),
+        'expires_at': expiresAt.toIso8601String(),
+      };
 
   AuthResponse copyWith({
-    String? token,
-    String? refreshToken,
-    User? user,
-    DateTime? expiresAt,
-  }) {
-    return AuthResponse(
-      token: token ?? this.token,
-      refreshToken: refreshToken ?? this.refreshToken,
-      user: user ?? this.user,
-      expiresAt: expiresAt ?? this.expiresAt,
-    );
-  }
+    final String? token,
+    final String? refreshToken,
+    final User? user,
+    final DateTime? expiresAt,
+  }) =>
+      AuthResponse(
+        token: token ?? this.token,
+        refreshToken: refreshToken ?? this.refreshToken,
+        user: user ?? this.user,
+        expiresAt: expiresAt ?? this.expiresAt,
+      );
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(final Object other) {
     if (identical(this, other)) return true;
     return other is AuthResponse &&
         other.token == token &&
@@ -58,10 +53,9 @@ class AuthResponse {
   }
 
   @override
-  int get hashCode {
-    return token.hashCode ^
-        refreshToken.hashCode ^
-        user.hashCode ^
-        expiresAt.hashCode;
-  }
+  int get hashCode =>
+      token.hashCode ^
+      refreshToken.hashCode ^
+      user.hashCode ^
+      expiresAt.hashCode;
 }

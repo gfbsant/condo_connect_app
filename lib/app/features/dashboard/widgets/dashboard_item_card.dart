@@ -1,21 +1,22 @@
-import 'package:condo_connect/app/features/dashboard/model/dashboard_item.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../model/dashboard_item.dart';
+
 class DashboardItemCard extends StatelessWidget {
+  const DashboardItemCard({
+    required this.item,
+    required this.onTap,
+    super.key,
+    this.isReorderMode = false,
+  });
   final DashboardItem item;
   final VoidCallback onTap;
   final bool isReorderMode;
 
-  const DashboardItemCard({
-    super.key,
-    required this.item,
-    required this.onTap,
-    this.isReorderMode = false,
-  });
-
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+  Widget build(final BuildContext context) {
+    final ThemeData theme = Theme.of(context);
 
     return SizedBox(
       width: 160,
@@ -52,7 +53,9 @@ class DashboardItemCard extends StatelessWidget {
                     if (item.badgeCount != null && item.badgeCount! > 0)
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.red,
                           borderRadius: BorderRadius.circular(10),
@@ -69,8 +72,10 @@ class DashboardItemCard extends StatelessWidget {
                         ),
                       ),
                     if (isReorderMode)
-                      Icon(Icons.drag_handle,
-                          color: theme.colorScheme.onSurfaceVariant),
+                      Icon(
+                        Icons.drag_handle,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -102,5 +107,13 @@ class DashboardItemCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<DashboardItem>('item', item));
+    properties.add(ObjectFlagProperty<VoidCallback>.has('onTap', onTap));
+    properties.add(DiagnosticsProperty<bool>('isReorderMode', isReorderMode));
   }
 }

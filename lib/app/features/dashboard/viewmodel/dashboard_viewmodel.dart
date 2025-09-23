@@ -1,29 +1,29 @@
 import 'dart:developer';
 
-import 'package:condo_connect/app/features/dashboard/model/dashboard_item.dart';
-import 'package:condo_connect/app/data/models/permission.dart';
-import 'package:condo_connect/app/data/models/user_model.dart';
-import 'package:condo_connect/app/data/models/user_preferences.dart';
-import 'package:condo_connect/app/data/models/user_role.dart';
-import 'package:condo_connect/app/data/interfaces/user_preferences_repository_interface.dart';
-import 'package:condo_connect/app/features/auth/viewmodel/auth_viewmodel.dart';
 import 'package:flutter/material.dart';
 
+import '../../../data/interfaces/user_preferences_repository_interface.dart';
+import '../../../data/models/permission.dart';
+import '../../../data/models/user_model.dart';
+import '../../../data/models/user_preferences.dart';
+import '../../../data/models/user_role.dart';
+import '../../auth/viewmodel/auth_viewmodel.dart';
+import '../model/dashboard_item.dart';
+
 class DashboardViewModel extends ChangeNotifier {
-  final AuthViewModel _authViewModel;
-  final UserPreferencesRepositoryInterface _preferencesRepository;
-
-  UserPreferences? _preferences;
-  bool _isLoading = false;
-  bool _isReorderMode = false;
-  List<DashboardItem> _orderedItems = [];
-
   DashboardViewModel(
     this._authViewModel,
     this._preferencesRepository,
   ) {
     _loadPreferences();
   }
+  final AuthViewModel _authViewModel;
+  final UserPreferencesRepositoryInterface _preferencesRepository;
+
+  UserPreferences? _preferences;
+  var _isLoading = false;
+  var _isReorderMode = false;
+  List<DashboardItem> _orderedItems = [];
 
   User? get currentUser => _authViewModel.authResponse?.user;
   String? get currentUserId => currentUser?.id;
@@ -42,22 +42,19 @@ class DashboardViewModel extends ChangeNotifier {
   Map<String, bool> get hiddenItems => _preferences?.hiddenItems ?? {};
 
   List<DashboardItem> get dashboardItems {
-    final items =
+    final List<DashboardItem> items =
         _orderedItems.isNotEmpty ? _orderedItems : _getDefaultDashboardItems();
-    return items.where((item) => !isItemHidden(item.route)).toList();
+    return items.where((final item) => !isItemHidden(item.route)).toList();
   }
 
-  List<DashboardItem> get allDashboardItems {
-    return _orderedItems.isNotEmpty
-        ? _orderedItems
-        : _getDefaultDashboardItems();
-  }
+  List<DashboardItem> get allDashboardItems =>
+      _orderedItems.isNotEmpty ? _orderedItems : _getDefaultDashboardItems();
 
   String get welcomeMessage {
-    final user = currentUser;
+    final User? user = currentUser;
     if (user == null) return 'Bem-vindo!';
 
-    final timeOfDay = DateTime.now().hour;
+    final int timeOfDay = DateTime.now().hour;
     String greeting;
 
     if (timeOfDay >= 6 && timeOfDay < 12) {
@@ -71,7 +68,7 @@ class DashboardViewModel extends ChangeNotifier {
   }
 
   String get roleDisplayName {
-    final user = currentUser;
+    final User? user = currentUser;
     if (user == null) return '';
 
     switch (user.role) {
@@ -84,8 +81,8 @@ class DashboardViewModel extends ChangeNotifier {
     }
   }
 
-  bool hasPermission(Permission permission) {
-    final user = currentUser;
+  bool hasPermission(final Permission permission) {
+    final User? user = currentUser;
     if (user == null) return false;
 
     final Map<UserRole, Set<Permission>> rolePermissions = {
@@ -109,14 +106,14 @@ class DashboardViewModel extends ChangeNotifier {
         Permission.searchCondos,
         Permission.manageVisitors,
         Permission.manageMail,
-      }
+      },
     };
 
     return rolePermissions[user.role]?.contains(permission) ?? false;
   }
 
   Map<String, int> get pendingCounts {
-    final user = currentUser;
+    final User? user = currentUser;
     if (user == null) return {};
 
     switch (user.role) {
@@ -129,55 +126,60 @@ class DashboardViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> updateThemeMode(ThemeMode mode) async {
-    await _updatePreference((prefs) => prefs.copyWith(themeMode: mode));
+  Future<void> updateThemeMode(final ThemeMode mode) async {
+    await _updatePreference((final prefs) => prefs.copyWith(themeMode: mode));
   }
 
-  Future<void> updateDashboardViewType(DashboardViewType viewType) async {
+  Future<void> updateDashboardViewType(final DashboardViewType viewType) async {
     await _updatePreference(
-        (prefs) => prefs.copyWith(dashboardViewType: viewType));
+      (final prefs) => prefs.copyWith(dashboardViewType: viewType),
+    );
     notifyListeners();
   }
 
-  Future<void> updateItemsPerRow(int items) async {
+  Future<void> updateItemsPerRow(final int items) async {
     if (items < 1 || items > 4) return;
-    await _updatePreference((prefs) => prefs.copyWith(itemsPerRow: items));
-  }
-
-  Future<void> updateShowNotificationBadges(bool show) async {
     await _updatePreference(
-        (prefs) => prefs.copyWith(showNotificationBadges: show));
+        (final prefs) => prefs.copyWith(itemsPerRow: items));
   }
 
-  Future<void> updateEnableSounds(bool enable) async {
-    await _updatePreference((prefs) => prefs.copyWith(enableSounds: enable));
+  Future<void> updateShowNotificationBadges(final bool show) async {
+    await _updatePreference(
+      (final prefs) => prefs.copyWith(showNotificationBadges: show),
+    );
   }
 
-  Future<void> updateLanguage(String lang) async {
-    await _updatePreference((prefs) => prefs.copyWith(language: lang));
+  Future<void> updateEnableSounds(final bool enable) async {
+    await _updatePreference(
+        (final prefs) => prefs.copyWith(enableSounds: enable));
   }
 
-  Future<void> updateDashboardOrder(List<String> order) async {
-    await _updatePreference((prefs) => prefs.copyWith(dashboardOrder: order));
+  Future<void> updateLanguage(final String lang) async {
+    await _updatePreference((final prefs) => prefs.copyWith(language: lang));
   }
 
-  Future<void> hideItem(String itemRoute) async {
+  Future<void> updateDashboardOrder(final List<String> order) async {
+    await _updatePreference(
+        (final prefs) => prefs.copyWith(dashboardOrder: order));
+  }
+
+  Future<void> hideItem(final String itemRoute) async {
     final hiddenItems = Map<String, bool>.from(_preferences?.hiddenItems ?? {});
     hiddenItems.remove(itemRoute);
     await _updatePreference(
-        (prefs) => prefs.copyWith(hiddenItems: hiddenItems));
+      (final prefs) => prefs.copyWith(hiddenItems: hiddenItems),
+    );
   }
 
-  Future<void> showItem(String itemRoute) async {
+  Future<void> showItem(final String itemRoute) async {
     final hiddenItems = Map<String, bool>.from(_preferences?.hiddenItems ?? {});
     hiddenItems.remove(itemRoute);
     await _updatePreference(
-        (prefs) => prefs.copyWith(hiddenItems: hiddenItems));
+      (final prefs) => prefs.copyWith(hiddenItems: hiddenItems),
+    );
   }
 
-  bool isItemHidden(String itemRoute) {
-    return hiddenItems[itemRoute] ?? false;
-  }
+  bool isItemHidden(final String itemRoute) => hiddenItems[itemRoute] ?? false;
 
   void toggleReorderMode() {
     _isReorderMode = !_isReorderMode;
@@ -189,7 +191,7 @@ class DashboardViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> reorderItems(int oldIndex, int newIndex) async {
+  Future<void> reorderItems(final int oldIndex, int newIndex) async {
     if (oldIndex < newIndex) {
       newIndex -= 1;
     }
@@ -210,7 +212,8 @@ class DashboardViewModel extends ChangeNotifier {
     await _saveDashboardOrder();
   }
 
-  void navigateToItem(DashboardItem item, Function(String) navigationCallback) {
+  void navigateToItem(
+      final DashboardItem item, final Function(String) navigationCallback) {
     if (!item.isEnabled) return;
     if (enableSounds) {
       log('Playing navigation sound');
@@ -228,7 +231,7 @@ class DashboardViewModel extends ChangeNotifier {
   }
 
   Future<void> _loadPreferences() async {
-    final userId = currentUserId;
+    final String? userId = currentUserId;
     if (userId == null) return;
 
     _isLoading = true;
@@ -253,17 +256,18 @@ class DashboardViewModel extends ChangeNotifier {
   }
 
   Future<void> _updatePreference(
-      UserPreferences Function(UserPreferences) updater) async {
-    final userId = currentUserId;
+    final UserPreferences Function(UserPreferences) updater,
+  ) async {
+    final String? userId = currentUserId;
     if (userId == null) return;
 
-    final currentPrefs = _preferences ??
+    final UserPreferences currentPrefs = _preferences ??
         UserPreferences(userId: userId, lastUpdated: DateTime.now());
 
-    final updatedPrefs =
+    final UserPreferences updatedPrefs =
         updater(currentPrefs).copyWith(lastUpdated: DateTime.now());
 
-    final success =
+    final bool success =
         await _preferencesRepository.saveUserPreferences(updatedPrefs);
 
     if (success) {
@@ -273,23 +277,27 @@ class DashboardViewModel extends ChangeNotifier {
   }
 
   Future<void> _saveDashboardOrder() async {
-    final order = allDashboardItems.map((item) => item.route).toList();
+    final List<String> order =
+        allDashboardItems.map((final item) => item.route).toList();
     await updateDashboardOrder(order);
   }
 
-  void _loadDashboardOrder(List<String> savedOrder) {
-    final defaultItems = _getDefaultDashboardItems();
+  void _loadDashboardOrder(final List<String> savedOrder) {
+    final List<DashboardItem> defaultItems = _getDefaultDashboardItems();
     final orderedItems = <DashboardItem>[];
 
     for (final route in savedOrder) {
-      final item = defaultItems.firstWhere((item) => item.route == route,
-          orElse: () => const DashboardItem(
-              title: '',
-              subtitle: '',
-              icon: Icons.error,
-              color: Colors.grey,
-              route: '',
-              isEnabled: false));
+      final DashboardItem item = defaultItems.firstWhere(
+        (final item) => item.route == route,
+        orElse: () => const DashboardItem(
+          title: '',
+          subtitle: '',
+          icon: Icons.error,
+          color: Colors.grey,
+          route: '',
+          isEnabled: false,
+        ),
+      );
       if (item.route.isNotEmpty && item.isEnabled) {
         orderedItems.add(item);
       }
@@ -304,94 +312,101 @@ class DashboardViewModel extends ChangeNotifier {
   }
 
   List<DashboardItem> _getDefaultDashboardItems() {
-    final user = currentUser;
+    final User? user = currentUser;
     if (user == null) return [];
 
     final baseItems = <DashboardItem>[
       const DashboardItem(
-          title: 'Meu Perfil',
-          subtitle: 'Central de avisos e comunicados',
-          icon: Icons.person,
-          color: Colors.orange,
-          route: '/perfil'),
+        title: 'Meu Perfil',
+        subtitle: 'Central de avisos e comunicados',
+        icon: Icons.person,
+        color: Colors.orange,
+        route: '/perfil',
+      ),
     ];
 
     final conditionalItems = <DashboardItem>[
       if (hasPermission(Permission.viewAllTickets))
         DashboardItem(
-            title: 'Chamados',
-            subtitle: 'Gerenciar todos os chamados',
-            icon: Icons.support_agent,
-            color: Colors.blue,
-            route: '/chamados',
-            badgeCount:
-                showNotificationBadges ? pendingCounts['chamados'] : null),
+          title: 'Chamados',
+          subtitle: 'Gerenciar todos os chamados',
+          icon: Icons.support_agent,
+          color: Colors.blue,
+          route: '/chamados',
+          badgeCount: showNotificationBadges ? pendingCounts['chamados'] : null,
+        ),
       if (hasPermission(Permission.createTicket))
-        DashboardItem(
-            title: 'Novo Chamado',
-            subtitle: 'Criar novo chamado',
-            icon: Icons.add_box,
-            color: Colors.green,
-            route: '/novo-chamado'),
+        const DashboardItem(
+          title: 'Novo Chamado',
+          subtitle: 'Criar novo chamado',
+          icon: Icons.add_box,
+          color: Colors.green,
+          route: '/novo-chamado',
+        ),
       if (hasPermission(Permission.manageUsers))
         DashboardItem(
-            title: 'Usuários',
-            subtitle: 'Gerenciar usuarios do condomínio',
-            icon: Icons.people,
-            color: Colors.purple,
-            route: '/usuarios',
-            badgeCount:
-                showNotificationBadges ? pendingCounts['usuarios'] : null),
+          title: 'Usuários',
+          subtitle: 'Gerenciar usuarios do condomínio',
+          icon: Icons.people,
+          color: Colors.purple,
+          route: '/usuarios',
+          badgeCount: showNotificationBadges ? pendingCounts['usuarios'] : null,
+        ),
       if (hasPermission(Permission.manageAparments))
         DashboardItem(
-            title: 'Apartamentos',
-            subtitle: 'Gerenciar apartamentos',
-            icon: Icons.home,
-            color: Colors.teal,
-            route: '/apartamentos',
-            badgeCount:
-                showNotificationBadges ? pendingCounts['apartamentos'] : null),
+          title: 'Apartamentos',
+          subtitle: 'Gerenciar apartamentos',
+          icon: Icons.home,
+          color: Colors.teal,
+          route: '/apartamentos',
+          badgeCount:
+              showNotificationBadges ? pendingCounts['apartamentos'] : null,
+        ),
       if (hasPermission(Permission.searchCondos))
-        DashboardItem(
-            title: 'Condomínios',
-            subtitle: 'Buscar condomínios',
-            icon: Icons.business,
-            color: Colors.indigo,
-            route: '/condominios'),
+        const DashboardItem(
+          title: 'Condomínios',
+          subtitle: 'Buscar condomínios',
+          icon: Icons.business,
+          color: Colors.indigo,
+          route: '/condominios',
+        ),
       if (hasPermission(Permission.manageVisitors))
         DashboardItem(
-            title: 'Visitantes',
-            subtitle: 'Controle de visitantes',
-            icon: Icons.badge,
-            color: Colors.amber,
-            route: '/visitantes',
-            badgeCount:
-                showNotificationBadges ? pendingCounts['visitantes'] : null),
+          title: 'Visitantes',
+          subtitle: 'Controle de visitantes',
+          icon: Icons.badge,
+          color: Colors.amber,
+          route: '/visitantes',
+          badgeCount:
+              showNotificationBadges ? pendingCounts['visitantes'] : null,
+        ),
       if (hasPermission(Permission.manageMail))
         DashboardItem(
-            title: 'Correspondência',
-            subtitle: 'Gerenciar correspondências',
-            icon: Icons.mail,
-            color: Colors.red,
-            route: 'correspondencia',
-            badgeCount: showNotificationBadges
-                ? pendingCounts['correspondencia']
-                : null),
+          title: 'Correspondência',
+          subtitle: 'Gerenciar correspondências',
+          icon: Icons.mail,
+          color: Colors.red,
+          route: 'correspondencia',
+          badgeCount:
+              showNotificationBadges ? pendingCounts['correspondencia'] : null,
+        ),
       if (hasPermission(Permission.viewReports))
         const DashboardItem(
-            title: 'Relatorios',
-            subtitle: 'Visualizar relatórios',
-            icon: Icons.assessment,
-            color: Colors.brown,
-            route: '/relatorios'),
+          title: 'Relatorios',
+          subtitle: 'Visualizar relatórios',
+          icon: Icons.assessment,
+          color: Colors.brown,
+          route: '/relatorios',
+        ),
       DashboardItem(
-          title: 'Notificações',
-          subtitle: 'Minhas notificações',
-          icon: Icons.notifications,
-          color: Colors.deepOrange,
-          route: '/notificacoes',
-          badgeCount:
-              showNotificationBadges ? pendingCounts['notificacoes'] : null)
+        title: 'Notificações',
+        subtitle: 'Minhas notificações',
+        icon: Icons.notifications,
+        color: Colors.deepOrange,
+        route: '/notificacoes',
+        badgeCount:
+            showNotificationBadges ? pendingCounts['notificacoes'] : null,
+      ),
     ];
 
     return [...baseItems, ...conditionalItems];

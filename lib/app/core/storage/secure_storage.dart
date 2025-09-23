@@ -6,36 +6,35 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class SecureStorage {
   static const _storage = FlutterSecureStorage();
 
-  static const String _tokenKey = 'auth_token';
-  static const String _refreshTokenKey = 'refresh_token';
-  static const String _userDataKey = 'user_data';
-  static const String _lastLoginkey = 'last_login';
-  static const String _isOfflineAuthEnabledKey = 'offline_auth_enabled';
+  static const _tokenKey = 'auth_token';
+  static const _refreshTokenKey = 'refresh_token';
+  static const _userDataKey = 'user_data';
+  static const _lastLoginkey = 'last_login';
+  static const _isOfflineAuthEnabledKey = 'offline_auth_enabled';
 
-  Future<void> saveToken(String token) async {
+  Future<void> saveToken(final String token) async {
     await _storage.write(key: _tokenKey, value: token);
   }
 
-  Future<void> saveRefreshToken(String token) async {
+  Future<void> saveRefreshToken(final String token) async {
     await _storage.write(key: _refreshTokenKey, value: token);
   }
 
-  Future<String?> getToken() async {
-    return await _storage.read(key: _tokenKey);
-  }
+  Future<String?> getToken() async => _storage.read(key: _tokenKey);
 
-  Future<String?> getRefreshToken() async {
-    return await _storage.read(key: _refreshTokenKey);
-  }
+  Future<String?> getRefreshToken() async =>
+      _storage.read(key: _refreshTokenKey);
 
-  Future<void> saveUserData(Map<String, dynamic> userData) async {
+  Future<void> saveUserData(final Map<String, dynamic> userData) async {
     await _storage.write(key: _userDataKey, value: jsonEncode(userData));
     await _storage.write(
-        key: _lastLoginkey, value: DateTime.now().toIso8601String());
+      key: _lastLoginkey,
+      value: DateTime.now().toIso8601String(),
+    );
   }
 
   Future<Map<String, dynamic>?> getUserData() async {
-    final userData = await _storage.read(key: _userDataKey);
+    final String? userData = await _storage.read(key: _userDataKey);
     if (userData != null) {
       try {
         return jsonDecode(userData) as Map<String, dynamic>;
@@ -47,10 +46,11 @@ class SecureStorage {
   }
 
   Future<bool> hasValidOfflineAuth() async {
-    final token = await getToken();
-    final userData = await getUserData();
-    final lastLogin = await _storage.read(key: _lastLoginkey);
-    final isOfflineEnabled = await _storage.read(key: _isOfflineAuthEnabledKey);
+    final String? token = await getToken();
+    final Map<String, dynamic>? userData = await getUserData();
+    final String? lastLogin = await _storage.read(key: _lastLoginkey);
+    final String? isOfflineEnabled =
+        await _storage.read(key: _isOfflineAuthEnabledKey);
 
     if (token == null ||
         userData == null ||
@@ -59,8 +59,9 @@ class SecureStorage {
       return false;
     }
 
-    final lastLoginDate = DateTime.parse(lastLogin);
-    final daysSinceLastLogin = DateTime.now().difference(lastLoginDate).inDays;
+    final DateTime lastLoginDate = DateTime.parse(lastLogin);
+    final int daysSinceLastLogin =
+        DateTime.now().difference(lastLoginDate).inDays;
 
     return daysSinceLastLogin < 30;
   }
@@ -74,7 +75,8 @@ class SecureStorage {
   }
 
   Future<bool> isOfflineAuthEnabled() async {
-    final isEnabled = await _storage.read(key: _isOfflineAuthEnabledKey);
+    final String? isEnabled =
+        await _storage.read(key: _isOfflineAuthEnabledKey);
     return isEnabled == 'true';
   }
 

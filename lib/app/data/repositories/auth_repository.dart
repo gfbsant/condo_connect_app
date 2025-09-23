@@ -3,21 +3,24 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:condo_connect/app/core/constants/api_constants.dart';
-import 'package:condo_connect/app/core/exceptions/api_exception.dart';
-import 'package:condo_connect/app/data/interfaces/auth_repository_interface.dart';
-import 'package:condo_connect/app/data/models/auth_response.dart';
-import 'package:condo_connect/app/data/models/user_model.dart';
 import 'package:http/http.dart' as http;
 
+import '../../core/constants/api_constants.dart';
+import '../../core/exceptions/api_exception.dart';
+import '../interfaces/auth_repository_interface.dart';
+import '../models/auth_response.dart';
+import '../models/user_model.dart';
+
 class AuthRepository implements AuthRepositoryInterface {
+  AuthRepository({final http.Client? client})
+      : _client = client ?? http.Client();
   final http.Client _client;
 
-  AuthRepository({http.Client? client}) : _client = client ?? http.Client();
-
   @override
-  Future<AuthResponse> login(
-      {required String email, required String password}) async {
+  Future<AuthResponse> login({
+    required final String email,
+    required final String password,
+  }) async {
     try {
       final http.Response response = await _client
           .post(
@@ -41,8 +44,9 @@ class AuthRepository implements AuthRepositoryInterface {
       } else {
         final error = jsonDecode(response.body) as Map<String, dynamic>;
         throw ApiException(
-            message: error['message'] ?? 'Erro no login',
-            statusCode: response.statusCode);
+          message: error['message'] ?? 'Erro no login',
+          statusCode: response.statusCode,
+        );
       }
     } on TimeoutException {
       throw ApiException(
@@ -55,7 +59,9 @@ class AuthRepository implements AuthRepositoryInterface {
         statusCode: 0,
       );
     } on Exception catch (e) {
-      if (e is ApiException) rethrow;
+      if (e is ApiException) {
+        rethrow;
+      }
       throw ApiException(
         message: 'Ocorreu um erro inesperado.',
         statusCode: 0,
@@ -64,7 +70,7 @@ class AuthRepository implements AuthRepositoryInterface {
   }
 
   @override
-  Future<void> logout(String token) async {
+  Future<void> logout(final String token) async {
     try {
       await _client.post(
         Uri.parse('${ApiConstants.baseUrl}/auth/logout'),
@@ -79,7 +85,7 @@ class AuthRepository implements AuthRepositoryInterface {
   }
 
   @override
-  Future<AuthResponse> refreshToken(String refreshToken) async {
+  Future<AuthResponse> refreshToken(final String refreshToken) async {
     try {
       final http.Response response = await _client
           .post(
@@ -109,7 +115,9 @@ class AuthRepository implements AuthRepositoryInterface {
         statusCode: 0,
       );
     } on Exception catch (e) {
-      if (e is ApiException) rethrow;
+      if (e is ApiException) {
+        rethrow;
+      }
       throw ApiException(
         message: 'Erro ao renovar sessão.',
         statusCode: 0,
@@ -118,12 +126,13 @@ class AuthRepository implements AuthRepositoryInterface {
   }
 
   @override
-  Future<User> register(
-      {required String name,
-      required String email,
-      required String password,
-      required String cpf,
-      String? phone}) async {
+  Future<User> register({
+    required final String name,
+    required final String email,
+    required final String password,
+    required final String cpf,
+    final String? phone,
+  }) async {
     try {
       final Map<String, dynamic> requestBody = {
         'name': name,
@@ -150,27 +159,79 @@ class AuthRepository implements AuthRepositoryInterface {
       } else if (response.statusCode == 400) {
         final error = jsonDecode(response.body) as Map<String, dynamic>;
         throw ApiException(
-            message: error['message'] ?? 'Dados inválidos', statusCode: 400);
+          message: error['message'] ?? 'Dados inválidos',
+          statusCode: 400,
+        );
       } else if (response.statusCode == 409) {
         throw ApiException(
-            message: 'Email ou CPF já cadastrado', statusCode: 409);
+          message: 'Email ou CPF já cadastrado',
+          statusCode: 409,
+        );
       } else {
         final error = jsonDecode(response.body) as Map<String, dynamic>;
         throw ApiException(
-            message: error['message'] ?? 'Erro no cadastro',
-            statusCode: response.statusCode);
+          message: error['message'] ?? 'Erro no cadastro',
+          statusCode: response.statusCode,
+        );
       }
     } on TimeoutException {
       throw ApiException(
-          message: 'Tempo de conexão esgotado. Verifique sua internet',
-          statusCode: 400);
+        message: 'Tempo de conexão esgotado. Verifique sua internet',
+        statusCode: 400,
+      );
     } on SocketException {
       throw ApiException(
-          message: 'Erro de conexão. Verifique se o servidor está online',
-          statusCode: 0);
+        message: 'Erro de conexão. Verifique se o servidor está online',
+        statusCode: 0,
+      );
     } on Exception catch (e) {
-      if (e is ApiException) rethrow;
+      if (e is ApiException) {
+        rethrow;
+      }
       throw ApiException(message: 'Ocorreu um erro inesperado', statusCode: 0);
+    }
+  }
+
+  @override
+  Future<void> requestPasswordReset(final String email) async {
+    try {
+      final Uri uri = Uri.parse('${ApiConstants.baseUrl}/auth/reset-password');
+      final http.Response response = await _client.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'email': email}),
+      );
+
+      if (response.statusCode != 200) {
+        final dynamic error = json.decode(response.body);
+        throw Exception(error['message'] ?? 'Erro ao solicitar recuperação');
+      }
+    } on Exception catch (e) {
+      throw Exception('Erro de conexão: $e');
+    }
+  }
+
+  @override
+  Future<void> confirmPasswordReset(
+      final String token, final String newPassword) async {
+    try {
+      final Uri uri =
+          Uri.parse('${ApiConstants.baseUrl}/auth/reset-password/confirm');
+      final http.Response response = await _client.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'token': token,
+          'new_password': newPassword,
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        final dynamic error = json.decode(response.body);
+        throw Exception(error['message'] ?? 'Erro ao confirmar nova senha');
+      }
+    } on Exception catch (e) {
+      throw Exception('Erro de conexão: $e');
     }
   }
 }

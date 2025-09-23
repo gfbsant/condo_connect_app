@@ -1,18 +1,19 @@
-import 'package:condo_connect/app/features/dashboard/model/dashboard_item.dart';
-import 'package:condo_connect/app/features/dashboard/viewmodel/dashboard_viewmodel.dart';
-import 'package:condo_connect/app/features/dashboard/widgets/dashboard_item_card.dart';
-import 'package:condo_connect/app/features/dashboard/widgets/reorderable_wrap.dart';
+import 'package:flutter/foundation.dart';
+
+import '../model/dashboard_item.dart';
+import '../viewmodel/dashboard_viewmodel.dart';
+import 'dashboard_item_card.dart';
+import 'reorderable_wrap.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class DashboardGrid extends StatelessWidget {
+  const DashboardGrid(this.viewModel, {super.key});
   final DashboardViewModel viewModel;
 
-  const DashboardGrid(this.viewModel, {super.key});
-
   @override
-  Widget build(BuildContext context) {
-    final items = viewModel.dashboardItems;
+  Widget build(final BuildContext context) {
+    final List<DashboardItem> items = viewModel.dashboardItems;
 
     if (items.isEmpty) {
       return const Center(child: Text('Nenhuma funcionalidade disponivel'));
@@ -34,46 +35,57 @@ class DashboardGrid extends StatelessWidget {
               TextButton(
                 onPressed: viewModel.exitReorderMode,
                 child: const Text('Concluir'),
-              )
+              ),
           ],
         ),
         const SizedBox(height: 16),
-        viewModel.isReorderMode
-            ? ReorderableWrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: items
-                    .map((item) => DashboardItemCard(
-                          key: ValueKey(item.route),
-                          item: item,
-                          onTap: () => _navigateToItem(context, item),
-                          isReorderMode: true,
-                        ))
-                    .toList(),
-                onReorder: (oldIndex, newIndex) =>
-                    viewModel.reorderItems(oldIndex, newIndex))
-            : Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: items
-                    .map((item) => DashboardItemCard(
-                          key: ValueKey(item.route),
-                          item: item,
-                          onTap: () => _navigateToItem(context, item),
-                          isReorderMode: false,
-                        ))
-                    .toList(),
-              ),
+        if (viewModel.isReorderMode)
+          ReorderableWrap(
+            spacing: 12,
+            runSpacing: 12,
+            onReorder: viewModel.reorderItems,
+            children: items
+                .map(
+                  (final item) => DashboardItemCard(
+                    key: ValueKey(item.route),
+                    item: item,
+                    onTap: () => _navigateToItem(context, item),
+                    isReorderMode: true,
+                  ),
+                )
+                .toList(),
+          )
+        else
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: items
+                .map(
+                  (final item) => DashboardItemCard(
+                    key: ValueKey(item.route),
+                    item: item,
+                    onTap: () => _navigateToItem(context, item),
+                  ),
+                )
+                .toList(),
+          ),
       ],
     );
   }
 
-  void _navigateToItem(BuildContext context, DashboardItem item) {
-    final viewModel = context.read<DashboardViewModel>();
-    viewModel.navigateToItem(item, (route) {
+  void _navigateToItem(final BuildContext context, final DashboardItem item) {
+    final DashboardViewModel viewModel = context.read<DashboardViewModel>();
+    viewModel.navigateToItem(item, (final route) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Navegando para: ${item.title}')),
       );
     });
+  }
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+        .add(DiagnosticsProperty<DashboardViewModel>('viewModel', viewModel));
   }
 }

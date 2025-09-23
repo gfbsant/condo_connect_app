@@ -1,13 +1,13 @@
 import 'dart:io';
 
 class ApiConstants {
-  static final String baseUrl = String.fromEnvironment(
+  static final baseUrl = String.fromEnvironment(
     'API_BASE_URL',
     defaultValue: _defaultApiUrl,
   );
 
-  static final String _defaultApiUrl =
-      Platform.isAndroid ? 'http://10.0.0.158:8080' : 'http://localhost:8080';
+  static final _defaultApiUrl =
+      Platform.isAndroid ? 'http://10.0.0.87:8080' : 'http://localhost:8080';
 
-  static const Duration timeout = Duration(seconds: 10);
+  static const timeout = Duration(seconds: 10);
 }

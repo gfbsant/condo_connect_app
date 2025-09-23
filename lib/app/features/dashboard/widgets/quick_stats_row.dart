@@ -1,63 +1,77 @@
-import 'package:condo_connect/app/data/models/permission.dart';
-import 'package:condo_connect/app/features/dashboard/model/stat_data.dart';
-import 'package:condo_connect/app/features/dashboard/viewmodel/dashboard_viewmodel.dart';
-import 'package:condo_connect/app/features/dashboard/widgets/stat_card.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../../../data/models/permission.dart';
+import '../model/stat_data.dart';
+import '../viewmodel/dashboard_viewmodel.dart';
+import 'stat_card.dart';
+
 class QuickStatsRow extends StatelessWidget {
+  const QuickStatsRow(this.viewModel, {super.key});
   final DashboardViewModel viewModel;
 
-  const QuickStatsRow(this.viewModel, {super.key});
-
   @override
-  Widget build(BuildContext context) {
-    final pendingCounts = viewModel.pendingCounts;
+  Widget build(final BuildContext context) {
+    final Map<String, int> pendingCounts = viewModel.pendingCounts;
     final stats = <StatData>[];
 
-    int? chamadosCount = pendingCounts['tickets'];
+    final int? chamadosCount = pendingCounts['tickets'];
     if (chamadosCount != null) {
-      bool canViewAllTickets =
+      final bool canViewAllTickets =
           viewModel.hasPermission(Permission.viewAllTickets);
-      stats.add(StatData(
+      stats.add(
+        StatData(
           title: viewModel.hasPermission(Permission.viewAllTickets)
               ? 'Chamados'
               : 'Meus Chamados',
           value: chamadosCount.toString(),
           subtitle: canViewAllTickets ? 'Em aberto' : 'Chamados',
           icon: Icons.support_agent,
-          color: Colors.blue));
+          color: Colors.blue,
+        ),
+      );
     }
 
-    int? notificacoesCount = pendingCounts['notifications'];
+    final int? notificacoesCount = pendingCounts['notifications'];
     if (notificacoesCount != null) {
-      stats.add(StatData(
+      stats.add(
+        StatData(
           title: 'Notificações',
           value: notificacoesCount.toString(),
           subtitle: 'Não lidas',
           icon: Icons.notifications,
-          color: Colors.orange));
+          color: Colors.orange,
+        ),
+      );
     }
 
-    bool canManageUsers = viewModel.hasPermission(Permission.manageUsers);
-    int? usersCount = pendingCounts['users'];
+    final bool canManageUsers = viewModel.hasPermission(Permission.manageUsers);
+    final int? usersCount = pendingCounts['users'];
     if (canManageUsers && usersCount != null) {
-      stats.add(StatData(
+      stats.add(
+        StatData(
           title: 'Usuários',
           value: usersCount.toString(),
           subtitle: 'Pendentes',
           icon: Icons.people,
-          color: Colors.green));
+          color: Colors.green,
+        ),
+      );
     }
 
-    bool canManageVisitors = viewModel.hasPermission(Permission.manageVisitors);
-    int? visitorsCount = pendingCounts['visitors'];
+    final bool canManageVisitors =
+        viewModel.hasPermission(Permission.manageVisitors);
+    final int? visitorsCount = pendingCounts['visitors'];
     if (canManageVisitors && visitorsCount != null) {
-      stats.add(StatData(
+      stats.add(
+        StatData(
           title: 'Visitantes',
           value: visitorsCount.toString(),
           subtitle: 'Aguardando',
           icon: Icons.badge,
-          color: Colors.purple));
+          color: Colors.purple,
+        ),
+      );
     }
 
     if (stats.isEmpty) return const SizedBox.shrink();
@@ -65,18 +79,27 @@ class QuickStatsRow extends StatelessWidget {
     return SizedBox(
       height: 100,
       child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          separatorBuilder: (_, index) => const SizedBox(width: 12),
-          itemCount: stats.length,
-          itemBuilder: (_, index) {
-            final stat = stats[index];
-            return StatCard(
-                title: stat.title,
-                value: stat.value,
-                subtitle: stat.subtitle,
-                icon: stat.icon,
-                color: stat.color);
-          }),
+        scrollDirection: Axis.horizontal,
+        separatorBuilder: (final _, final index) => const SizedBox(width: 12),
+        itemCount: stats.length,
+        itemBuilder: (final _, final index) {
+          final StatData stat = stats[index];
+          return StatCard(
+            title: stat.title,
+            value: stat.value,
+            subtitle: stat.subtitle,
+            icon: stat.icon,
+            color: stat.color,
+          );
+        },
+      ),
     );
+  }
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+        .add(DiagnosticsProperty<DashboardViewModel>('viewModel', viewModel));
   }
 }

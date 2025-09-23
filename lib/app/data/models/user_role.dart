@@ -12,12 +12,10 @@ enum UserRole {
 
   final String value;
 
-  static UserRole fromString(String value) {
-    return UserRole.values.firstWhere(
-      (role) => role.value == value,
-      orElse: () => UserRole.resident,
-    );
-  }
+  static UserRole fromString(final String value) => UserRole.values.firstWhere(
+        (final role) => role.value == value,
+        orElse: () => UserRole.resident,
+      );
 
   @override
   String toString() => value;

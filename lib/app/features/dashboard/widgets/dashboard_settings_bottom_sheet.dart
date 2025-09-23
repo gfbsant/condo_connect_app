@@ -1,18 +1,17 @@
-import 'package:condo_connect/app/data/models/user_preferences.dart';
-import 'package:condo_connect/app/features/dashboard/viewmodel/dashboard_viewmodel.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../../../data/models/user_preferences.dart';
+import '../viewmodel/dashboard_viewmodel.dart';
+
 class DashboardSettingsBottomSheet extends StatelessWidget {
+  const DashboardSettingsBottomSheet({required this.viewModel, super.key});
   final DashboardViewModel viewModel;
 
-  const DashboardSettingsBottomSheet({super.key, required this.viewModel});
-
   @override
-  Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: viewModel,
-      builder: (context, child) {
-        return SafeArea(
+  Widget build(final BuildContext context) => ListenableBuilder(
+        listenable: viewModel,
+        builder: (final context, final child) => SafeArea(
           child: Container(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -35,37 +34,32 @@ class DashboardSettingsBottomSheet extends StatelessWidget {
               ],
             ),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
 
-  Widget _sheetHeader(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: Row(
-        children: [
-          const Icon(Icons.settings),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              'Configurações do dashboard',
-              style: Theme.of(context).textTheme.titleLarge,
-              overflow: TextOverflow.ellipsis,
+  Widget _sheetHeader(final BuildContext context) => SizedBox(
+        width: double.infinity,
+        child: Row(
+          children: [
+            const Icon(Icons.settings),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Configurações do dashboard',
+                style: Theme.of(context).textTheme.titleLarge,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
 
-  Widget _themeSelector(BuildContext context) {
-    return ListTile(
-      leading: const Icon(Icons.palette),
-      title: const Text('tema'),
-      trailing: DropdownButton<ThemeMode>(
+  Widget _themeSelector(final BuildContext context) => ListTile(
+        leading: const Icon(Icons.palette),
+        title: const Text('tema'),
+        trailing: DropdownButton<ThemeMode>(
           value: viewModel.themeMode,
-          onChanged: (mode) {
+          onChanged: (final mode) {
             if (mode != null) {
               viewModel.updateThemeMode(mode);
             }
@@ -74,115 +68,126 @@ class DashboardSettingsBottomSheet extends StatelessWidget {
             DropdownMenuItem(value: ThemeMode.system, child: Text('Sistema')),
             DropdownMenuItem(value: ThemeMode.light, child: Text('Claro')),
             DropdownMenuItem(value: ThemeMode.dark, child: Text('Escuro')),
-          ]),
-    );
-  }
+          ],
+        ),
+      );
 
-  Widget _viewTypeSelector(BuildContext context) {
-    return ListTile(
-      leading: const Icon(Icons.view_module),
-      title: Text('Visualização'),
-      trailing: DropdownButton<DashboardViewType>(
+  Widget _viewTypeSelector(final BuildContext context) => ListTile(
+        leading: const Icon(Icons.view_module),
+        title: const Text('Visualização'),
+        trailing: DropdownButton<DashboardViewType>(
           value: viewModel.dashboardViewType,
-          onChanged: (type) {
+          onChanged: (final type) {
             if (type != null) {
               viewModel.updateDashboardViewType(type);
             }
           },
           items: const [
             DropdownMenuItem(
-                value: DashboardViewType.grid, child: Text('Grid')),
+              value: DashboardViewType.grid,
+              child: Text('Grid'),
+            ),
             DropdownMenuItem(
-                value: DashboardViewType.list, child: Text('Lista')),
+              value: DashboardViewType.list,
+              child: Text('Lista'),
+            ),
             DropdownMenuItem(
-                value: DashboardViewType.compact, child: Text('Compacto')),
-          ]),
-    );
-  }
+              value: DashboardViewType.compact,
+              child: Text('Compacto'),
+            ),
+          ],
+        ),
+      );
 
-  Widget _itemsPerRowSelector(BuildContext context) {
-    return ListTile(
-      leading: const Icon(Icons.grid_3x3),
-      title: Text('Itens por linha: ${viewModel.itemsPerRow}'),
-      subtitle: Slider(
+  Widget _itemsPerRowSelector(final BuildContext context) => ListTile(
+        leading: const Icon(Icons.grid_3x3),
+        title: Text('Itens por linha: ${viewModel.itemsPerRow}'),
+        subtitle: Slider(
           value: viewModel.itemsPerRow.toDouble(),
           min: 1,
           max: 4,
           divisions: 3,
           label: viewModel.itemsPerRow.toString(),
-          onChanged: (value) => viewModel.updateItemsPerRow(value.round())),
-    );
-  }
+          onChanged: (final value) =>
+              viewModel.updateItemsPerRow(value.round()),
+        ),
+      );
 
-  Widget _languageSelector(BuildContext context) {
-    return ListTile(
-      leading: const Icon(Icons.language),
-      title: const Text('Idioma'),
-      trailing: DropdownButton<String>(
+  Widget _languageSelector(final BuildContext context) => ListTile(
+        leading: const Icon(Icons.language),
+        title: const Text('Idioma'),
+        trailing: DropdownButton<String>(
           value: viewModel.language,
-          onChanged: (lang) => viewModel.updateLanguage(lang!),
+          onChanged: (final lang) => viewModel.updateLanguage(lang!),
           items: const [
             DropdownMenuItem(value: 'pt_BR', child: Text('Português')),
             DropdownMenuItem(value: 'en_US', child: Text('English')),
             DropdownMenuItem(value: 'es_ES', child: Text('Español')),
-          ]),
-    );
-  }
+          ],
+        ),
+      );
 
-  Widget _showBadgesSwitch(BuildContext context) {
-    return SwitchListTile(
+  Widget _showBadgesSwitch(final BuildContext context) => SwitchListTile(
         secondary: const Icon(Icons.notifications_active),
         title: const Text('Mostrar badges de notificação'),
         value: viewModel.showNotificationBadges,
-        onChanged: viewModel.updateShowNotificationBadges);
-  }
+        onChanged: viewModel.updateShowNotificationBadges,
+      );
 
-  Widget _enableSoundsSwitch(BuildContext context) {
-    return SwitchListTile(
+  Widget _enableSoundsSwitch(final BuildContext context) => SwitchListTile(
         secondary: const Icon(Icons.volume_up),
         title: const Text('Ativar sons'),
         value: viewModel.enableSounds,
-        onChanged: viewModel.updateEnableSounds);
-  }
+        onChanged: viewModel.updateEnableSounds,
+      );
 
-  Widget _hiddenItemsSelector(BuildContext context) {
-    return ExpansionTile(
-      leading: const Icon(Icons.visibility_off),
-      title: const Text('Itens ocultos'),
-      children: [
-        ...viewModel.allDashboardItems
-            .where((item) => viewModel.isItemHidden(item.route))
-            .map((item) => ListTile(
+  Widget _hiddenItemsSelector(final BuildContext context) => ExpansionTile(
+        leading: const Icon(Icons.visibility_off),
+        title: const Text('Itens ocultos'),
+        children: [
+          ...viewModel.allDashboardItems
+              .where((final item) => viewModel.isItemHidden(item.route))
+              .map(
+                (final item) => ListTile(
                   leading: Icon(item.icon, color: item.color),
                   title: Text(item.title),
                   trailing: IconButton(
-                      onPressed: () => viewModel.showItem(item.route),
-                      icon: const Icon(Icons.visibility)),
-                )),
-        if (viewModel.hiddenItems.isEmpty)
-          const ListTile(
-            title: Text('Nenhum item oculto'),
-          )
-      ],
-    );
-  }
+                    onPressed: () => viewModel.showItem(item.route),
+                    icon: const Icon(Icons.visibility),
+                  ),
+                ),
+              ),
+          if (viewModel.hiddenItems.isEmpty)
+            const ListTile(
+              title: Text('Nenhum item oculto'),
+            ),
+        ],
+      );
 
-  Widget _actionsRow(BuildContext context) {
-    return Row(
-      spacing: 8,
-      children: [
-        Expanded(
-          child: OutlinedButton.icon(
-              onPressed: () => viewModel.resetToDefaultOrder(),
+  Widget _actionsRow(final BuildContext context) => Row(
+        spacing: 8,
+        children: [
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: viewModel.resetToDefaultOrder,
               icon: const Icon(Icons.refresh),
-              label: const Text('Restaurar padrão')),
-        ),
-        Expanded(
+              label: const Text('Restaurar padrão'),
+            ),
+          ),
+          Expanded(
             child: ElevatedButton.icon(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.check),
-                label: const Text('Concluir')))
-      ],
-    );
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.check),
+              label: const Text('Concluir'),
+            ),
+          ),
+        ],
+      );
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+        .add(DiagnosticsProperty<DashboardViewModel>('viewModel', viewModel));
   }
 }

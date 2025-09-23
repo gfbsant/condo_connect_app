@@ -1,7 +1,7 @@
-import 'package:condo_connect/app/data/models/user_preferences.dart';
+import '../models/user_preferences.dart';
 
 abstract class UserPreferencesRepositoryInterface {
-  Future<UserPreferences?> getUserPreferences(String userId);
-  Future<bool> saveUserPreferences(UserPreferences preferences);
-  Future<bool> clearUserPreferences(String userId);
+  Future<UserPreferences?> getUserPreferences(final String userId);
+  Future<bool> saveUserPreferences(final UserPreferences preferences);
+  Future<bool> clearUserPreferences(final String userId);
 }

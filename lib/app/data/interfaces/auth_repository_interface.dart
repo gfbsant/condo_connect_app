@@ -1,14 +1,19 @@
-import 'package:condo_connect/app/data/models/auth_response.dart';
-import 'package:condo_connect/app/data/models/user_model.dart';
+import '../models/auth_response.dart';
+import '../models/user_model.dart';
 
 abstract class AuthRepositoryInterface {
-  Future<AuthResponse> login({required String email, required String password});
-  Future<void> logout(String token);
-  Future<AuthResponse> refreshToken(String refreshToken);
-  Future<User> register(
-      {required String name,
-      required String email,
-      required String password,
-      required String cpf,
-      String? phone});
+  Future<AuthResponse> login(
+      {required final String email, required final String password});
+  Future<void> logout(final String token);
+  Future<AuthResponse> refreshToken(final String refreshToken);
+  Future<User> register({
+    required final String name,
+    required final String email,
+    required final String password,
+    required final String cpf,
+    final String? phone,
+  });
+  Future<void> requestPasswordReset(final String email);
+  Future<void> confirmPasswordReset(
+      final String token, final String newPassword);
 }

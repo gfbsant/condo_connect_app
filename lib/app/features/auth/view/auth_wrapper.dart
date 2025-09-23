@@ -1,8 +1,9 @@
-import 'package:condo_connect/app/features/auth/view/login_view.dart';
-import 'package:condo_connect/app/features/auth/viewmodel/auth_viewmodel.dart';
-import 'package:condo_connect/app/features/dashboard/view/dashboard_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../dashboard/view/dashboard_view.dart';
+import '../viewmodel/auth_viewmodel.dart';
+import 'login_view.dart';
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
@@ -15,27 +16,27 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((final _) {
       context.read<AuthViewModel>().checkAuthStatus();
     });
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer<AuthViewModel>(builder: (context, authViewModel, child) {
-      if (authViewModel.isLoading) {
-        return const Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
-      }
+  Widget build(final BuildContext context) => Consumer<AuthViewModel>(
+        builder: (final context, final authViewModel, final child) {
+          if (authViewModel.isLoading) {
+            return const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
 
-      if (authViewModel.isAuthenticated) {
-        return const DashboardView();
-      }
+          if (authViewModel.isAuthenticated) {
+            return const DashboardView();
+          }
 
-      return LoginView();
-    });
-  }
+          return const LoginView();
+        },
+      );
 }

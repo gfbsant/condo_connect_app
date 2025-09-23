@@ -1,27 +1,27 @@
 import 'dart:developer';
 
-import 'package:condo_connect/app/core/storage/secure_storage.dart';
-import 'package:condo_connect/app/core/utils/validators.dart';
-import 'package:condo_connect/app/data/models/auth_response.dart';
-import 'package:condo_connect/app/data/models/auth_state.dart';
-import 'package:condo_connect/app/data/models/user_model.dart';
-import 'package:condo_connect/app/data/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
-class AuthViewModel extends ChangeNotifier {
-  final AuthService _authService;
-  final SecureStorage _storage;
+import '../../../core/storage/secure_storage.dart';
+import '../../../core/utils/validators.dart';
+import '../../../data/models/auth_response.dart';
+import '../../../data/models/auth_state.dart';
+import '../../../data/models/user_model.dart';
+import '../../../data/services/auth_service.dart';
 
+class AuthViewModel extends ChangeNotifier {
   AuthViewModel({
-    required AuthService authService,
-    required SecureStorage storage,
+    required final AuthService authService,
+    required final SecureStorage storage,
   })  : _authService = authService,
         _storage = storage;
+  final AuthService _authService;
+  final SecureStorage _storage;
 
   AuthState _state = AuthState.initial;
   String? _errorMessage;
   AuthResponse? _authResponse;
-  bool _isRegistering = false;
+  var _isRegistering = false;
   String? _registerError;
 
   AuthState get state => _state;
@@ -33,13 +33,13 @@ class AuthViewModel extends ChangeNotifier {
   bool get isRegistering => _isRegistering;
   String? get registerError => _registerError;
 
-  Future<bool> login(String email, String password) async {
-    final emailError = Validators.validateEmail(email);
+  Future<bool> login(final String email, final String password) async {
+    final String? emailError = Validators.validateEmail(email);
     if (emailError != null) {
       _setErrorMessage(emailError);
       return false;
     }
-    final passwordError = Validators.validatePassword(password);
+    final String? passwordError = Validators.validatePassword(password);
     if (passwordError != null) {
       _setErrorMessage(passwordError);
       return false;
@@ -116,9 +116,10 @@ class AuthViewModel extends ChangeNotifier {
     if (!isAuthenticated) return;
 
     try {
-      final refreshToken = await _storage.getRefreshToken();
+      final String? refreshToken = await _storage.getRefreshToken();
       if (refreshToken != null) {
-        final response = await _authService.refreshToken(refreshToken);
+        final AuthResponse response =
+            await _authService.refreshToken(refreshToken);
         _authResponse = response;
 
         await _storage.saveToken(response.token);
@@ -132,12 +133,13 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> register(
-      {required String name,
-      required String email,
-      required String password,
-      required String cpf,
-      String? phone}) async {
+  Future<bool> register({
+    required final String name,
+    required final String email,
+    required final String password,
+    required final String cpf,
+    final String? phone,
+  }) async {
     try {
       _isRegistering = true;
       _registerError = null;
@@ -164,6 +166,42 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
+  Future<bool> requestPasswordReset(final String email) async {
+    final String? emailError = Validators.validateEmail(email);
+    if (emailError != null) {
+      _setErrorMessage('Email inválido');
+    }
+
+    _setAuthState(AuthState.loading);
+    try {
+      await _authService.requestPasswordReset(email);
+      _setAuthState(AuthState.success);
+      return true;
+    } on Exception catch (e) {
+      _setErrorMessage(e.toString().replaceFirst('Exception: ', ''));
+      return false;
+    }
+  }
+
+  Future<bool> confirmPasswordReset(
+      final String token, final String newPassword) async {
+    final String? passwordError = Validators.validatePassword(newPassword);
+    if (passwordError != null) {
+      _setErrorMessage('Senha deve ter pelo menos 6 caracteres');
+      return false;
+    }
+
+    _setAuthState(AuthState.loading);
+    try {
+      await _authService.confirmPasswordReset(token, newPassword);
+      _setAuthState(AuthState.success);
+      return true;
+    } on Exception catch (e) {
+      _setErrorMessage(e.toString().replaceFirst('Exception: ', ''));
+      return false;
+    }
+  }
+
   void clearRegisterError() {
     _registerError = null;
     notifyListeners();
@@ -176,10 +214,16 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
+  void resetToInitialState() {
+    _state = AuthState.initial;
+    _errorMessage = null;
+    notifyListeners();
+  }
+
   Future<void> _loadOfflineAuth() async {
-    final userData = await _storage.getUserData();
-    final token = await _storage.getToken();
-    final refreshToken = await _storage.getRefreshToken();
+    final Map<String, dynamic>? userData = await _storage.getUserData();
+    final String? token = await _storage.getToken();
+    final String? refreshToken = await _storage.getRefreshToken();
 
     if (userData == null || token == null || refreshToken == null) return;
 
@@ -187,14 +231,15 @@ class AuthViewModel extends ChangeNotifier {
       token: token,
       refreshToken: refreshToken,
       user: User.fromJson(userData),
-      expiresAt: DateTime.now().add(Duration(hours: 24)),
+      expiresAt: DateTime.now().add(const Duration(hours: 24)),
     );
     _setAuthState(AuthState.authenticated);
   }
 
-  Future<bool> _tryOfflineAuth(String email, String passwrod) async {
+  Future<bool> _tryOfflineAuth(
+      final String email, final String passwrod) async {
     if (!await _storage.hasValidOfflineAuth()) return false;
-    final userData = await _storage.getUserData();
+    final Map<String, dynamic>? userData = await _storage.getUserData();
     if (userData == null) return false;
     if (userData['email'] != email) return false;
 
@@ -202,18 +247,18 @@ class AuthViewModel extends ChangeNotifier {
       token: await _storage.getToken() ?? '',
       refreshToken: await _storage.getRefreshToken() ?? '',
       user: User.fromJson(userData),
-      expiresAt: DateTime.now().add(Duration(hours: 8)),
+      expiresAt: DateTime.now().add(const Duration(hours: 8)),
     );
     _setAuthState(AuthState.authenticated);
     return true;
   }
 
-  void _setAuthState(AuthState newState) {
+  void _setAuthState(final AuthState newState) {
     _state = newState;
     notifyListeners();
   }
 
-  void _setErrorMessage(String message) {
+  void _setErrorMessage(final String message) {
     _errorMessage = message;
     _setAuthState(AuthState.error);
   }

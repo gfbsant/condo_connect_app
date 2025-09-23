@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppThemes {
-  static const Color verdeTurquesa = Color(0xFF1ABC9C);
-  static const Color laranjaCoral = Color(0xFFFF6F3C);
-  static const Color cinzaEscuro = Color(0xFF2C3E50);
-  static const Color neutroClaro = Color(0xFFECF0F1);
-  static const Color laranjaEscuro = Color(0xFFE74C3C);
-  static const Color cinzaMedio = Color(0xFF7F8C8D);
+  static const verdeTurquesa = Color(0xFF1ABC9C);
+  static const laranjaCoral = Color(0xFFFF6F3C);
+  static const cinzaEscuro = Color(0xFF2C3E50);
+  static const neutroClaro = Color(0xFFECF0F1);
+  static const laranjaEscuro = Color(0xFFE74C3C);
+  static const cinzaMedio = Color(0xFF7F8C8D);
 
-  static final _baseTextTheme = GoogleFonts.poppinsTextTheme();
+  static final TextTheme _baseTextTheme = GoogleFonts.poppinsTextTheme();
 
-  static final ThemeData lightTheme = ThemeData(
+  static final lightTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
     colorScheme: ColorScheme.fromSeed(
@@ -20,7 +20,6 @@ class AppThemes {
       secondary: laranjaCoral,
       error: laranjaEscuro,
       surface: Colors.white,
-      brightness: Brightness.light,
     ),
     textTheme: _baseTextTheme.copyWith(
       headlineMedium: _baseTextTheme.headlineMedium?.copyWith(
@@ -53,7 +52,7 @@ class AppThemes {
     ),
   );
 
-  static final ThemeData darkTheme = ThemeData(
+  static final darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
     colorScheme: ColorScheme.fromSeed(
@@ -101,53 +100,54 @@ class AppThemes {
   );
 
   static ElevatedButtonThemeData _elevatedButtonTheme(
-      Color background, Color foreground) {
-    return ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: background,
-        foregroundColor: foreground,
-        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+    final Color background,
+    final Color foreground,
+  ) =>
+      ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: background,
+          foregroundColor: foreground,
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
-      ),
-    );
-  }
+      );
 
   static InputDecorationTheme _inputDecorationTheme({
-    required Color fillColor,
-    required Color borderColor,
-    required Color focusColor,
-    required Color labelColor,
-    required Color iconColor,
-  }) {
-    return InputDecorationTheme(
-      filled: true,
-      fillColor: fillColor,
-      contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: focusColor, width: 2),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: laranjaEscuro, width: 1.5),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: laranjaEscuro, width: 2),
-      ),
-      labelStyle: TextStyle(color: labelColor),
-      prefixIconColor: iconColor,
-    );
-  }
+    required final Color fillColor,
+    required final Color borderColor,
+    required final Color focusColor,
+    required final Color labelColor,
+    required final Color iconColor,
+  }) =>
+      InputDecorationTheme(
+        filled: true,
+        fillColor: fillColor,
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: focusColor, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: laranjaEscuro, width: 1.5),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: laranjaEscuro, width: 2),
+        ),
+        labelStyle: TextStyle(color: labelColor),
+        prefixIconColor: iconColor,
+      );
 }

@@ -1,25 +1,32 @@
-import 'package:condo_connect/app/features/dashboard/viewmodel/dashboard_viewmodel.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../../../data/models/user_model.dart';
+import '../viewmodel/dashboard_viewmodel.dart';
+
 class WelcomeCard extends StatelessWidget {
+  const WelcomeCard(this.viewModel, {super.key});
   final DashboardViewModel viewModel;
 
-  const WelcomeCard(this.viewModel, {super.key});
-
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final user = viewModel.currentUser;
+  Widget build(final BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final User? user = viewModel.currentUser;
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [
+        gradient: LinearGradient(
+          colors: [
             theme.colorScheme.primary,
-            theme.colorScheme.primary.withAlpha(204)
-          ], begin: Alignment.topLeft, end: Alignment.bottomRight),
-          borderRadius: BorderRadius.circular(16)),
+            theme.colorScheme.primary.withAlpha(204),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Column(
         spacing: 8,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,7 +53,7 @@ class WelcomeCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                )
+                ),
               ],
             ),
             const SizedBox(height: 8),
@@ -54,10 +61,17 @@ class WelcomeCard extends StatelessWidget {
               user.email,
               style: theme.textTheme.bodyMedium
                   ?.copyWith(color: Colors.white.withAlpha(204)),
-            )
-          ]
+            ),
+          ],
         ],
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+        .add(DiagnosticsProperty<DashboardViewModel>('viewModel', viewModel));
   }
 }
