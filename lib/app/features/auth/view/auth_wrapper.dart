@@ -16,8 +16,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((final _) {
-      context.read<AuthViewModel>().checkAuthStatus();
+    WidgetsBinding.instance.addPostFrameCallback((final _) async {
+      await context.read<AuthViewModel>().checkAuthStatus();
     });
   }
 

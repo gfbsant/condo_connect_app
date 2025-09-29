@@ -113,7 +113,9 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   Future<void> syncOnlineData() async {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      return;
+    }
 
     try {
       final String? refreshToken = await _storage.getRefreshToken();

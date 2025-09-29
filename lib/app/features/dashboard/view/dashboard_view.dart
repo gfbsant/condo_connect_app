@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import '../../../data/models/permission.dart';
 import '../../../data/repositories/user_preferences_repository.dart';
 import '../../auth/viewmodel/auth_viewmodel.dart';
@@ -7,8 +10,6 @@ import '../widgets/dashboard_settings_bottom_sheet.dart';
 import '../widgets/notification_badge.dart';
 import '../widgets/quick_stats_row.dart';
 import '../widgets/welcome_card.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class DashboardView extends StatefulWidget {
   const DashboardView({super.key});
@@ -146,7 +147,9 @@ class _DashboardViewState extends State<DashboardView> {
     final BuildContext context,
     final DashboardViewModel viewModel,
   ) {
-    if (!viewModel.hasPermission(Permission.createTicket)) return null;
+    if (!viewModel.hasPermission(Permission.createTicket)) {
+      return null;
+    }
 
     return FloatingActionButton.extended(
       onPressed: () => _navigateToNewTicket(context),
@@ -156,8 +159,8 @@ class _DashboardViewState extends State<DashboardView> {
     );
   }
 
-  void _showSettingsBottomSheet(final BuildContext context) {
-    showModalBottomSheet(
+  Future<void> _showSettingsBottomSheet(final BuildContext context) async {
+    await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
@@ -182,7 +185,7 @@ class _DashboardViewState extends State<DashboardView> {
       case 'reorder':
         viewModel.toggleReorderMode();
       case 'logout':
-        _showLogoutDialog(context, viewModel);
+        await _showLogoutDialog(context, viewModel);
     }
   }
 

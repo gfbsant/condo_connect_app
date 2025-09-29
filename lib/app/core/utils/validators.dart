@@ -1,4 +1,11 @@
 class Validators {
+  static String? validateRequired(final String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Este campo é obrigatorio';
+    }
+    return null;
+  }
+
   static String? validateEmail(final String? value) {
     if (value == null || value.isEmpty) {
       return 'Email é obrigatório';
@@ -55,7 +62,9 @@ class Validators {
   }
 
   static String? validateConfirmPassword(
-      final String? value, final String? password) {
+    final String? value,
+    final String? password,
+  ) {
     if (value == null || password == null) {
       return 'Confirmação de senha é obrigatória!';
     }
@@ -90,21 +99,49 @@ class Validators {
     return null;
   }
 
+  static String? validateState(final String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Estado é obrigatório';
+    }
+    if (value.trim().length != 2) {
+      return 'Estado deve ter 2 caracteres';
+    }
+    return null;
+  }
+
+  static String? validateZipCode(final String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'CEP é obrigatório';
+    }
+    final String cleanValue = value.replaceAll(RegExp('[^0-9]'), '');
+    if (cleanValue.length != 8) {
+      return 'CEP deve ter 8 dígitos';
+    }
+    return null;
+  }
+
   static String formatCPF(final String cpf) {
     final String numbers = cpf.replaceAll(RegExp('[^0-9]'), '');
 
     final String limitedNumbers =
         numbers.length > 11 ? numbers.substring(0, 11) : numbers;
 
-    if (limitedNumbers.length <= 3) return limitedNumbers;
+    if (limitedNumbers.length <= 3) {
+      return limitedNumbers;
+    }
     if (limitedNumbers.length <= 6) {
       return '${limitedNumbers.substring(0, 3)}.${limitedNumbers.substring(3)}';
     }
     if (limitedNumbers.length <= 9) {
-      return '${limitedNumbers.substring(0, 3)}.${limitedNumbers.substring(3, 6)}.${limitedNumbers.substring(6)}';
+      return '${limitedNumbers.substring(0, 3)}.'
+          '${limitedNumbers.substring(3, 6)}.'
+          '${limitedNumbers.substring(6)}';
     }
 
-    return '${limitedNumbers.substring(0, 3)}.${limitedNumbers.substring(3, 6)}.${limitedNumbers.substring(6, 9)}-${limitedNumbers.substring(9)}';
+    return '${limitedNumbers.substring(0, 3)}.'
+        '${limitedNumbers.substring(3, 6)}.'
+        '${limitedNumbers.substring(6, 9)}-'
+        '${limitedNumbers.substring(9)}';
   }
 
   static String formatPhone(final String phone) {
@@ -113,15 +150,22 @@ class Validators {
     final String limitedNumbers =
         numbers.length > 11 ? numbers.substring(0, 11) : numbers;
 
-    if (limitedNumbers.length <= 2) return limitedNumbers;
+    if (limitedNumbers.length <= 2) {
+      return limitedNumbers;
+    }
     if (limitedNumbers.length <= 6) {
-      return '(${limitedNumbers.substring(0, 2)}) ${limitedNumbers.substring(2)}';
+      return '(${limitedNumbers.substring(0, 2)}) '
+          '${limitedNumbers.substring(2)}';
     }
     if (limitedNumbers.length <= 10) {
-      return '(${limitedNumbers.substring(0, 2)}) ${limitedNumbers.substring(2, 6)}-${limitedNumbers.substring(6)}';
+      return '(${limitedNumbers.substring(0, 2)}) '
+          '${limitedNumbers.substring(2, 6)}-'
+          '${limitedNumbers.substring(6)}';
     }
 
-    return '(${limitedNumbers.substring(0, 2)}) ${limitedNumbers.substring(2, 7)}-${limitedNumbers.substring(7)}';
+    return '(${limitedNumbers.substring(0, 2)}) '
+        '${limitedNumbers.substring(2, 7)}-'
+        '${limitedNumbers.substring(7)}';
   }
 
   static bool _isValidCPF(final String cpf) {
@@ -130,16 +174,22 @@ class Validators {
       sum += int.parse(cpf[i]) * (10 - i);
     }
     int firstDigit = 11 - (sum % 11);
-    if (firstDigit >= 10) firstDigit = 0;
+    if (firstDigit >= 10) {
+      firstDigit = 0;
+    }
 
-    if (int.parse(cpf[9]) != firstDigit) return false;
+    if (int.parse(cpf[9]) != firstDigit) {
+      return false;
+    }
 
     sum = 0;
     for (var i = 0; i < 10; i++) {
       sum += int.parse(cpf[i]) * (11 - i);
     }
     int secondDigit = 11 - (sum % 11);
-    if (secondDigit >= 10) secondDigit = 0;
+    if (secondDigit >= 10) {
+      secondDigit = 0;
+    }
 
     return int.parse(cpf[10]) == secondDigit;
   }

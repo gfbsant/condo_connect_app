@@ -23,11 +23,8 @@ class _ResetPasswordViewState extends State<ResetPasswordView>
   final _confirmPasswordController = TextEditingController();
 
   late AuthViewModel _authViewModel;
-  late AnimationController _slideController;
-  late Animation<Offset> _slideAnimation;
 
   var _isTokenStep = false;
-  String? _emailSent;
 
   @override
   void initState() {
@@ -35,17 +32,6 @@ class _ResetPasswordViewState extends State<ResetPasswordView>
     _authViewModel = context.read<AuthViewModel>();
     _authViewModel.addListener(_handleStateChanges);
 
-    _slideController = AnimationController(
-      duration: const Duration(milliseconds: 250),
-      vsync: this,
-    );
-    _slideAnimation =
-        Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(
-      CurvedAnimation(
-        parent: _slideController,
-        curve: Curves.easeInOutCubic,
-      ),
-    );
     WidgetsBinding.instance.addPostFrameCallback((final _) {
       _authViewModel.resetToInitialState();
     });
@@ -63,10 +49,8 @@ class _ResetPasswordViewState extends State<ResetPasswordView>
           'Código enviado para ${_emailController.text.trim()}',
         );
         setState(() {
-          _emailSent = _emailController.text.trim();
           _isTokenStep = true;
         });
-        await _slideController.forward();
         _authViewModel.resetToInitialState();
       } else {
         await HapticFeedback.mediumImpact();
@@ -109,13 +93,15 @@ class _ResetPasswordViewState extends State<ResetPasswordView>
 
   Future<void> _showSuccessDialog() async {
     await showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (final context) => AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadiusGeometry.circular(16)),
-              icon: Container(),
-            ));
+      context: context,
+      barrierDismissible: false,
+      builder: (final context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadiusGeometry.circular(16),
+        ),
+        icon: Container(),
+      ),
+    );
   }
 
   Future<void> _handleRequestReset() async {
@@ -152,9 +138,9 @@ class _ResetPasswordViewState extends State<ResetPasswordView>
             elevation: 0,
           ),
           body: SafeArea(
-              child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            child: Form(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: Form(
                 key: _formKey,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: Column(
@@ -174,7 +160,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView>
                       _RequestResetButton(
                         isLoading: authViewModel.isLoading,
                         onPressed: _handleRequestReset,
-                      )
+                      ),
                     ] else ...[
                       _TokenField(
                         controller: _tokenController,
@@ -194,20 +180,24 @@ class _ResetPasswordViewState extends State<ResetPasswordView>
                         isLoading: authViewModel.isLoading,
                         onPressed: _handleConfirmReset,
                       ),
-                      _BackToEmailButton(onPressed: () {
-                        setState(() {
-                          _isTokenStep = false;
-                          _tokenController.clear();
-                          _passwordController.clear();
-                          _confirmPasswordController.clear();
-                        });
-                      }),
+                      _BackToEmailButton(
+                        onPressed: () {
+                          setState(() {
+                            _isTokenStep = false;
+                            _tokenController.clear();
+                            _passwordController.clear();
+                            _confirmPasswordController.clear();
+                          });
+                        },
+                      ),
                     ],
                     spacer,
                     const _BackToLoginLink(),
                   ],
-                )),
-          )),
+                ),
+              ),
+            ),
+          ),
         ),
       );
 
@@ -283,10 +273,11 @@ class _EmailField extends StatelessWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(
-      DiagnosticsProperty<TextEditingController>('controller', controller),
-    );
-    properties.add(DiagnosticsProperty<bool>('isEnabled', isEnabled));
+    properties
+      ..add(
+        DiagnosticsProperty<TextEditingController>('controller', controller),
+      )
+      ..add(DiagnosticsProperty<bool>('isEnabled', isEnabled));
   }
 }
 
@@ -315,10 +306,11 @@ class _TokenField extends StatelessWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(
-      DiagnosticsProperty<TextEditingController>('controller', controller),
-    );
-    properties.add(DiagnosticsProperty<bool>('isEnabled', isEnabled));
+    properties
+      ..add(
+        DiagnosticsProperty<TextEditingController>('controller', controller),
+      )
+      ..add(DiagnosticsProperty<bool>('isEnabled', isEnabled));
   }
 }
 
@@ -337,10 +329,11 @@ class _PasswordField extends StatefulWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(
-      DiagnosticsProperty<TextEditingController>('controller', controller),
-    );
-    properties.add(DiagnosticsProperty<bool>('isEnabled', isEnabled));
+    properties
+      ..add(
+        DiagnosticsProperty<TextEditingController>('controller', controller),
+      )
+      ..add(DiagnosticsProperty<bool>('isEnabled', isEnabled));
   }
 }
 
@@ -389,16 +382,17 @@ class _ConfirmPasswordField extends StatefulWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(
-      DiagnosticsProperty<TextEditingController>('controller', controller),
-    );
-    properties.add(
-      DiagnosticsProperty<TextEditingController>(
-        'passwordController',
-        passwordController,
-      ),
-    );
-    properties.add(DiagnosticsProperty<bool>('isEnabled', isEnabled));
+    properties
+      ..add(
+        DiagnosticsProperty<TextEditingController>('controller', controller),
+      )
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'passwordController',
+          passwordController,
+        ),
+      )
+      ..add(DiagnosticsProperty<bool>('isEnabled', isEnabled));
   }
 }
 
@@ -473,9 +467,9 @@ class _RequestResetButton extends StatelessWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<bool>('isLoading', isLoading));
     properties
-        .add(ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed));
+      ..add(DiagnosticsProperty<bool>('isLoading', isLoading))
+      ..add(ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed));
   }
 }
 
@@ -516,9 +510,9 @@ class _ConfirmResetButton extends StatelessWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<bool>('isLoading', isLoading));
     properties
-        .add(ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed));
+      ..add(DiagnosticsProperty<bool>('isLoading', isLoading))
+      ..add(ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed));
   }
 }
 

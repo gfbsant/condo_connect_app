@@ -52,7 +52,9 @@ class DashboardViewModel extends ChangeNotifier {
 
   String get welcomeMessage {
     final User? user = currentUser;
-    if (user == null) return 'Bem-vindo!';
+    if (user == null) {
+      return 'Bem-vindo!';
+    }
 
     final int timeOfDay = DateTime.now().hour;
     String greeting;
@@ -69,7 +71,9 @@ class DashboardViewModel extends ChangeNotifier {
 
   String get roleDisplayName {
     final User? user = currentUser;
-    if (user == null) return '';
+    if (user == null) {
+      return '';
+    }
 
     switch (user.role) {
       case UserRole.resident:
@@ -83,7 +87,9 @@ class DashboardViewModel extends ChangeNotifier {
 
   bool hasPermission(final Permission permission) {
     final User? user = currentUser;
-    if (user == null) return false;
+    if (user == null) {
+      return false;
+    }
 
     final Map<UserRole, Set<Permission>> rolePermissions = {
       UserRole.resident: {
@@ -114,7 +120,9 @@ class DashboardViewModel extends ChangeNotifier {
 
   Map<String, int> get pendingCounts {
     final User? user = currentUser;
-    if (user == null) return {};
+    if (user == null) {
+      return {};
+    }
 
     switch (user.role) {
       case UserRole.resident:
@@ -138,9 +146,12 @@ class DashboardViewModel extends ChangeNotifier {
   }
 
   Future<void> updateItemsPerRow(final int items) async {
-    if (items < 1 || items > 4) return;
+    if (items < 1 || items > 4) {
+      return;
+    }
     await _updatePreference(
-        (final prefs) => prefs.copyWith(itemsPerRow: items));
+      (final prefs) => prefs.copyWith(itemsPerRow: items),
+    );
   }
 
   Future<void> updateShowNotificationBadges(final bool show) async {
@@ -151,7 +162,8 @@ class DashboardViewModel extends ChangeNotifier {
 
   Future<void> updateEnableSounds(final bool enable) async {
     await _updatePreference(
-        (final prefs) => prefs.copyWith(enableSounds: enable));
+      (final prefs) => prefs.copyWith(enableSounds: enable),
+    );
   }
 
   Future<void> updateLanguage(final String lang) async {
@@ -160,7 +172,8 @@ class DashboardViewModel extends ChangeNotifier {
 
   Future<void> updateDashboardOrder(final List<String> order) async {
     await _updatePreference(
-        (final prefs) => prefs.copyWith(dashboardOrder: order));
+      (final prefs) => prefs.copyWith(dashboardOrder: order),
+    );
   }
 
   Future<void> hideItem(final String itemRoute) async {
@@ -213,8 +226,12 @@ class DashboardViewModel extends ChangeNotifier {
   }
 
   void navigateToItem(
-      final DashboardItem item, final Function(String) navigationCallback) {
-    if (!item.isEnabled) return;
+    final DashboardItem item,
+    final Function(String) navigationCallback,
+  ) {
+    if (!item.isEnabled) {
+      return;
+    }
     if (enableSounds) {
       log('Playing navigation sound');
     }
@@ -232,7 +249,9 @@ class DashboardViewModel extends ChangeNotifier {
 
   Future<void> _loadPreferences() async {
     final String? userId = currentUserId;
-    if (userId == null) return;
+    if (userId == null) {
+      return;
+    }
 
     _isLoading = true;
     notifyListeners();
@@ -259,7 +278,9 @@ class DashboardViewModel extends ChangeNotifier {
     final UserPreferences Function(UserPreferences) updater,
   ) async {
     final String? userId = currentUserId;
-    if (userId == null) return;
+    if (userId == null) {
+      return;
+    }
 
     final UserPreferences currentPrefs = _preferences ??
         UserPreferences(userId: userId, lastUpdated: DateTime.now());
@@ -313,7 +334,9 @@ class DashboardViewModel extends ChangeNotifier {
 
   List<DashboardItem> _getDefaultDashboardItems() {
     final User? user = currentUser;
-    if (user == null) return [];
+    if (user == null) {
+      return [];
+    }
 
     final baseItems = <DashboardItem>[
       const DashboardItem(

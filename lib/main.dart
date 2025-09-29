@@ -1,14 +1,11 @@
 import 'package:flutter/foundation.dart'
     show DiagnosticPropertiesBuilder, DiagnosticsProperty;
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app/core/storage/secure_storage.dart';
 import 'app/core/theme/app_themes.dart';
-import 'app/data/interfaces/auth_repository_interface.dart';
-import 'app/data/repositories/auth_repository.dart';
 import 'app/data/repositories/user_preferences_repository.dart';
 import 'app/data/services/auth_service.dart';
 import 'app/features/auth/view/auth_wrapper.dart';
@@ -33,10 +30,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(final BuildContext context) => MultiProvider(
         providers: [
-          Provider<http.Client>(
-            create: (final _) => http.Client(),
-            dispose: (final _, final client) => client.close(),
-          ),
           Provider<SecureStorage>(
             create: (final _) => SecureStorage(),
           ),
@@ -44,15 +37,8 @@ class MyApp extends StatelessWidget {
             create: (final _) =>
                 UserPreferencesRepository(preferences: sharedPreferences),
           ),
-          Provider<AuthRepositoryInterface>(
-            create: (final context) => AuthRepository(
-              client: context.read<http.Client>(),
-            ),
-          ),
           Provider<AuthService>(
-            create: (final context) => AuthService(
-              repository: context.read<AuthRepositoryInterface>(),
-            ),
+            create: (final context) => AuthService(),
           ),
           ChangeNotifierProxyProvider2<AuthService, SecureStorage,
               AuthViewModel>(
@@ -60,8 +46,12 @@ class MyApp extends StatelessWidget {
               authService: context.read<AuthService>(),
               storage: context.read<SecureStorage>(),
             ),
-            update: (final context, final authService, final storage,
-                    final previous) =>
+            update: (
+              final context,
+              final authService,
+              final storage,
+              final previous,
+            ) =>
                 previous ??
                 AuthViewModel(
                   authService: authService,
