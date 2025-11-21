@@ -127,10 +127,9 @@ class AppThemes {
         fillColor: fillColor,
         contentPadding:
             const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-        // Melhoria: Definir 'border' como padrão simplifica o código
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none, // Borda sem cor quando não focado
+          borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -140,7 +139,6 @@ class AppThemes {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: focusColor, width: 2),
         ),
-        // Melhoria: Estilos para o estado de erro
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: laranjaEscuro, width: 1.5),
