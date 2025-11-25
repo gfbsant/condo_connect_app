@@ -7,6 +7,7 @@ import 'features/auth/presentation/pages/auth_wrapper.dart';
 import 'features/auth/presentation/pages/login_page.dart';
 import 'features/auth/presentation/pages/register_view.dart';
 import 'features/auth/presentation/pages/reset_password_page.dart';
+import 'features/notice/presentation/pages/notice_detail_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +31,18 @@ class MyApp extends StatelessWidget {
       '/login': (final context) => const LoginPage(),
       '/register': (final context) => const RegisterPage(),
       '/reset-password': (final context) => const ResetPasswordPage(),
+    },
+    onGenerateRoute: (final settings) {
+      if (settings.name == '/notice-detail') {
+        final Object? arguments = settings.arguments;
+        if (arguments != null) {
+          final noticeId = arguments as int;
+          return MaterialPageRoute(
+            builder: (final context) => NoticeDetailPage(noticeId: noticeId),
+          );
+        }
+      }
+      return null;
     },
   );
 }

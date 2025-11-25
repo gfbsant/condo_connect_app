@@ -43,11 +43,7 @@ class DashboardItemCard extends StatelessWidget {
                         color: item.color.withAlpha(26),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Icon(
-                        item.icon,
-                        color: item.color,
-                        size: 24,
-                      ),
+                      child: Icon(item.icon, color: item.color, size: 24),
                     ),
                     const Spacer(),
                     if (item.badgeCount != null && item.badgeCount! > 0)
@@ -112,8 +108,9 @@ class DashboardItemCard extends StatelessWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<DashboardItem>('item', item));
-    properties.add(ObjectFlagProperty<VoidCallback>.has('onTap', onTap));
-    properties.add(DiagnosticsProperty<bool>('isReorderMode', isReorderMode));
+    properties
+      ..add(DiagnosticsProperty<DashboardItem>('item', item))
+      ..add(ObjectFlagProperty<VoidCallback>.has('onTap', onTap))
+      ..add(DiagnosticsProperty<bool>('isReorderMode', isReorderMode));
   }
 }

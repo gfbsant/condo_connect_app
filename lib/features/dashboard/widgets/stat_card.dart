@@ -38,8 +38,9 @@ class StatCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: theme.textTheme.labelSmall
-                      ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -50,16 +51,19 @@ class StatCard extends StatelessWidget {
           Flexible(
             child: Text(
               value,
-              style: theme.textTheme.headlineSmall
-                  ?.copyWith(fontWeight: FontWeight.bold, color: color),
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
             ),
           ),
           const SizedBox(height: 4),
           Flexible(
             child: Text(
               subtitle,
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
         ],
@@ -70,10 +74,11 @@ class StatCard extends StatelessWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(StringProperty('title', title));
-    properties.add(StringProperty('value', value));
-    properties.add(StringProperty('subtitle', subtitle));
-    properties.add(DiagnosticsProperty<IconData>('icon', icon));
-    properties.add(ColorProperty('color', color));
+    properties
+      ..add(StringProperty('title', title))
+      ..add(StringProperty('value', value))
+      ..add(StringProperty('subtitle', subtitle))
+      ..add(DiagnosticsProperty<IconData>('icon', icon))
+      ..add(ColorProperty('color', color));
   }
 }

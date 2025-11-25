@@ -66,7 +66,7 @@ class ApartmentRemoteDataSourceImpl extends BaseHttpDataSource
       );
     } on ApiException catch (_) {
       rethrow;
-    } on Exception catch (e) {
+    } on Exception {
       throw ApiException(message: 'Erro ao obter apartamentos', statusCode: 0);
     }
   }

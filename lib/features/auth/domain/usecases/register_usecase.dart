@@ -1,10 +1,12 @@
 import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../../core/errors/failures.dart';
 import '../../../../core/usecase/usecase.dart';
 import '../../../user/domain/entities/user_entity.dart';
 import '../repositories/auth_repository.dart';
 
+@injectable
 class RegisterUseCase implements UseCase<UserEntity, RegisterParams> {
   const RegisterUseCase(this.repository);
 

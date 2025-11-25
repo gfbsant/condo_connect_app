@@ -469,10 +469,9 @@ class _RegisterButton extends StatelessWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<bool>('isLoading', isLoading));
-    properties.add(
-      ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed),
-    );
+    properties
+      ..add(DiagnosticsProperty<bool>('isLoading', isLoading))
+      ..add(ObjectFlagProperty<VoidCallback>.has('onPressed', onPressed));
   }
 }
 

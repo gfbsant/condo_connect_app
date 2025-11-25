@@ -9,7 +9,5 @@ class DashgboardPage extends StatefulWidget {
 
 class _DashgboardPageState extends State<DashgboardPage> {
   @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
+  Widget build(final BuildContext context) => const Placeholder();
 }

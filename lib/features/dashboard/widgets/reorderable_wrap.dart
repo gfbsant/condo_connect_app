@@ -16,22 +16,23 @@ class ReorderableWrap extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) => ReorderableListView(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        onReorder: onReorder,
-        children: children,
-      );
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    onReorder: onReorder,
+    children: children,
+  );
 
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(
-      ObjectFlagProperty<Function(int p1, int p2)>.has(
-        'onReorder',
-        onReorder,
-      ),
-    );
-    properties.add(DoubleProperty('spacing', spacing));
-    properties.add(DoubleProperty('runSpacing', runSpacing));
+    properties
+      ..add(
+        ObjectFlagProperty<Function(int p1, int p2)>.has(
+          'onReorder',
+          onReorder,
+        ),
+      )
+      ..add(DoubleProperty('spacing', spacing))
+      ..add(DoubleProperty('runSpacing', runSpacing));
   }
 }

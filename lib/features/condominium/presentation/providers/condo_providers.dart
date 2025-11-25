@@ -40,7 +40,6 @@ final NotifierProvider<CondoNotifier, CondoState> condoNotifierProvider =
     NotifierProvider.autoDispose<CondoNotifier, CondoState>(CondoNotifier.new);
 
 // Helpers
-
 final Provider<CondoNotifier> condoNotifierAccessor =
     Provider.autoDispose<CondoNotifier>(
       (final ref) => ref.watch(condoNotifierProvider.notifier),

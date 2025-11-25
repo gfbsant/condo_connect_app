@@ -102,7 +102,7 @@ class CondoNotifier extends Notifier<CondoState> {
     );
   }
 
-  Future<bool> updatedCondo(final int id, final CondominiumEntity condo) async {
+  Future<bool> updateCondo(final int id, final CondominiumEntity condo) async {
     if (state.status == CondoStatus.loading) {
       return false;
     }

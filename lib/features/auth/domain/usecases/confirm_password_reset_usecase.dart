@@ -1,9 +1,11 @@
 import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../../core/errors/failures.dart';
 import '../../../../core/usecase/usecase.dart';
 import '../repositories/auth_repository.dart';
 
+@injectable
 class ConfirmPasswordResetUseCase
     implements UseCase<void, ConfirmPasswordResetParams> {
   const ConfirmPasswordResetUseCase(this.repository);

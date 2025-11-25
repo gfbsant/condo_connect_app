@@ -99,7 +99,7 @@ class _CondoFormPageState extends ConsumerState<CondoFormPage> {
     if (_isEditing) {
       success = await ref
           .read(condoNotifierAccessor)
-          .updatedCondo(widget.condo!.id!, condo);
+          .updateCondo(widget.condo!.id!, condo);
     } else {
       success = await ref.read(condoNotifierAccessor).createCondo(condo);
     }

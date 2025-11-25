@@ -27,10 +27,16 @@ import 'package:condo_connect/features/auth/domain/datasources/auth_remote_datas
     as _i509;
 import 'package:condo_connect/features/auth/domain/repositories/auth_repository.dart'
     as _i520;
+import 'package:condo_connect/features/auth/domain/usecases/confirm_password_reset_usecase.dart'
+    as _i231;
 import 'package:condo_connect/features/auth/domain/usecases/login_usecase.dart'
     as _i25;
 import 'package:condo_connect/features/auth/domain/usecases/logout_usecase.dart'
     as _i719;
+import 'package:condo_connect/features/auth/domain/usecases/register_usecase.dart'
+    as _i451;
+import 'package:condo_connect/features/auth/domain/usecases/request_password_reset_usecase.dart'
+    as _i483;
 import 'package:condo_connect/features/condominium/data/datasources/condo_remote_datasource_impl.dart'
     as _i713;
 import 'package:condo_connect/features/condominium/data/repositories/condo_repository_impl.dart'
@@ -61,6 +67,18 @@ import 'package:condo_connect/features/notice/domain/datasources/notice_remote_d
     as _i714;
 import 'package:condo_connect/features/notice/domain/repositories/notice_repository.dart'
     as _i656;
+import 'package:condo_connect/features/notice/domain/usecases/create_notice_usecase.dart'
+    as _i20;
+import 'package:condo_connect/features/notice/domain/usecases/delete_notice_usecase.dart'
+    as _i233;
+import 'package:condo_connect/features/notice/domain/usecases/get_notice_by_id_usecase.dart'
+    as _i13;
+import 'package:condo_connect/features/notice/domain/usecases/get_notices_by_apartment_usecase.dart'
+    as _i874;
+import 'package:condo_connect/features/notice/domain/usecases/get_notices_by_condo_usecase.dart'
+    as _i952;
+import 'package:condo_connect/features/notice/domain/usecases/update_notice_usecase.dart'
+    as _i85;
 import 'package:condo_connect/features/user/data/datasources/user_remote_datasource_impl.dart'
     as _i932;
 import 'package:condo_connect/features/user/domain/datasources/user_remote_datasource.dart'
@@ -102,17 +120,44 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i714.NoticeRemoteDataSource>(
       () => _i164.NoticeRemoteDataSourceImpl(),
     );
+    gh.factory<_i231.ConfirmPasswordResetUseCase>(
+      () => _i231.ConfirmPasswordResetUseCase(gh<_i520.AuthRepository>()),
+    );
     gh.factory<_i25.LoginUseCase>(
       () => _i25.LoginUseCase(gh<_i520.AuthRepository>()),
     );
     gh.factory<_i719.LogoutUseCase>(
       () => _i719.LogoutUseCase(gh<_i520.AuthRepository>()),
     );
+    gh.factory<_i451.RegisterUseCase>(
+      () => _i451.RegisterUseCase(gh<_i520.AuthRepository>()),
+    );
+    gh.factory<_i483.RequestPasswordResetUseCase>(
+      () => _i483.RequestPasswordResetUseCase(gh<_i520.AuthRepository>()),
+    );
     gh.factory<_i57.CondoRepository>(
       () => _i864.CondoRepositoryImpl(gh<_i207.CondoRemoteDataSource>()),
     );
     gh.factory<_i656.NoticeRepository>(
       () => _i681.NoticeRepositoryImpl(gh<_i714.NoticeRemoteDataSource>()),
+    );
+    gh.factory<_i20.CreateNoticeUseCase>(
+      () => _i20.CreateNoticeUseCase(gh<_i656.NoticeRepository>()),
+    );
+    gh.factory<_i233.DeleteNoticeUseCase>(
+      () => _i233.DeleteNoticeUseCase(gh<_i656.NoticeRepository>()),
+    );
+    gh.factory<_i13.GetNoticeByIdUseCase>(
+      () => _i13.GetNoticeByIdUseCase(gh<_i656.NoticeRepository>()),
+    );
+    gh.factory<_i874.GetNoticesByApartmentUseCase>(
+      () => _i874.GetNoticesByApartmentUseCase(gh<_i656.NoticeRepository>()),
+    );
+    gh.factory<_i952.GetNoticesByCondoUseCase>(
+      () => _i952.GetNoticesByCondoUseCase(gh<_i656.NoticeRepository>()),
+    );
+    gh.factory<_i85.UpdateNoticeUseCase>(
+      () => _i85.UpdateNoticeUseCase(gh<_i656.NoticeRepository>()),
     );
     gh.factory<_i164.CreateCondoUseCase>(
       () => _i164.CreateCondoUseCase(gh<_i57.CondoRepository>()),

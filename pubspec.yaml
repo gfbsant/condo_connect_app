@@ -20,13 +20,14 @@ dependencies:
   flutter_riverpod: ^3.0.3
   flutter_secure_storage: ^9.2.4
 
-  get_it: ^9.0.5
+  get_it: ^9.1.0
   google_fonts: ^6.3.2
 
   http: ^1.6.0
 
   injectable: ^2.6.0
   
+  intl: ^0.20.2
   json_annotation: ^4.9.0
 
 
