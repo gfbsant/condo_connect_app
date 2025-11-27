@@ -11,9 +11,14 @@ EmployeeModel _$EmployeeModelFromJson(Map<String, dynamic> json) =>
       userId: (json['userId'] as num).toInt(),
       condominiumId: (json['condominiumId'] as num).toInt(),
       role: $enumDecode(_$EmployeeRoleEnumMap, json['role']),
-      createdAt: DateTime.parse(json['createdAt'] as String),
       id: (json['id'] as num?)?.toInt(),
       description: json['description'] as String?,
+      user: json['user'] == null
+          ? null
+          : UserModel.fromJson(json['user'] as Map<String, dynamic>),
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
       updatedAt: json['updatedAt'] == null
           ? null
           : DateTime.parse(json['updatedAt'] as String),
@@ -29,6 +34,5 @@ Map<String, dynamic> _$EmployeeModelToJson(EmployeeModel instance) =>
 
 const _$EmployeeRoleEnumMap = {
   EmployeeRole.admin: 'admin',
-  EmployeeRole.manager: 'manager',
   EmployeeRole.colaborator: 'colaborator',
 };

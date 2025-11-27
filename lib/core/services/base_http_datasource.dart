@@ -96,7 +96,9 @@ abstract class BaseHttpDataSource {
     final http.Response response,
     final T Function(Object)? fromJson,
   ) {
-    if (response.statusCode == 200 || response.statusCode == 201) {
+    if (response.statusCode == 200 ||
+        response.statusCode == 201 ||
+        response.statusCode == 204) {
       try {
         final dynamic decodedJson = jsonDecode(response.body);
 

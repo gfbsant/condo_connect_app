@@ -26,7 +26,7 @@ class CondoRepositoryImpl implements CondoRepository {
     } on ApiException catch (e) {
       return Left(ServerFailure(message: e.message));
     } on Exception catch (e) {
-      return Left(ServerFailure(message: 'Erro no login: $e'));
+      return Left(ServerFailure(message: 'Erro ao criar condominio: $e'));
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../user/data/models/user_model.dart';
 import '../enums/employee_role.dart';
 
 class EmployeeEntity extends Equatable {
@@ -7,9 +8,10 @@ class EmployeeEntity extends Equatable {
     required this.userId,
     required this.condominiumId,
     required this.role,
-    required this.createdAt,
     this.id,
     this.description,
+    this.user,
+    this.createdAt,
     this.updatedAt,
   });
 
@@ -18,7 +20,8 @@ class EmployeeEntity extends Equatable {
   final int condominiumId;
   final String? description;
   final EmployeeRole role;
-  final DateTime createdAt;
+  final UserModel? user;
+  final DateTime? createdAt;
   final DateTime? updatedAt;
 
   bool get isAdmin => role == EmployeeRole.admin;
@@ -30,6 +33,7 @@ class EmployeeEntity extends Equatable {
     condominiumId,
     description,
     role,
+    user,
     createdAt,
     updatedAt,
   ];

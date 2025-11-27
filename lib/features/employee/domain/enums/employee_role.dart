@@ -1,1 +1,1 @@
-enum EmployeeRole { admin, manager, colaborator }
+enum EmployeeRole { admin, colaborator }

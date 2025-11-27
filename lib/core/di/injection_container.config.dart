@@ -57,8 +57,22 @@ import 'package:condo_connect/features/condominium/domain/usecases/update_condo_
     as _i175;
 import 'package:condo_connect/features/employee/data/datasources/employee_remote_datasource_impl.dart'
     as _i584;
+import 'package:condo_connect/features/employee/data/repositories/employee_repository_impl.dart'
+    as _i824;
 import 'package:condo_connect/features/employee/domain/datasources/employee_remote_datasource.dart'
     as _i445;
+import 'package:condo_connect/features/employee/domain/repositories/employee_repository.dart'
+    as _i384;
+import 'package:condo_connect/features/employee/domain/usecases/create_employee_usecase.dart'
+    as _i285;
+import 'package:condo_connect/features/employee/domain/usecases/delete_employee_usecase.dart'
+    as _i519;
+import 'package:condo_connect/features/employee/domain/usecases/get_employee_by_id_usecase.dart'
+    as _i1071;
+import 'package:condo_connect/features/employee/domain/usecases/get_employees_by_condo_usecase.dart'
+    as _i265;
+import 'package:condo_connect/features/employee/domain/usecases/update_employee_usecase.dart'
+    as _i81;
 import 'package:condo_connect/features/notice/data/datasources/notice_remote_datasource_impl.dart'
     as _i164;
 import 'package:condo_connect/features/notice/data/repositories/notice_repository_impl.dart'
@@ -102,6 +116,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i445.EmployeeRemoteDataSource>(
       () => _i584.EmployeeRemoteDataSourceImpl(),
     );
+    gh.factory<_i384.EmployeeRepository>(
+      () => _i824.EmployeeRepositoryImpl(gh<_i445.EmployeeRemoteDataSource>()),
+    );
     gh.factory<_i672.UserRemoteDataSource>(
       () => _i932.UserRemoteDataSourceImpl(),
     );
@@ -134,6 +151,21 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i483.RequestPasswordResetUseCase>(
       () => _i483.RequestPasswordResetUseCase(gh<_i520.AuthRepository>()),
+    );
+    gh.factory<_i285.CreateEmployeeUseCase>(
+      () => _i285.CreateEmployeeUseCase(gh<_i384.EmployeeRepository>()),
+    );
+    gh.factory<_i519.DeleteEmployeeUseCase>(
+      () => _i519.DeleteEmployeeUseCase(gh<_i384.EmployeeRepository>()),
+    );
+    gh.factory<_i1071.GetEmployeeByIdUseCase>(
+      () => _i1071.GetEmployeeByIdUseCase(gh<_i384.EmployeeRepository>()),
+    );
+    gh.factory<_i265.GetEmployeesByCondoUseCase>(
+      () => _i265.GetEmployeesByCondoUseCase(gh<_i384.EmployeeRepository>()),
+    );
+    gh.factory<_i81.UpdateEmployeeUseCase>(
+      () => _i81.UpdateEmployeeUseCase(gh<_i384.EmployeeRepository>()),
     );
     gh.factory<_i57.CondoRepository>(
       () => _i864.CondoRepositoryImpl(gh<_i207.CondoRemoteDataSource>()),

@@ -3,6 +3,7 @@
 
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../../user/data/models/user_model.dart';
 import '../../domain/entities/employee_entity.dart';
 import '../../domain/enums/employee_role.dart';
 
@@ -14,11 +15,12 @@ class EmployeeModel extends EmployeeEntity {
     required super.userId,
     required super.condominiumId,
     required super.role,
-    required this.createdAt,
     this.id,
     super.description,
+    this.user,
+    this.createdAt,
     this.updatedAt,
-  }) : super(id: id, createdAt: createdAt, updatedAt: updatedAt);
+  }) : super(id: id, user: user, createdAt: createdAt, updatedAt: updatedAt);
 
   factory EmployeeModel.fromEntity(final EmployeeEntity entity) =>
       EmployeeModel(
@@ -27,6 +29,7 @@ class EmployeeModel extends EmployeeEntity {
         condominiumId: entity.condominiumId,
         description: entity.description,
         role: entity.role,
+        user: entity.user,
         createdAt: entity.createdAt,
         updatedAt: entity.updatedAt,
       );
@@ -40,11 +43,15 @@ class EmployeeModel extends EmployeeEntity {
 
   @JsonKey(includeToJson: false)
   @override
-  final DateTime createdAt;
+  final DateTime? createdAt;
 
   @JsonKey(includeToJson: false)
   @override
   final DateTime? updatedAt;
+
+  @JsonKey(includeToJson: false)
+  @override
+  final UserModel? user;
 
   Map<String, dynamic> toJson() => _$EmployeeModelToJson(this);
 
@@ -54,6 +61,7 @@ class EmployeeModel extends EmployeeEntity {
     condominiumId: condominiumId,
     description: description,
     role: role,
+    user: user,
     createdAt: createdAt,
     updatedAt: updatedAt,
   );

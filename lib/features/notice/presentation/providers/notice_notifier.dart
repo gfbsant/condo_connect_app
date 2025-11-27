@@ -170,7 +170,7 @@ class NoticeNotifier extends Notifier<NoticeState> {
           selectedNotice: state.selectedNotice?.id == id
               ? updatedNotice
               : state.selectedNotice,
-          successMessage: 'Aviso atualizado com sucesso',
+          successMessage: 'Aviso atualizado com sucesso!',
         );
         return true;
       },

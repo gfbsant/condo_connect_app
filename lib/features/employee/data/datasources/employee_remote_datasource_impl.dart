@@ -10,9 +10,9 @@ import '../models/employee_model.dart';
 @Injectable(as: EmployeeRemoteDataSource)
 class EmployeeRemoteDataSourceImpl extends BaseHttpDataSource
     implements EmployeeRemoteDataSource {
-  String get _employeesPath => '/employees';
-
   String get _condominiaPath => '/condominia';
+
+  String get _employeesPath => '/employees';
 
   @override
   Future<EmployeeModel> createEmployee(
@@ -23,7 +23,7 @@ class EmployeeRemoteDataSourceImpl extends BaseHttpDataSource
       final ApiResponse<EmployeeModel> response =
           await makeRequest<EmployeeModel>(
             RequestType.POST,
-            '$_condominiaPath/$condominiumId/$_employeesPath',
+            '$_condominiaPath/$condominiumId$_employeesPath',
             jsonBody: employee.toJson(),
             fromJson: (final json) =>
                 EmployeeModel.fromJson(json as Map<String, dynamic>),
@@ -47,12 +47,14 @@ class EmployeeRemoteDataSourceImpl extends BaseHttpDataSource
   }
 
   @override
-  Future<List<EmployeeModel>> getEmployees(final int condominiumId) async {
+  Future<List<EmployeeModel>> getEmployeesByCondo(
+    final int condominiumId,
+  ) async {
     try {
       final ApiResponse<List<EmployeeModel>> response =
           await makeRequest<List<EmployeeModel>>(
             RequestType.GET,
-            '$_condominiaPath/$condominiumId/$_employeesPath',
+            '$_condominiaPath/$condominiumId$_employeesPath',
             fromJson: (final data) {
               final items = data as List<dynamic>;
               return items
@@ -109,14 +111,14 @@ class EmployeeRemoteDataSourceImpl extends BaseHttpDataSource
 
   @override
   Future<EmployeeModel> updateEmployee(
-    final int employeeId,
+    final int id,
     final EmployeeModel employee,
   ) async {
     try {
       final ApiResponse<EmployeeModel> response =
           await makeRequest<EmployeeModel>(
             RequestType.PUT,
-            '$_employeesPath/$employeeId',
+            '$_employeesPath/$id',
             jsonBody: employee.toJson(),
             fromJson: (final json) =>
                 EmployeeModel.fromJson(json as Map<String, dynamic>),

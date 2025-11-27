@@ -5,10 +5,10 @@ abstract class EmployeeRemoteDataSource {
     final int condominiumId,
     final EmployeeModel employee,
   );
-  Future<List<EmployeeModel>> getEmployees(final int condominiumId);
+  Future<List<EmployeeModel>> getEmployeesByCondo(final int condominiumId);
   Future<EmployeeModel> getEmployeeById(final int employeeId);
   Future<EmployeeModel> updateEmployee(
-    final int employeeId,
+    final int id,
     final EmployeeModel employee,
   );
   Future<void> deleteEmployee(final int employeeId);
