@@ -8,10 +8,23 @@ abstract class ApartmentRepository {
     final ApartmentEntity apartment,
   );
 
-  Future<Either<Failure, ApartmentEntity>> getApartmentById(final int id);
-
-  Future<Either<Failure, List<ApartmentEntity>>> searchApartments(
-    final int condoId,
-    final String? query,
+  Future<Either<Failure, List<ApartmentEntity>>> getApartmentsByCondo(
+    final int condominiumId,
+    final Map<String, String>? query,
   );
+
+  Future<Either<Failure, ApartmentEntity>> getApartmentById(
+    final int apartmentId,
+  );
+
+  Future<Either<Failure, ApartmentEntity>> updateApartment(
+    final int apartmentId,
+    final ApartmentEntity apartment,
+  );
+
+  Future<Either<Failure, ApartmentEntity>> approveApartment(
+    final int apartmentId,
+  );
+
+  Future<Either<Failure, void>> deleteApartment(final int apartmentId);
 }

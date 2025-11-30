@@ -12,6 +12,8 @@ class ApartmentRemoteDataSourceImpl extends BaseHttpDataSource
     implements ApartmentRemoteDataSource {
   String get _apartmentsPath => '/apartments';
 
+  String get _condominiaPath => '/condominia';
+
   @override
   Future<ApartmentModel> createApartment(final ApartmentModel apartment) async {
     try {
@@ -41,12 +43,16 @@ class ApartmentRemoteDataSourceImpl extends BaseHttpDataSource
   }
 
   @override
-  Future<List<ApartmentModel>> getApartments() async {
+  Future<List<ApartmentModel>> getApartmentsByCondo(
+    final int condominiumId,
+    final Map<String, String>? query,
+  ) async {
     try {
       final ApiResponse<List<ApartmentModel>> response =
           await makeRequest<List<ApartmentModel>>(
             RequestType.GET,
-            _apartmentsPath,
+            '$_condominiaPath/$condominiumId$_apartmentsPath',
+            queryParams: query,
             fromJson: (final data) {
               final items = data as List<dynamic>;
               return items
@@ -130,7 +136,30 @@ class ApartmentRemoteDataSourceImpl extends BaseHttpDataSource
   }
 
   @override
-  Future<void> deleteApartment(final String apartmentId) async {
+  Future<ApartmentModel> approveApartment(final int apartmentId) async {
+    try {
+      final ApiResponse<ApartmentModel> response = await makeRequest(
+        RequestType.PATCH,
+        '$_apartmentsPath/$apartmentId/approve',
+        fromJson: (final json) =>
+            ApartmentModel.fromJson(json as Map<String, dynamic>),
+      );
+      if (response.success && response.data != null) {
+        return response.data!;
+      }
+      throw ApiException(
+        message: response.message ?? 'Erro ao aprovar apartamento',
+        statusCode: response.statusCode ?? 0,
+      );
+    } on ApiException {
+      rethrow;
+    } on Exception catch (e) {
+      throw ApiException(message: e.toString(), statusCode: 0);
+    }
+  }
+
+  @override
+  Future<void> deleteApartment(final int apartmentId) async {
     try {
       final ApiResponse response = await makeRequest(
         RequestType.DELETE,

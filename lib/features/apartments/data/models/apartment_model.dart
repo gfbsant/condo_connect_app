@@ -1,5 +1,10 @@
+//
+// ignore_for_file: overridden_fields
+
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../../residents/data/resident_model.dart';
+import '../../../residents/domain/entities/resident_entity.dart';
 import '../../domain/entities/apartment_entity.dart';
 
 part 'apartment_model.g.dart';
@@ -9,15 +14,16 @@ class ApartmentModel extends ApartmentEntity {
   const ApartmentModel({
     required super.number,
     required super.condominiumId,
-    required super.createdAt,
     super.id,
     super.floor,
     super.door,
     super.tower,
     super.rented,
     super.active,
+    this.residents,
+    super.createdAt,
     super.updatedAt,
-  });
+  }) : super(residents: residents);
 
   factory ApartmentModel.fromEntity(final ApartmentEntity entity) =>
       ApartmentModel(
@@ -29,6 +35,7 @@ class ApartmentModel extends ApartmentEntity {
         rented: entity.rented,
         active: entity.active,
         condominiumId: entity.condominiumId,
+        residents: entity.residents,
         createdAt: entity.createdAt,
         updatedAt: entity.updatedAt,
       );
@@ -47,7 +54,23 @@ class ApartmentModel extends ApartmentEntity {
     rented: rented,
     active: active,
     condominiumId: condominiumId,
+    residents: residents,
     createdAt: createdAt,
     updatedAt: updatedAt,
   );
+
+  @JsonKey(fromJson: _residentsFromJson, toJson: _residentsToJson)
+  @override
+  final List<ResidentEntity>? residents;
+
+  static List<ResidentEntity>? _residentsFromJson(final List<dynamic>? json) =>
+      json
+          ?.map((final e) => ResidentModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+  static List<dynamic>? _residentsToJson(
+    final List<ResidentEntity>? residents,
+  ) => residents
+      ?.map((final e) => ResidentModel.fromEntity(e).toJson())
+      .toList();
 }

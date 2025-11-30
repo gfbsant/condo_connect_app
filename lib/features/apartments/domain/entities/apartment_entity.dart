@@ -1,16 +1,19 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../residents/domain/entities/resident_entity.dart';
+
 class ApartmentEntity extends Equatable {
   const ApartmentEntity({
     required this.number,
     required this.condominiumId,
-    required this.createdAt,
     this.id,
     this.floor,
     this.door,
     this.tower,
     this.rented,
     this.active,
+    this.residents,
+    this.createdAt,
     this.updatedAt,
   });
 
@@ -22,7 +25,8 @@ class ApartmentEntity extends Equatable {
   final bool? rented;
   final bool? active;
   final int condominiumId;
-  final DateTime createdAt;
+  final List<ResidentEntity>? residents;
+  final DateTime? createdAt;
   final DateTime? updatedAt;
 
   @override
@@ -35,6 +39,7 @@ class ApartmentEntity extends Equatable {
     rented,
     active,
     condominiumId,
+    residents,
     createdAt,
     updatedAt,
   ];

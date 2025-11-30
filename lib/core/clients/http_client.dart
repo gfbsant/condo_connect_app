@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 
 // get is a reserved word
 // ignore: constant_identifier_names
-enum RequestType { GET, POST, PUT, DELETE }
+enum RequestType { GET, POST, PUT, PATCH, DELETE }
 
 abstract class HttpCaller {
   Future<http.Response> call(

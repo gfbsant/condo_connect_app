@@ -45,6 +45,8 @@ class HttpCallerImpl implements HttpCaller {
         return http.post(uri, headers: headers, body: body);
       case RequestType.PUT:
         return http.put(uri, headers: headers, body: body);
+      case RequestType.PATCH:
+        return http.patch(uri, headers: headers, body: body);
       case RequestType.DELETE:
         return http.delete(uri, headers: headers);
     }
@@ -73,6 +75,10 @@ class HttpCallerImpl implements HttpCaller {
         case RequestType.PUT:
           request = await client
               .putUrl(uri)
+              .timeout(Duration(seconds: timeoutSeconds));
+        case RequestType.PATCH:
+          request = await client
+              .patchUrl(uri)
               .timeout(Duration(seconds: timeoutSeconds));
         case RequestType.DELETE:
           request = await client
