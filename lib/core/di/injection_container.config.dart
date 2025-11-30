@@ -109,6 +109,24 @@ import 'package:condo_connect/features/notice/domain/usecases/get_notices_by_con
     as _i952;
 import 'package:condo_connect/features/notice/domain/usecases/update_notice_usecase.dart'
     as _i85;
+import 'package:condo_connect/features/residents/data/datasources/resident_remote_datasource_impl.dart'
+    as _i617;
+import 'package:condo_connect/features/residents/data/repositories/resident_repository_impl.dart'
+    as _i1012;
+import 'package:condo_connect/features/residents/domain/datasources/resident_remote_datasource.dart'
+    as _i805;
+import 'package:condo_connect/features/residents/domain/repositories/resident_repository.dart'
+    as _i105;
+import 'package:condo_connect/features/residents/domain/usecases/create_resident_usecase.dart'
+    as _i87;
+import 'package:condo_connect/features/residents/domain/usecases/delete_resident_usecase.dart'
+    as _i361;
+import 'package:condo_connect/features/residents/domain/usecases/get_resident_by_id_usecase.dart'
+    as _i856;
+import 'package:condo_connect/features/residents/domain/usecases/get_residents_by_apartment_usecase.dart'
+    as _i982;
+import 'package:condo_connect/features/residents/domain/usecases/update_resident_usecase.dart'
+    as _i718;
 import 'package:condo_connect/features/user/data/datasources/user_remote_datasource_impl.dart'
     as _i932;
 import 'package:condo_connect/features/user/domain/datasources/user_remote_datasource.dart'
@@ -150,6 +168,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i520.AuthRepository>(
       () => _i549.AuthRepositoryImpl(gh<_i509.AuthRemoteDataSource>()),
     );
+    gh.factory<_i805.ResidentRemoteDataSource>(
+      () => _i617.ResidentRemoteDataSourceImpl(),
+    );
     gh.factory<_i714.NoticeRemoteDataSource>(
       () => _i164.NoticeRemoteDataSourceImpl(),
     );
@@ -187,9 +208,31 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i81.UpdateEmployeeUseCase>(
       () => _i81.UpdateEmployeeUseCase(gh<_i384.EmployeeRepository>()),
     );
+    gh.factory<_i105.ResidentRepository>(
+      () => _i1012.ResidentRepositoryImpl(gh<_i805.ResidentRemoteDataSource>()),
+    );
     gh.factory<_i57.CondoRepository>(
       () => _i864.CondoRepositoryImpl(gh<_i207.CondoRemoteDataSource>()),
     );
+<<<<<<< HEAD
+=======
+    gh.factory<_i87.CreateResidentUseCase>(
+      () => _i87.CreateResidentUseCase(gh<_i105.ResidentRepository>()),
+    );
+    gh.factory<_i361.DeleteResidentUseCase>(
+      () => _i361.DeleteResidentUseCase(gh<_i105.ResidentRepository>()),
+    );
+    gh.factory<_i856.GetResidentByIdUseCase>(
+      () => _i856.GetResidentByIdUseCase(gh<_i105.ResidentRepository>()),
+    );
+    gh.factory<_i982.GetResidentsByApartmentUseCase>(
+      () =>
+          _i982.GetResidentsByApartmentUseCase(gh<_i105.ResidentRepository>()),
+    );
+    gh.factory<_i718.UpdateResidentUseCase>(
+      () => _i718.UpdateResidentUseCase(gh<_i105.ResidentRepository>()),
+    );
+>>>>>>> 1855d78 (Implement resident management features)
     gh.factory<_i221.ApproveApartmentUseCase>(
       () => _i221.ApproveApartmentUseCase(gh<_i270.ApartmentRepository>()),
     );

@@ -3,7 +3,11 @@
 
 import 'package:json_annotation/json_annotation.dart';
 
+<<<<<<< HEAD
 import '../../../residents/data/resident_model.dart';
+=======
+import '../../../residents/data/models/resident_model.dart';
+>>>>>>> 1855d78 (Implement resident management features)
 import '../../../residents/domain/entities/resident_entity.dart';
 import '../../domain/entities/apartment_entity.dart';
 

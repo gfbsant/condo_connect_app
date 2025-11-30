@@ -163,6 +163,17 @@ class Validators {
     return null;
   }
 
+  static String? validateRequiredNumber(final String? value) {
+    final String? requiredValueValidation = validateRequired(value);
+    if (requiredValueValidation != null) {
+      return requiredValueValidation;
+    }
+    if (int.tryParse(value!) == null) {
+      return 'O valor não é um número';
+    }
+    return null;
+  }
+
   static String formatCPF(final String cpf) {
     final String numbers = cpf.replaceAll(RegExp('[^0-9]'), '');
 

@@ -17,7 +17,7 @@ class ApartmentRemoteDataSourceImpl extends BaseHttpDataSource
   @override
   Future<ApartmentModel> createApartment(final ApartmentModel apartment) async {
     try {
-      final ApiResponse response = await makeRequest(
+      final ApiResponse<ApartmentModel> response = await makeRequest(
         RequestType.POST,
         _apartmentsPath,
         jsonBody: apartment.toJson(),
