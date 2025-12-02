@@ -214,8 +214,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i57.CondoRepository>(
       () => _i864.CondoRepositoryImpl(gh<_i207.CondoRemoteDataSource>()),
     );
-<<<<<<< HEAD
-=======
     gh.factory<_i87.CreateResidentUseCase>(
       () => _i87.CreateResidentUseCase(gh<_i105.ResidentRepository>()),
     );
@@ -232,7 +230,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i718.UpdateResidentUseCase>(
       () => _i718.UpdateResidentUseCase(gh<_i105.ResidentRepository>()),
     );
->>>>>>> 1855d78 (Implement resident management features)
     gh.factory<_i221.ApproveApartmentUseCase>(
       () => _i221.ApproveApartmentUseCase(gh<_i270.ApartmentRepository>()),
     );
