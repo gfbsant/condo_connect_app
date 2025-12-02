@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/utils/validators.dart';
+import '../../../../shared/utils/validators.dart';
 import '../../domain/entities/notice_entity.dart';
 import '../../domain/enums/notice_status.dart';
 import '../../domain/enums/notice_type.dart';

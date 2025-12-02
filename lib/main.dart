@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/di/injection_container.dart';
-import 'core/theme/app_themes.dart';
+import 'shared/themes/app_themes.dart';
 import 'features/auth/presentation/pages/auth_wrapper.dart';
 import 'features/auth/presentation/pages/login_page.dart';
 import 'features/auth/presentation/pages/register_view.dart';

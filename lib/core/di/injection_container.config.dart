@@ -89,6 +89,24 @@ import 'package:condo_connect/features/employee/domain/usecases/get_employees_by
     as _i265;
 import 'package:condo_connect/features/employee/domain/usecases/update_employee_usecase.dart'
     as _i81;
+import 'package:condo_connect/features/facilities/data/datasources/facility_remote_datasource_impl.dart'
+    as _i389;
+import 'package:condo_connect/features/facilities/data/repositories/facility_repository_impl.dart'
+    as _i939;
+import 'package:condo_connect/features/facilities/domain/datasources/facility_remote_datasource.dart'
+    as _i335;
+import 'package:condo_connect/features/facilities/domain/repositories/facility_repository.dart'
+    as _i792;
+import 'package:condo_connect/features/facilities/domain/usecases/create_facility_usecase.dart'
+    as _i483;
+import 'package:condo_connect/features/facilities/domain/usecases/delete_facility_usecase.dart'
+    as _i25;
+import 'package:condo_connect/features/facilities/domain/usecases/get_facilities_by_condo_usecase.dart'
+    as _i1048;
+import 'package:condo_connect/features/facilities/domain/usecases/get_facility_by_id_usecase.dart'
+    as _i389;
+import 'package:condo_connect/features/facilities/domain/usecases/update_facility_usecase.dart'
+    as _i900;
 import 'package:condo_connect/features/notice/data/datasources/notice_remote_datasource_impl.dart'
     as _i164;
 import 'package:condo_connect/features/notice/data/repositories/notice_repository_impl.dart'
@@ -147,8 +165,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i308.ApartmentRemoteDataSource>(
       () => _i94.ApartmentRemoteDataSourceImpl(),
     );
+    gh.factory<_i335.FacilityRemoteDataSource>(
+      () => _i389.FacilityRemoteDataSourceImpl(),
+    );
     gh.factory<_i445.EmployeeRemoteDataSource>(
       () => _i584.EmployeeRemoteDataSourceImpl(),
+    );
+    gh.factory<_i792.FacilityRepository>(
+      () => _i939.FacilityRepositoryImpl(gh<_i335.FacilityRemoteDataSource>()),
     );
     gh.factory<_i384.EmployeeRepository>(
       () => _i824.EmployeeRepositoryImpl(gh<_i445.EmployeeRemoteDataSource>()),
@@ -207,6 +231,21 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i81.UpdateEmployeeUseCase>(
       () => _i81.UpdateEmployeeUseCase(gh<_i384.EmployeeRepository>()),
+    );
+    gh.factory<_i483.CreateFacilityUseCase>(
+      () => _i483.CreateFacilityUseCase(gh<_i792.FacilityRepository>()),
+    );
+    gh.factory<_i25.DeleteFacilityUseCase>(
+      () => _i25.DeleteFacilityUseCase(gh<_i792.FacilityRepository>()),
+    );
+    gh.factory<_i1048.GetFacilitiesByCondoUseCase>(
+      () => _i1048.GetFacilitiesByCondoUseCase(gh<_i792.FacilityRepository>()),
+    );
+    gh.factory<_i389.GetFacilityByIdUseCase>(
+      () => _i389.GetFacilityByIdUseCase(gh<_i792.FacilityRepository>()),
+    );
+    gh.factory<_i900.UpdateFacilityUseCase>(
+      () => _i900.UpdateFacilityUseCase(gh<_i792.FacilityRepository>()),
     );
     gh.factory<_i105.ResidentRepository>(
       () => _i1012.ResidentRepositoryImpl(gh<_i805.ResidentRemoteDataSource>()),

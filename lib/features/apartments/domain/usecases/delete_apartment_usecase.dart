@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../../core/errors/failures.dart';
-import '../../../../core/usecase/usecase.dart';
+import '../../../../shared/errors/failures.dart';
+import '../../../../shared/usecase/usecase.dart';
 import '../repositories/apartment_repository.dart';
 
 @injectable

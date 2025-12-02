@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../../core/errors/failures.dart';
-import '../../../../core/exceptions/api_exception.dart';
+import '../../../../shared/errors/failures.dart';
+import '../../../../shared/exceptions/api_exception.dart';
 import '../../domain/datasources/apartment_remote_datasource.dart';
 import '../../domain/entities/apartment_entity.dart';
 import '../../domain/repositories/apartment_repository.dart';

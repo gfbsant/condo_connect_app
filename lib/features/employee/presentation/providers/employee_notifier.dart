@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/errors/failures.dart';
+import '../../../../shared/errors/failures.dart';
 import '../../domain/entities/employee_entity.dart';
 import '../../domain/usecases/create_employee_usecase.dart';
 import '../../domain/usecases/delete_employee_usecase.dart';

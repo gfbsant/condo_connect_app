@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../../shared/constants/api_constants.dart';
+import '../../shared/models/api_response.dart';
 import '../clients/http_client.dart';
 import '../clients/http_client_impl.dart';
-import '../constants/api_constants.dart';
-import '../models/api_response.dart';
 import 'storage/secure_storage_service.dart';
 import 'storage/secure_storage_service_impl.dart';
 

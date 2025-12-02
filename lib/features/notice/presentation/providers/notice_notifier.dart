@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/errors/failures.dart';
+import '../../../../shared/errors/failures.dart';
 import '../../domain/entities/notice_entity.dart';
 import '../../domain/usecases/create_notice_usecase.dart';
 import '../../domain/usecases/delete_notice_usecase.dart';

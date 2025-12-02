@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/errors/failures.dart';
 import '../../../../core/services/storage/secure_storage_service.dart';
+import '../../../../shared/errors/failures.dart';
 import '../../../user/domain/entities/user_entity.dart';
 import '../../domain/usecases/confirm_password_reset_usecase.dart';
 import '../../domain/usecases/login_usecase.dart';

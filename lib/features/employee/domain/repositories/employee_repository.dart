@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 
-import '../../../../core/errors/failures.dart';
+import '../../../../shared/errors/failures.dart';
 import '../entities/employee_entity.dart';
 
 abstract class EmployeeRepository {
