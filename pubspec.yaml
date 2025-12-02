@@ -5,8 +5,8 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.10.0 <4.0.0'
-  flutter: '>=3.38.0'
+  sdk: '>=3.10.1 <4.0.0'
+  flutter: '>=3.38.3'
 
 dependencies:
   cupertino_icons: ^1.0.8
@@ -21,7 +21,7 @@ dependencies:
   flutter_secure_storage: ^9.2.4
 
   get_it: ^9.1.1
-  google_fonts: ^6.3.2
+  google_fonts: ^6.3.3
 
   http: ^1.6.0
 

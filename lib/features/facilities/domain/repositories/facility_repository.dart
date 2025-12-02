@@ -16,7 +16,7 @@ abstract class FacilityRepository {
   Future<Either<Failure, FacilityEntity>> getFacilityById(final int facilityId);
 
   Future<Either<Failure, FacilityEntity>> updateFacility(
-    final int facilityId,
+    final int id,
     final FacilityEntity facility,
   );
 

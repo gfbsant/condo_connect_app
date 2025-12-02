@@ -16,15 +16,12 @@ class UpdateFacilityUseCase
   @override
   Future<Either<Failure, FacilityEntity>> call(
     final UpdateFacilityParams params,
-  ) => _repository.updateFacility(params.facilityId, params.facility);
+  ) => _repository.updateFacility(params.id, params.facility);
 }
 
 class UpdateFacilityParams {
-  const UpdateFacilityParams({
-    required this.facilityId,
-    required this.facility,
-  });
+  const UpdateFacilityParams({required this.id, required this.facility});
 
-  final int facilityId;
+  final int id;
   final FacilityEntity facility;
 }

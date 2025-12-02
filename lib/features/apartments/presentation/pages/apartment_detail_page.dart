@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../residents/domain/entities/resident_entity.dart';
+import '../../../residents/presentation/pages/resident_list_page.dart';
 import '../../domain/entities/apartment_entity.dart';
 import '../providers/apartment_providers.dart';
 import '../providers/apartment_state.dart';
@@ -75,6 +76,7 @@ class _ApartmentDetailPageState extends ConsumerState<ApartmentDetailPage> {
       body: ApartmentDetailBody(
         apartment: selectedApartment,
         isLoading: isLoading,
+        residentsCallback: _navigateToResidents,
       ),
     );
   }
@@ -117,6 +119,17 @@ class _ApartmentDetailPageState extends ConsumerState<ApartmentDetailPage> {
             condominiumId: apartment.condominiumId,
             apartment: apartment,
           ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _navigateToResidents(final ApartmentEntity apartment) async {
+    final int? apartmentId = apartment.id;
+    if (apartmentId != null) {
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ResidentListPage(apartmentId: apartmentId),
         ),
       );
     }
@@ -196,7 +209,7 @@ class ApartmentDetailAppBar extends StatelessWidget
   });
 
   final ApartmentEntity? apartment;
-  final Future<void> Function(ApartmentEntity?) editCallback;
+  final Future<void> Function(ApartmentEntity) editCallback;
   final Future<void> Function() deleteCallback;
   final Future<void> Function() approveCallback;
   final bool isApproving;
@@ -223,7 +236,7 @@ class ApartmentDetailAppBar extends StatelessWidget
               ),
             IconButton(
               onPressed: () async {
-                await editCallback(apartment);
+                await editCallback(apartment!);
               },
               icon: const Icon(Icons.edit),
             ),
@@ -246,12 +259,6 @@ class ApartmentDetailAppBar extends StatelessWidget
     properties
       ..add(DiagnosticsProperty<ApartmentEntity?>('apartment', apartment))
       ..add(
-        ObjectFlagProperty<Future<void> Function(ApartmentEntity?)>.has(
-          'editCallback',
-          editCallback,
-        ),
-      )
-      ..add(
         ObjectFlagProperty<Future<void> Function()>.has(
           'deleteCallback',
           deleteCallback,
@@ -263,7 +270,13 @@ class ApartmentDetailAppBar extends StatelessWidget
           approveCallback,
         ),
       )
-      ..add(DiagnosticsProperty<bool>('isApproving', isApproving));
+      ..add(DiagnosticsProperty<bool>('isApproving', isApproving))
+      ..add(
+        ObjectFlagProperty<Future<void> Function(ApartmentEntity)>.has(
+          'editCallback',
+          editCallback,
+        ),
+      );
   }
 }
 
@@ -271,11 +284,13 @@ class ApartmentDetailBody extends StatelessWidget {
   const ApartmentDetailBody({
     required this.apartment,
     required this.isLoading,
+    required this.residentsCallback,
     super.key,
   });
 
   final ApartmentEntity? apartment;
   final bool isLoading;
+  final Future<void> Function(ApartmentEntity) residentsCallback;
 
   @override
   Widget build(final BuildContext context) => SafeArea(
@@ -291,7 +306,10 @@ class ApartmentDetailBody extends StatelessWidget {
                 _ApartmentInfo(apartment: apartment!),
                 if (apartment!.residents != null &&
                     apartment!.residents!.isNotEmpty)
-                  _ResidentsList(residents: apartment!.residents!),
+                  _ResidentsSection(
+                    apartment: apartment!,
+                    onPressed: residentsCallback,
+                  ),
                 _ApartmentMetadata(apartment: apartment!),
               ],
             ),
@@ -303,7 +321,13 @@ class ApartmentDetailBody extends StatelessWidget {
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty<ApartmentEntity?>('apartment', apartment))
-      ..add(DiagnosticsProperty<bool>('isLoading', isLoading));
+      ..add(DiagnosticsProperty<bool>('isLoading', isLoading))
+      ..add(
+        ObjectFlagProperty<Future<void> Function(ApartmentEntity)>.has(
+          'residentsListCallback',
+          residentsCallback,
+        ),
+      );
   }
 }
 
@@ -470,14 +494,16 @@ class _ApartmentInfo extends StatelessWidget {
   }
 }
 
-class _ResidentsList extends StatelessWidget {
-  const _ResidentsList({required this.residents});
+class _ResidentsSection extends StatelessWidget {
+  const _ResidentsSection({required this.apartment, required this.onPressed});
 
-  final List<ResidentEntity> residents;
+  final ApartmentEntity apartment;
+  final Future<void> Function(ApartmentEntity) onPressed;
 
   @override
   Widget build(final BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final List<ResidentEntity> residents = apartment.residents ?? [];
 
     return Card(
       child: Padding(
@@ -486,23 +512,23 @@ class _ResidentsList extends StatelessWidget {
           crossAxisAlignment: .start,
           spacing: 12,
           children: [
-            Text(
-              'Moradores (${residents.length})',
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: .bold),
-            ),
-            ...residents.map(
-              (final resident) => ListTile(
-                contentPadding: .zero,
-                leading: CircleAvatar(
-                  backgroundColor: theme.colorScheme.secondaryContainer,
-                  child: Icon(
-                    Icons.person,
-                    color: theme.colorScheme.onSecondaryContainer,
+            Row(
+              mainAxisAlignment: .spaceBetween,
+              children: [
+                Text(
+                  'Moradores (${residents.length})',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: .bold,
                   ),
                 ),
-                title: Text(resident.userName),
-                subtitle: resident.owner ? const Text('Proprietário') : null,
-              ),
+                IconButton(
+                  onPressed: () async {
+                    await onPressed(apartment);
+                  },
+                  icon: const Icon(Icons.arrow_forward),
+                  tooltip: 'Ver todos',
+                ),
+              ],
             ),
           ],
         ),
@@ -513,7 +539,14 @@ class _ResidentsList extends StatelessWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(IterableProperty<ResidentEntity>('residents', residents));
+    properties
+      ..add(DiagnosticsProperty<ApartmentEntity>('apartment', apartment))
+      ..add(
+        ObjectFlagProperty<Future<void> Function(ApartmentEntity)>.has(
+          'residentsListCallback',
+          onPressed,
+        ),
+      );
   }
 }
 

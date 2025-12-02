@@ -69,13 +69,13 @@ class FacilityRepositoryImpl implements FacilityRepository {
 
   @override
   Future<Either<Failure, FacilityEntity>> updateFacility(
-    final int facilityId,
+    final int id,
     final FacilityEntity facility,
   ) async {
     try {
       final facilityModel = FacilityModel.fromEntity(facility);
       final FacilityModel result = await _remoteDataSource.updateFacility(
-        facilityId,
+        id,
         facilityModel,
       );
 
