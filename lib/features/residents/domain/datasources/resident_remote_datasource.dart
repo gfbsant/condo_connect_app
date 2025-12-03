@@ -1,7 +1,10 @@
 import '../../data/models/resident_model.dart';
 
 abstract class ResidentRemoteDataSource {
-  Future<ResidentModel> createResident(final int apartmentId, final int userId);
+  Future<ResidentModel> createResident(
+    final int apartmentId,
+    final String email,
+  );
 
   Future<List<ResidentModel>> getResidentsByApartment(final int apartmentId);
 

@@ -28,7 +28,8 @@ class ResidentFormPage extends ConsumerStatefulWidget {
 
 class _ResidentFormPageState extends ConsumerState<ResidentFormPage> {
   final _formKey = GlobalKey<FormState>();
-  final _userIdController = TextEditingController();
+  final _emailController = TextEditingController();
+  //final _userIdController = TextEditingController();
 
   var _isOwner = false;
 
@@ -45,7 +46,7 @@ class _ResidentFormPageState extends ConsumerState<ResidentFormPage> {
   void _initializeForm() {
     final ResidentEntity? resident = widget.resident;
     if (resident != null) {
-      _userIdController.text = resident.id.toString();
+      _emailController.text = resident.id.toString();
       _isOwner = resident.owner;
     }
   }
@@ -81,7 +82,7 @@ class _ResidentFormPageState extends ConsumerState<ResidentFormPage> {
         isEditing: _isEditing,
         isLoading: isLoading,
         isOwner: _isOwner,
-        userIdController: _userIdController,
+        emailController: _emailController,
         onOwnerChanged: _updateOwner,
         onSubmit: _handleSubmit,
       ),
@@ -125,7 +126,7 @@ class _ResidentFormPageState extends ConsumerState<ResidentFormPage> {
       return;
     }
 
-    final int userId = int.parse(_userIdController.text.trim());
+    final String email = _emailController.text.trim();
 
     final ResidentNotifier notifier = ref.read(residentNotifierAccessor);
 
@@ -146,7 +147,7 @@ class _ResidentFormPageState extends ConsumerState<ResidentFormPage> {
         );
       }
     } else {
-      success = await notifier.createResident(widget.apartmentId, userId);
+      success = await notifier.createResident(widget.apartmentId, email);
     }
 
     if (success) {
@@ -166,7 +167,7 @@ class _ResidentFormPageState extends ConsumerState<ResidentFormPage> {
 
   @override
   void dispose() {
-    _userIdController.dispose();
+    _emailController.dispose();
     super.dispose();
   }
 }
@@ -197,7 +198,7 @@ class ResidentFormAppBar extends StatelessWidget
 class ResidentFormBody extends StatelessWidget {
   const ResidentFormBody({
     required this.formKey,
-    required this.userIdController,
+    required this.emailController,
     required this.isOwner,
     required this.isLoading,
     required this.isEditing,
@@ -207,7 +208,7 @@ class ResidentFormBody extends StatelessWidget {
   });
 
   final GlobalKey<FormState> formKey;
-  final TextEditingController userIdController;
+  final TextEditingController emailController;
   final bool isOwner;
   final bool isLoading;
   final bool isEditing;
@@ -227,7 +228,7 @@ class ResidentFormBody extends StatelessWidget {
           children: [
             _Header(isEditing: isEditing),
             if (!isEditing)
-              _UserIdField(controller: userIdController, isEnabled: !isLoading),
+              _EmailField(controller: emailController, isEnabled: !isLoading),
             if (isEditing)
               _OwnerSwitch(
                 isEnabled: !isLoading,
@@ -255,7 +256,7 @@ class ResidentFormBody extends StatelessWidget {
       ..add(
         DiagnosticsProperty<TextEditingController>(
           'userIdController',
-          userIdController,
+          emailController,
         ),
       )
       ..add(DiagnosticsProperty<bool>('isOwner', isOwner))
@@ -308,8 +309,8 @@ class _Header extends StatelessWidget {
   }
 }
 
-class _UserIdField extends StatelessWidget {
-  const _UserIdField({required this.controller, required this.isEnabled});
+class _EmailField extends StatelessWidget {
+  const _EmailField({required this.controller, required this.isEnabled});
 
   final TextEditingController controller;
   final bool isEnabled;
@@ -318,14 +319,14 @@ class _UserIdField extends StatelessWidget {
   Widget build(final BuildContext context) => TextFormField(
     controller: controller,
     enabled: isEnabled,
-    keyboardType: .number,
-    validator: Validators.validateRequiredNumber,
+    keyboardType: .emailAddress,
+    validator: Validators.validateEmail,
     decoration: const InputDecoration(
-      prefixIcon: Icon(Icons.badge),
-      labelText: 'ID do Usuario',
-      hintText: 'Ex: 123',
+      prefixIcon: Icon(Icons.email_outlined),
+      labelText: 'Email',
+      hintText: 'morado@exemplo.com',
     ),
-    textInputAction: TextInputAction.done,
+    textInputAction: .done,
   );
 
   @override

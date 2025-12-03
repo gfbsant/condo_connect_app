@@ -17,13 +17,13 @@ class ResidentRemoteDataSourceImpl extends BaseHttpDataSource
   @override
   Future<ResidentModel> createResident(
     final int apartmentId,
-    final int userId,
+    final String email,
   ) async {
     try {
       final ApiResponse<ResidentModel> response = await makeRequest(
         RequestType.POST,
         '$_apartmentsPath/$apartmentId$_residentsPath',
-        jsonBody: {'userId': userId},
+        jsonBody: {'email': email},
         fromJson: (final json) =>
             ResidentModel.fromJson(json as Map<String, dynamic>),
       );

@@ -13,9 +13,10 @@ part 'employee_model.g.dart';
 @JsonSerializable()
 class EmployeeModel extends EmployeeEntity {
   const EmployeeModel({
-    required super.userId,
     required super.condominiumId,
     required super.role,
+    super.email,
+    super.userId,
     this.id,
     super.description,
     this.user,
@@ -27,6 +28,7 @@ class EmployeeModel extends EmployeeEntity {
       EmployeeModel(
         id: entity.id,
         userId: entity.userId,
+        email: entity.email,
         condominiumId: entity.condominiumId,
         description: entity.description,
         role: entity.role,
@@ -55,6 +57,7 @@ class EmployeeModel extends EmployeeEntity {
   EmployeeEntity toEntity() => EmployeeEntity(
     id: id,
     userId: userId,
+    email: email,
     condominiumId: condominiumId,
     description: description,
     role: role,

@@ -32,7 +32,7 @@ class ResidentNotifier extends Notifier<ResidentState> {
     return const ResidentState.initial();
   }
 
-  Future<bool> createResident(final int apartmentId, final int userId) async {
+  Future<bool> createResident(final int apartmentId, final String email) async {
     if (_isLoading) {
       return false;
     }
@@ -40,7 +40,7 @@ class ResidentNotifier extends Notifier<ResidentState> {
     _setLoadingState();
 
     final Either<Failure, ResidentEntity> result = await _createResidentUseCase(
-      CreateResidentParams(apartmentId: apartmentId, userId: userId),
+      CreateResidentParams(apartmentId: apartmentId, email: email),
     );
 
     return result.fold(

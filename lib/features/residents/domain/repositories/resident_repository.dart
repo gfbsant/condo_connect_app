@@ -6,7 +6,7 @@ import '../entities/resident_entity.dart';
 abstract class ResidentRepository {
   Future<Either<Failure, ResidentEntity>> createResident(
     final int apartmentId,
-    final int userId,
+    final String email,
   );
 
   Future<Either<Failure, List<ResidentEntity>>> getResidentsByApartment(

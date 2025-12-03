@@ -17,12 +17,12 @@ class ResidentRepositoryImpl implements ResidentRepository {
   @override
   Future<Either<Failure, ResidentEntity>> createResident(
     final int apartmentId,
-    final int userId,
+    final String email,
   ) async {
     try {
       final ResidentModel result = await _remoteDataSource.createResident(
         apartmentId,
-        userId,
+        email,
       );
 
       return Right(result);

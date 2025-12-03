@@ -8,9 +8,10 @@ part of 'employee_model.dart';
 
 EmployeeModel _$EmployeeModelFromJson(Map<String, dynamic> json) =>
     EmployeeModel(
-      userId: (json['userId'] as num).toInt(),
       condominiumId: (json['condominiumId'] as num).toInt(),
       role: $enumDecode(_$EmployeeRoleEnumMap, json['role']),
+      email: json['email'] as String?,
+      userId: (json['userId'] as num?)?.toInt(),
       id: (json['id'] as num?)?.toInt(),
       description: json['description'] as String?,
       user: EmployeeModel._userFromJson(json['user'] as Map<String, dynamic>?),
@@ -24,8 +25,9 @@ EmployeeModel _$EmployeeModelFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$EmployeeModelToJson(EmployeeModel instance) =>
     <String, dynamic>{
-      'userId': instance.userId,
       'condominiumId': instance.condominiumId,
+      'userId': instance.userId,
+      'email': instance.email,
       'description': instance.description,
       'role': _$EmployeeRoleEnumMap[instance.role]!,
     };

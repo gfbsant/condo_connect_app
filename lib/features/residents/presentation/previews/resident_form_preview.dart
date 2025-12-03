@@ -9,7 +9,7 @@ Widget residentFormPreview() => PreviewWrapper(
   appBar: const ResidentFormAppBar(isEditing: false),
   body: ResidentFormBody(
     formKey: GlobalKey<FormState>(),
-    userIdController: TextEditingController(),
+    emailController: TextEditingController(),
     isOwner: true,
     isLoading: false,
     isEditing: false,

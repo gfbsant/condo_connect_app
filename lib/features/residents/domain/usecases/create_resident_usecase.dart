@@ -16,12 +16,12 @@ class CreateResidentUseCase
   @override
   Future<Either<Failure, ResidentEntity>> call(
     final CreateResidentParams params,
-  ) => _repository.createResident(params.apartmentId, params.userId);
+  ) => _repository.createResident(params.apartmentId, params.email);
 }
 
 class CreateResidentParams {
-  const CreateResidentParams({required this.apartmentId, required this.userId});
+  const CreateResidentParams({required this.apartmentId, required this.email});
 
   final int apartmentId;
-  final int userId;
+  final String email;
 }

@@ -5,9 +5,10 @@ import '../enums/employee_role.dart';
 
 class EmployeeEntity extends Equatable {
   const EmployeeEntity({
-    required this.userId,
     required this.condominiumId,
     required this.role,
+    this.email,
+    this.userId,
     this.id,
     this.description,
     this.user,
@@ -16,8 +17,9 @@ class EmployeeEntity extends Equatable {
   });
 
   final int? id;
-  final int userId;
   final int condominiumId;
+  final int? userId;
+  final String? email;
   final String? description;
   final EmployeeRole role;
   final UserEntity? user;

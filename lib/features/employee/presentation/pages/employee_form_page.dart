@@ -33,7 +33,7 @@ class EmployeeFormPage extends ConsumerStatefulWidget {
 
 class _EmployeeFormPageState extends ConsumerState<EmployeeFormPage> {
   final _formKey = GlobalKey<FormState>();
-  final _userIdController = TextEditingController();
+  final _emailController = TextEditingController();
   final _descriptionController = TextEditingController();
 
   EmployeeRole _selectedRole = EmployeeRole.colaborator;
@@ -49,7 +49,7 @@ class _EmployeeFormPageState extends ConsumerState<EmployeeFormPage> {
   void _initializeForm() {
     final EmployeeEntity? employee = widget.employee;
     if (employee != null) {
-      _userIdController.text = employee.userId.toString();
+      _emailController.text = employee.userId.toString();
       _descriptionController.text = employee.description ?? '';
       _selectedRole = employee.role;
     }
@@ -84,7 +84,7 @@ class _EmployeeFormPageState extends ConsumerState<EmployeeFormPage> {
       appBar: EmployeeFormAppBar(isEditing: _isEditing),
       body: EmployeeFormBody(
         formKey: _formKey,
-        userIdContoller: _userIdController,
+        emailController: _emailController,
         descriptionController: _descriptionController,
         selectedRole: _selectedRole,
         isLoading: isLoading,
@@ -133,11 +133,11 @@ class _EmployeeFormPageState extends ConsumerState<EmployeeFormPage> {
     }
 
     final String descriptionText = _descriptionController.text.trim();
-    final int userId = int.parse(_userIdController.text.trim());
+    final String email = _emailController.text.trim();
 
     final employee = EmployeeEntity(
       id: _isEditing ? widget.employee?.id : null,
-      userId: userId,
+      email: email,
       condominiumId: widget.condominiumId,
       role: _selectedRole,
       description: descriptionText.isNotEmpty ? descriptionText : null,
@@ -200,7 +200,7 @@ class EmployeeFormBody extends StatelessWidget {
   const EmployeeFormBody({
     required this.formKey,
     required this.descriptionController,
-    required this.userIdContoller,
+    required this.emailController,
     required this.selectedRole,
     required this.isLoading,
     required this.isEditing,
@@ -211,7 +211,7 @@ class EmployeeFormBody extends StatelessWidget {
 
   final GlobalKey<FormState> formKey;
   final TextEditingController descriptionController;
-  final TextEditingController userIdContoller;
+  final TextEditingController emailController;
   final EmployeeRole selectedRole;
   final bool isLoading;
   final bool isEditing;
@@ -231,8 +231,8 @@ class EmployeeFormBody extends StatelessWidget {
           children: [
             _Header(isEditing: isEditing),
             const SizedBox(height: 16),
-            _UserIdField(
-              controller: userIdContoller,
+            _EmailField(
+              controller: emailController,
               isEnabled: !isLoading && !isEditing,
             ),
             const SizedBox(height: 4),
@@ -271,7 +271,7 @@ class EmployeeFormBody extends StatelessWidget {
       ..add(
         DiagnosticsProperty<TextEditingController>(
           'userIdContoller',
-          userIdContoller,
+          emailController,
         ),
       )
       ..add(EnumProperty<EmployeeRole>('selectedRole', selectedRole))
@@ -325,8 +325,8 @@ class _Header extends StatelessWidget {
   }
 }
 
-class _UserIdField extends StatelessWidget {
-  const _UserIdField({required this.controller, required this.isEnabled});
+class _EmailField extends StatelessWidget {
+  const _EmailField({required this.controller, required this.isEnabled});
 
   final TextEditingController controller;
   final bool isEnabled;
@@ -335,17 +335,13 @@ class _UserIdField extends StatelessWidget {
   Widget build(final BuildContext context) => TextFormField(
     controller: controller,
     enabled: isEnabled,
-    validator: Validators.validateRequired,
-    decoration: InputDecoration(
-      prefixIcon: const Icon(Icons.badge),
-      labelText: 'ID do Usuário',
-      hintText: 'Digite o ID do Usuário',
-      helperText: isEnabled
-          ? 'Este campo nao pode ser alterado após criação'
-          : null,
+    keyboardType: TextInputType.emailAddress,
+    validator: Validators.validateEmail,
+    decoration: const InputDecoration(
+      prefixIcon: Icon(Icons.email_outlined),
+      labelText: 'Email',
+      hintText: 'funcionario@condominio.com',
     ),
-    keyboardType: .number,
-    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
     textInputAction: TextInputAction.next,
   );
 

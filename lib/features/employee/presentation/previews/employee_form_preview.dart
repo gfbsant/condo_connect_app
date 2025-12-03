@@ -12,7 +12,7 @@ Widget employeeFormPreview() => PreviewWrapper(
   body: EmployeeFormBody(
     formKey: GlobalKey<FormState>(),
     descriptionController: _textController,
-    userIdContoller: _textController,
+    emailController: _textController,
     selectedRole: .admin,
     isLoading: false,
     isEditing: false,
