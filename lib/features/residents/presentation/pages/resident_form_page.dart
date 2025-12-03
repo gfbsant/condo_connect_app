@@ -29,7 +29,6 @@ class ResidentFormPage extends ConsumerStatefulWidget {
 class _ResidentFormPageState extends ConsumerState<ResidentFormPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  //final _userIdController = TextEditingController();
 
   var _isOwner = false;
 
@@ -46,7 +45,6 @@ class _ResidentFormPageState extends ConsumerState<ResidentFormPage> {
   void _initializeForm() {
     final ResidentEntity? resident = widget.resident;
     if (resident != null) {
-      _emailController.text = resident.id.toString();
       _isOwner = resident.owner;
     }
   }
@@ -83,6 +81,7 @@ class _ResidentFormPageState extends ConsumerState<ResidentFormPage> {
         isLoading: isLoading,
         isOwner: _isOwner,
         emailController: _emailController,
+        userName: widget.resident?.userName,
         onOwnerChanged: _updateOwner,
         onSubmit: _handleSubmit,
       ),
@@ -204,11 +203,13 @@ class ResidentFormBody extends StatelessWidget {
     required this.isEditing,
     required this.onOwnerChanged,
     required this.onSubmit,
+    required this.userName,
     super.key,
   });
 
   final GlobalKey<FormState> formKey;
   final TextEditingController emailController;
+  final String? userName;
   final bool isOwner;
   final bool isLoading;
   final bool isEditing;
@@ -227,8 +228,11 @@ class ResidentFormBody extends StatelessWidget {
           crossAxisAlignment: .stretch,
           children: [
             _Header(isEditing: isEditing),
-            if (!isEditing)
+            if (!isEditing) ...[
               _EmailField(controller: emailController, isEnabled: !isLoading),
+            ] else if (userName != null) ...[
+              _UserNameField(userName: userName!),
+            ],
             if (isEditing)
               _OwnerSwitch(
                 isEnabled: !isLoading,
@@ -269,7 +273,8 @@ class ResidentFormBody extends StatelessWidget {
       )
       ..add(
         ObjectFlagProperty<Future<void> Function()>.has('onSubmit', onSubmit),
-      );
+      )
+      ..add(StringProperty('userName', userName));
   }
 }
 
@@ -306,6 +311,50 @@ class _Header extends StatelessWidget {
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(DiagnosticsProperty<bool>('isEditing', isEditing));
+  }
+}
+
+class _UserNameField extends StatelessWidget {
+  const _UserNameField({required this.userName});
+
+  final String userName;
+
+  @override
+  Widget build(final BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    return Card(
+      margin: const .all(4),
+      child: Padding(
+        padding: .all(16),
+        child: Column(
+          spacing: 8,
+          crossAxisAlignment: .start,
+          children: [
+            Text(
+              'Usuário',
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              textAlign: .center,
+            ),
+            Text(
+              userName,
+              style: theme.textTheme.titleLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontWeight: .w500,
+              ),
+              textAlign: .center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('userName', userName));
   }
 }
 

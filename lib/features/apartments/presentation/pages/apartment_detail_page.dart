@@ -232,19 +232,19 @@ class ApartmentDetailAppBar extends StatelessWidget
                           strokeWidth: 2,
                         ),
                       )
-                    : const Icon(Icons.check_circle),
+                    : const Icon(Icons.check_circle, size: 20),
               ),
             IconButton(
               onPressed: () async {
                 await editCallback(apartment!);
               },
-              icon: const Icon(Icons.edit),
+              icon: const Icon(Icons.edit, size: 20),
             ),
             IconButton(
               onPressed: () async {
                 await deleteCallback();
               },
-              icon: const Icon(Icons.delete),
+              icon: const Icon(Icons.delete, size: 20),
             ),
           ]
         : null,

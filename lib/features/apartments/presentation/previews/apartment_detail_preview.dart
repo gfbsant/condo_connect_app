@@ -22,7 +22,7 @@ const _apartment = ApartmentEntity(
   tower: '11',
   floor: '4',
   door: 'B',
-  active: true,
+  active: false,
   rented: true,
   residents: _residents,
 );

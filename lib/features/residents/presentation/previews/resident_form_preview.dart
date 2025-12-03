@@ -10,6 +10,7 @@ Widget residentFormPreview() => PreviewWrapper(
   body: ResidentFormBody(
     formKey: GlobalKey<FormState>(),
     emailController: TextEditingController(),
+    userName: 'José Alves Oliveira',
     isOwner: true,
     isLoading: false,
     isEditing: false,
