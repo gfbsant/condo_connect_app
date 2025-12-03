@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/di/injection_container.dart';
-import 'shared/themes/app_themes.dart';
 import 'features/auth/presentation/pages/auth_wrapper.dart';
 import 'features/auth/presentation/pages/login_page.dart';
-import 'features/auth/presentation/pages/register_view.dart';
+import 'features/auth/presentation/pages/register_page.dart';
 import 'features/auth/presentation/pages/reset_password_page.dart';
 import 'features/notice/presentation/pages/notice_detail_page.dart';
+import 'shared/themes/app_themes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

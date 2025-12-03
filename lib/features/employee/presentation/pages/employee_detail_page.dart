@@ -173,13 +173,13 @@ class EmployeeDetailAppBar extends StatelessWidget
               onPressed: () async {
                 await editCallback(employee);
               },
-              icon: const Icon(Icons.edit),
+              icon: const Icon(Icons.edit, size: 20),
             ),
             IconButton(
               onPressed: () async {
                 await deleteCallback();
               },
-              icon: const Icon(Icons.delete),
+              icon: const Icon(Icons.delete, size: 20),
             ),
           ]
         : null,
@@ -206,7 +206,11 @@ class EmployeeDetailAppBar extends StatelessWidget
 }
 
 class EmployeeDetailBody extends StatelessWidget {
-  const EmployeeDetailBody({required this.isLoading, this.employee, super.key});
+  const EmployeeDetailBody({
+    required this.employee,
+    required this.isLoading,
+    super.key,
+  });
 
   final EmployeeEntity? employee;
   final bool isLoading;
@@ -218,7 +222,6 @@ class EmployeeDetailBody extends StatelessWidget {
         : SingleChildScrollView(
             padding: const .all(16),
             child: Column(
-              crossAxisAlignment: .start,
               spacing: 20,
               children: [
                 _EmployeeHeader(employee: employee!),

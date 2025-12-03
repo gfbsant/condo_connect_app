@@ -56,6 +56,51 @@ class _NoticeFormPageState extends ConsumerState<NoticeFormPage> {
     _selectedStatus = notice.status;
   }
 
+  @override
+  Widget build(final BuildContext context) {
+    ref
+      ..listen<String?>(
+        noticeNotifierProvider.select((final state) => state.errorMessage),
+        (_, final errorMessage) {
+          if (errorMessage != null) {
+            _showErrorSnackBar(errorMessage);
+            _clearMessages();
+          }
+        },
+      )
+      ..listen<String?>(
+        noticeNotifierProvider.select((final state) => state.successMessage),
+        (_, final successMessage) {
+          if (successMessage != null) {
+            _showSuccessSnackBar(successMessage);
+            _clearMessages();
+          }
+        },
+      );
+
+    final bool isLoading = ref.read(isLoadingProvider);
+
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: NoticeFormAppBar(isEditing: _isEditing),
+      body: NoticeFormBody(
+        formKey: _formKey,
+        titleController: _titleController,
+        descriptionController: _descriptionController,
+        typeInfoController: _typeInfoController,
+        selectedType: _selectedType,
+        selectedStatus: _selectedStatus,
+        isLoading: isLoading,
+        isEditing: _isEditing,
+        onTypeChange: _updateType,
+        onStatusChange: _updateStatus,
+        onSubmit: _handleSubmit,
+      ),
+    );
+  }
+
+  void _clearMessages() => ref.read(noticeNotifierAccessor).clearMessages();
+
   void _showErrorSnackBar(final String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -129,89 +174,6 @@ class _NoticeFormPageState extends ConsumerState<NoticeFormPage> {
     }
   }
 
-  void _clearMessages() => ref.read(noticeNotifierAccessor).clearMessages();
-
-  @override
-  Widget build(final BuildContext context) {
-    ref
-      ..listen<String?>(
-        noticeNotifierProvider.select((final state) => state.errorMessage),
-        (_, final errorMessage) {
-          if (errorMessage != null) {
-            _showErrorSnackBar(errorMessage);
-            _clearMessages();
-          }
-        },
-      )
-      ..listen<String?>(
-        noticeNotifierProvider.select((final state) => state.successMessage),
-        (_, final successMessage) {
-          if (successMessage != null) {
-            _showSuccessSnackBar(successMessage);
-            _clearMessages();
-          }
-        },
-      );
-
-    final bool isLoading = ref.read(isLoadingProvider);
-
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        title: Text(_isEditing ? 'Editar Aviso' : 'Novo Aviso'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: Form(
-            key: _formKey,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            child: Column(
-              spacing: 16,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _Header(isEditing: _isEditing),
-                const SizedBox(height: 16),
-                _TitleField(
-                  controller: _titleController,
-                  isEnabled: !isLoading,
-                ),
-                _DescriptionField(
-                  controller: _descriptionController,
-                  isEnabled: !isLoading,
-                ),
-                _NoticeTypeDropdown(
-                  selectedType: _selectedType,
-                  onChanged: _updateType,
-                  isEnabled: !isLoading,
-                ),
-                if (_isEditing) ...[
-                  _NoticeStatusDropdown(
-                    selectedStatus: _selectedStatus,
-                    onChanged: _updateStatus,
-                    isEnabled: !isLoading,
-                  ),
-                ],
-                _TypeInfoField(
-                  controller: _typeInfoController,
-                  isEnabled: !isLoading,
-                ),
-                const SizedBox(height: 16),
-                _SubmitButton(
-                  isLoading: isLoading,
-                  isEditing: _isEditing,
-                  onPressed: _handleSubmit,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   void _updateType(final NoticeType? newType) {
     if (newType != null) {
       setState(() {
@@ -238,6 +200,147 @@ class _NoticeFormPageState extends ConsumerState<NoticeFormPage> {
     _descriptionController.dispose();
     _typeInfoController.dispose();
     super.dispose();
+  }
+}
+
+class NoticeFormAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const NoticeFormAppBar({required this.isEditing, super.key});
+
+  final bool isEditing;
+
+  @override
+  Widget build(final BuildContext context) => AppBar(
+    title: Text(isEditing ? 'Editar Aviso' : 'Novo Aviso'),
+    backgroundColor: Colors.transparent,
+    elevation: 0,
+  );
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<bool>('isEditing', isEditing));
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class NoticeFormBody extends StatelessWidget {
+  const NoticeFormBody({
+    required this.formKey,
+    required this.titleController,
+    required this.descriptionController,
+    required this.typeInfoController,
+    required this.selectedType,
+    required this.selectedStatus,
+    required this.isLoading,
+    required this.isEditing,
+    required this.onTypeChange,
+    required this.onStatusChange,
+    required this.onSubmit,
+    super.key,
+  });
+
+  final GlobalKey<FormState> formKey;
+  final TextEditingController titleController;
+  final TextEditingController descriptionController;
+  final TextEditingController typeInfoController;
+  final NoticeType selectedType;
+  final NoticeStatus selectedStatus;
+  final bool isLoading;
+  final bool isEditing;
+  final ValueChanged<NoticeType?> onTypeChange;
+  final ValueChanged<NoticeStatus> onStatusChange;
+  final Future<void> Function() onSubmit;
+
+  @override
+  Widget build(final BuildContext context) => SafeArea(
+    child: SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: Form(
+        key: formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: Column(
+          spacing: 16,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _Header(isEditing: isEditing),
+            const SizedBox(height: 4),
+            _TitleField(controller: titleController, isEnabled: !isLoading),
+            _DescriptionField(
+              controller: descriptionController,
+              isEnabled: !isLoading,
+            ),
+            _NoticeTypeDropdown(
+              selectedType: selectedType,
+              onChanged: onTypeChange,
+              isEnabled: !isLoading,
+            ),
+            if (isEditing) ...[
+              _NoticeStatusDropdown(
+                selectedStatus: selectedStatus,
+                onChanged: onStatusChange,
+                isEnabled: !isLoading,
+              ),
+            ],
+            _TypeInfoField(
+              controller: typeInfoController,
+              isEnabled: !isLoading,
+            ),
+            const SizedBox(height: 16),
+            _SubmitButton(
+              isLoading: isLoading,
+              isEditing: isEditing,
+              onPressed: onSubmit,
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty<GlobalKey<FormState>>('formKey', formKey))
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'titleController',
+          titleController,
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'descriptionController',
+          descriptionController,
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'typeInfoController',
+          typeInfoController,
+        ),
+      )
+      ..add(EnumProperty<NoticeType>('selectedType', selectedType))
+      ..add(EnumProperty<NoticeStatus>('selectedStatus', selectedStatus))
+      ..add(DiagnosticsProperty<bool>('isLoading', isLoading))
+      ..add(DiagnosticsProperty<bool>('isEditing', isEditing))
+      ..add(
+        ObjectFlagProperty<ValueChanged<NoticeType?>>.has(
+          'onTypeChange',
+          onTypeChange,
+        ),
+      )
+      ..add(
+        ObjectFlagProperty<ValueChanged<NoticeStatus>>.has(
+          'onStatusChange',
+          onStatusChange,
+        ),
+      )
+      ..add(
+        ObjectFlagProperty<Future<void> Function()>.has('onSubmit', onSubmit),
+      );
   }
 }
 
@@ -324,7 +427,7 @@ class _DescriptionField extends StatelessWidget {
     ),
     textInputAction: TextInputAction.next,
     textCapitalization: TextCapitalization.sentences,
-    maxLines: 4,
+    maxLength: 60,
   );
 
   @override
@@ -467,7 +570,7 @@ class _TypeInfoField extends StatelessWidget {
     ),
     textInputAction: TextInputAction.done,
     textCapitalization: TextCapitalization.sentences,
-    maxLines: 2,
+    maxLength: 100,
   );
 
   @override
@@ -490,34 +593,35 @@ class _SubmitButton extends StatelessWidget {
 
   final bool isLoading;
   final bool isEditing;
-  final VoidCallback onPressed;
+  final Future<void> Function() onPressed;
 
   @override
   Widget build(final BuildContext context) => ElevatedButton(
-    onPressed: isLoading ? null : onPressed,
+    onPressed: isLoading
+        ? null
+        : () async {
+            await onPressed();
+          },
     style: ElevatedButton.styleFrom(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 12),
     ),
-    child: SizedBox(
-      height: 16,
-      child: isLoading
-          ? Center(
-              child: SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 3,
-                  valueColor: AlwaysStoppedAnimation(
-                    Theme.of(context).colorScheme.primary,
-                  ),
+    child: isLoading
+        ? Center(
+            child: SizedBox(
+              height: 24,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                valueColor: AlwaysStoppedAnimation(
+                  Theme.of(context).colorScheme.primary,
                 ),
               ),
-            )
-          : Text(
-              isEditing ? 'Atualizar' : 'Criar',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
-    ),
+          )
+        : Text(
+            isEditing ? 'Atualizar' : 'Criar',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+          ),
   );
 
   @override

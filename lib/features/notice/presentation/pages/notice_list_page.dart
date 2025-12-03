@@ -66,39 +66,18 @@ class _NoticeListPageState extends ConsumerState<NoticeListPage> {
       );
 
     final NoticeState state = ref.watch(noticeNotifierProvider);
-    final isLoading = state.status == NoticeStatus.loading;
-    final isSearching = state.status == NoticeStatus.searching;
+    final List<NoticeEntity> notices = state.notices;
+    final isLoading = state.status == .loading;
+    final isSearching = state.status == .searching;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        title: Text(
-          widget.apartmentId != null
-              ? 'Avisos do Apartamento'
-              : 'Avisos do Condominio',
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: SafeArea(
-        child: isSearching && state.notices.isEmpty
-            ? const _LoadingView()
-            : state.notices.isEmpty
-            ? _EmptyView(onRefresh: _loadNotices)
-            : RefreshIndicator(
-                onRefresh: _loadNotices,
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: state.notices.length,
-                  itemBuilder: (final context, final index) {
-                    final NoticeEntity notice = state.notices[index];
-                    return NoticeCard(
-                      notice: notice,
-                      onTap: () => _navigateToDetail(notice.id!),
-                    );
-                  },
-                ),
-              ),
+      appBar: NoticeListAppBar(fromApartment: widget.apartmentId != null),
+      body: NoticeListBody(
+        notices: notices,
+        isSearching: isSearching,
+        refreshCallback: _loadNotices,
+        detailsCallback: _navigateToDetail,
       ),
       floatingActionButton: widget.apartmentId != null
           ? FloatingActionButton.extended(
@@ -157,6 +136,89 @@ class _NoticeListPageState extends ConsumerState<NoticeListPage> {
         ),
       );
     }
+  }
+}
+
+class NoticeListAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const NoticeListAppBar({required this.fromApartment, super.key});
+
+  final bool fromApartment;
+
+  @override
+  Widget build(final BuildContext context) => AppBar(
+    title: Text(
+      fromApartment ? 'Avisos do Apartamento' : 'Avisos do Condominio',
+    ),
+    backgroundColor: Colors.transparent,
+    elevation: 0,
+  );
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<bool>('fromApartment', fromApartment));
+  }
+}
+
+class NoticeListBody extends StatelessWidget {
+  const NoticeListBody({
+    required this.notices,
+    required this.isSearching,
+    required this.refreshCallback,
+    required this.detailsCallback,
+    super.key,
+  });
+
+  final List<NoticeEntity> notices;
+  final bool isSearching;
+  final Future<void> Function() refreshCallback;
+  final Future<void> Function(int) detailsCallback;
+
+  @override
+  Widget build(final BuildContext context) => SafeArea(
+    child: isSearching && notices.isEmpty
+        ? const _LoadingView()
+        : notices.isEmpty
+        ? _EmptyView(onRefresh: refreshCallback)
+        : RefreshIndicator(
+            onRefresh: refreshCallback,
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: notices.length,
+              itemBuilder: (final context, final index) {
+                final NoticeEntity notice = notices[index];
+                return NoticeCard(
+                  notice: notice,
+                  onTap: () async {
+                    await detailsCallback(notice.id!);
+                  },
+                );
+              },
+            ),
+          ),
+  );
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(IterableProperty<NoticeEntity>('notices', notices))
+      ..add(DiagnosticsProperty<bool>('isSearching', isSearching))
+      ..add(
+        ObjectFlagProperty<Future<void> Function()>.has(
+          'refreshCallback',
+          refreshCallback,
+        ),
+      )
+      ..add(
+        ObjectFlagProperty<Future<void> Function(int)>.has(
+          'detailsCallback',
+          detailsCallback,
+        ),
+      );
   }
 }
 

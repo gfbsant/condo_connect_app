@@ -222,8 +222,8 @@ class ResidentDetailAppBar extends StatelessWidget
 
 class ResidentDetailBody extends StatelessWidget {
   const ResidentDetailBody({
-    required this.isLoading,
     required this.resident,
+    required this.isLoading,
     super.key,
   });
 
@@ -237,7 +237,6 @@ class ResidentDetailBody extends StatelessWidget {
         : SingleChildScrollView(
             padding: const .all(16),
             child: Column(
-              crossAxisAlignment: .start,
               spacing: 20,
               children: [
                 _ResidentHeader(resident: resident!),

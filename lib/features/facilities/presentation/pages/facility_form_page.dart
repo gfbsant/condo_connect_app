@@ -145,7 +145,7 @@ class _FacilityFormPageState extends ConsumerState<FacilityFormPage> {
         _taxController.text.trim().replaceAll(',', '.'),
       );
       if (taxDouble != null) {
-        taxValue = (taxDouble * 100).round();
+        taxValue = taxDouble.round();
       }
     }
 
@@ -435,27 +435,24 @@ class _SubmitButton extends StatelessWidget {
   @override
   Widget build(final BuildContext context) => ElevatedButton(
     onPressed: isLoading ? null : onPressed,
-    style: ElevatedButton.styleFrom(padding: const .symmetric(vertical: 16)),
-    child: SizedBox(
-      height: 16,
-      child: isLoading
-          ? Center(
-              child: SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 3,
-                  valueColor: AlwaysStoppedAnimation(
-                    Theme.of(context).colorScheme.primary,
-                  ),
+    style: ElevatedButton.styleFrom(padding: const .symmetric(vertical: 12)),
+    child: isLoading
+        ? Center(
+            child: SizedBox(
+              height: 24,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                valueColor: AlwaysStoppedAnimation(
+                  Theme.of(context).colorScheme.primary,
                 ),
               ),
-            )
-          : Text(
-              isEditing ? 'Atualizar' : 'Criar',
-              style: const TextStyle(fontWeight: .bold, fontSize: 16),
             ),
-    ),
+          )
+        : Text(
+            isEditing ? 'Atualizar' : 'Criar',
+            style: const TextStyle(fontWeight: .bold, fontSize: 12),
+          ),
   );
 
   @override

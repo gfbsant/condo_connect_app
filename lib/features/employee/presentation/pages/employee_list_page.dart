@@ -139,7 +139,7 @@ class EmployeeListAppBar extends StatelessWidget
     actions: [
       IconButton(
         onPressed: createCallback,
-        icon: const Icon(Icons.person_add),
+        icon: const Icon(Icons.person_add, size: 20),
         tooltip: 'Adicionar Funcionário',
       ),
     ],
@@ -414,7 +414,7 @@ class _RoleChip extends StatelessWidget {
       label: Text(_label),
       backgroundColor: _isAdmin
           ? theme.colorScheme.errorContainer
-          : theme.colorScheme.onSecondaryContainer,
+          : theme.colorScheme.secondaryContainer,
       labelStyle: TextStyle(
         color: _isAdmin
             ? theme.colorScheme.onErrorContainer

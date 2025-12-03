@@ -4,6 +4,7 @@
 import 'package:json_annotation/json_annotation.dart';
 
 import '../../../user/data/models/user_model.dart';
+import '../../../user/domain/entities/user_entity.dart';
 import '../../domain/entities/employee_entity.dart';
 import '../../domain/enums/employee_role.dart';
 
@@ -49,10 +50,6 @@ class EmployeeModel extends EmployeeEntity {
   @override
   final DateTime? updatedAt;
 
-  @JsonKey(includeToJson: false)
-  @override
-  final UserModel? user;
-
   Map<String, dynamic> toJson() => _$EmployeeModelToJson(this);
 
   EmployeeEntity toEntity() => EmployeeEntity(
@@ -65,4 +62,15 @@ class EmployeeModel extends EmployeeEntity {
     createdAt: createdAt,
     updatedAt: updatedAt,
   );
+
+  @JsonKey(includeToJson: false, fromJson: _userFromJson)
+  @override
+  final UserEntity? user;
+
+  static UserEntity? _userFromJson(final Map<String, dynamic>? json) {
+    if (json == null) {
+      return null;
+    }
+    return UserModel.fromJson(json);
+  }
 }

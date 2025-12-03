@@ -235,6 +235,7 @@ class EmployeeFormBody extends StatelessWidget {
               controller: userIdContoller,
               isEnabled: !isLoading && !isEditing,
             ),
+            const SizedBox(height: 4),
             _RoleDropdown(
               onChanged: onUpdateRole,
               selectedRole: selectedRole,
@@ -426,7 +427,6 @@ class _DescriptionField extends StatelessWidget {
     ),
     textInputAction: .done,
     textCapitalization: .sentences,
-    maxLines: 4,
   );
 
   @override
@@ -454,7 +454,7 @@ class _SubmitButton extends StatelessWidget {
   @override
   Widget build(final BuildContext context) => ElevatedButton(
     onPressed: isLoading ? null : onPressed,
-    style: ElevatedButton.styleFrom(padding: const .symmetric(vertical: 16)),
+    style: ElevatedButton.styleFrom(padding: const .symmetric(vertical: 12)),
     child: SizedBox(
       height: 16,
       child: isLoading
@@ -472,7 +472,7 @@ class _SubmitButton extends StatelessWidget {
             )
           : Text(
               isEditing ? 'Atualizar' : 'Criar',
-              style: const TextStyle(fontWeight: .bold, fontSize: 16),
+              style: const TextStyle(fontWeight: .bold, fontSize: 12),
             ),
     ),
   );

@@ -74,42 +74,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     });
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-            child: Form(
-              key: _formKey,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const _Header(),
-                  const SizedBox(height: 8),
-                  _EmailField(
-                    controller: _emailController,
-                    isEnabled: authState.status != AuthStatus.loading,
-                  ),
-                  const SizedBox(height: 16),
-                  _PasswordField(
-                    controller: _passwordController,
-                    isEnabled: authState.status != AuthStatus.loading,
-                  ),
-                  const SizedBox(height: 8),
-                  const _ForgotPasswordLink(),
-                  const SizedBox(height: 24),
-                  _LoginButton(
-                    isLoading: authState.status == AuthStatus.loading,
-                    onPressed: _handleLogin,
-                  ),
-                  const SizedBox(height: 24),
-                  const _RegisterLink(),
-                ],
-              ),
-            ),
-          ),
-        ),
+      body: LoginPageBody(
+        formKey: _formKey,
+        emailController: _emailController,
+        passwordController: _passwordController,
+        isLoading: authState.status != AuthStatus.loading,
+        onSubmit: _handleLogin,
       ),
     );
   }
@@ -157,6 +127,79 @@ class _Header extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class LoginPageBody extends StatelessWidget {
+  const LoginPageBody({
+    required this.formKey,
+    required this.emailController,
+    required this.passwordController,
+    required this.isLoading,
+    required this.onSubmit,
+    super.key,
+  });
+
+  final GlobalKey<FormState> formKey;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final bool isLoading;
+  final Future<void> Function() onSubmit;
+
+  @override
+  Widget build(final BuildContext context) => SafeArea(
+    child: Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        child: Form(
+          key: formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const _Header(),
+              const SizedBox(height: 8),
+              _EmailField(controller: emailController, isEnabled: !isLoading),
+              const SizedBox(height: 16),
+              _PasswordField(
+                controller: passwordController,
+                isEnabled: !isLoading,
+              ),
+              const SizedBox(height: 8),
+              const _ForgotPasswordLink(),
+              const SizedBox(height: 24),
+              _LoginButton(isLoading: isLoading, onPressed: onSubmit),
+              const SizedBox(height: 24),
+              const _RegisterLink(),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty<GlobalKey<FormState>>('formKey', formKey))
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'emailController',
+          emailController,
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'passwordController',
+          passwordController,
+        ),
+      )
+      ..add(DiagnosticsProperty<bool>('isLoading', isLoading))
+      ..add(
+        ObjectFlagProperty<Future<void> Function()>.has('onSubmit', onSubmit),
+      );
   }
 }
 
@@ -249,35 +292,36 @@ class _LoginButton extends StatelessWidget {
   const _LoginButton({required this.isLoading, required this.onPressed});
 
   final bool isLoading;
-  final VoidCallback onPressed;
+  final Future<void> Function() onPressed;
 
   @override
   Widget build(final BuildContext context) => ElevatedButton(
-    onPressed: isLoading ? null : onPressed,
+    onPressed: isLoading
+        ? null
+        : () async {
+            await onPressed();
+          },
     style: ElevatedButton.styleFrom(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       elevation: 4,
     ),
-    child: SizedBox(
-      height: 24,
-      child: isLoading
-          ? Center(
-              child: SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 3,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    Theme.of(context).colorScheme.onPrimary,
-                  ),
+    child: isLoading
+        ? Center(
+            child: SizedBox(
+              height: 24,
+              width: 24,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
-            )
-          : const Text(
-              'ENTRAR',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
-    ),
+          )
+        : const Text(
+            'Entrar',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
   );
 
   @override

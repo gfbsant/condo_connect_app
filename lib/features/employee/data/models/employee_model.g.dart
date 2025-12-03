@@ -13,9 +13,7 @@ EmployeeModel _$EmployeeModelFromJson(Map<String, dynamic> json) =>
       role: $enumDecode(_$EmployeeRoleEnumMap, json['role']),
       id: (json['id'] as num?)?.toInt(),
       description: json['description'] as String?,
-      user: json['user'] == null
-          ? null
-          : UserModel.fromJson(json['user'] as Map<String, dynamic>),
+      user: EmployeeModel._userFromJson(json['user'] as Map<String, dynamic>?),
       createdAt: json['createdAt'] == null
           ? null
           : DateTime.parse(json['createdAt'] as String),

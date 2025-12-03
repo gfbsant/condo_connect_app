@@ -297,7 +297,6 @@ class ApartmentDetailBody extends StatelessWidget {
     child: isLoading || apartment == null
         ? const _LoadingView()
         : SingleChildScrollView(
-            padding: const .all(16),
             child: Column(
               crossAxisAlignment: .start,
               spacing: 20,

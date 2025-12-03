@@ -67,7 +67,7 @@ class _ApartmentListPageState extends ConsumerState<ApartmentListPage> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: ApartmentListAppBar(createCallback: _navigateToCreate()),
+      appBar: ApartmentListAppBar(createCallback: _navigateToCreate),
       body: ApartmentListBody(
         apartments: apartments,
         detailsCallback: _navigateToDetail,
@@ -128,7 +128,7 @@ class ApartmentListAppBar extends StatelessWidget
     implements PreferredSizeWidget {
   const ApartmentListAppBar({required this.createCallback, super.key});
 
-  final Future<void> createCallback;
+  final Future<void> Function() createCallback;
 
   @override
   Widget build(final BuildContext context) => AppBar(
@@ -138,9 +138,9 @@ class ApartmentListAppBar extends StatelessWidget
     actions: [
       IconButton(
         onPressed: () async {
-          await createCallback;
+          await createCallback();
         },
-        icon: const Icon(Icons.add_home),
+        icon: const Icon(Icons.add_home, size: 20),
         tooltip: 'Adicionar Apartamento',
       ),
     ],
@@ -153,7 +153,10 @@ class ApartmentListAppBar extends StatelessWidget
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(
-      DiagnosticsProperty<Future<void>>('createCallback', createCallback),
+      ObjectFlagProperty<Future<void> Function()>.has(
+        'createCallback',
+        createCallback,
+      ),
     );
   }
 }
@@ -310,105 +313,108 @@ class _ApartmentCard extends StatelessWidget {
     final dateFormat = DateFormat('dd/MM/yyyy');
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 24),
       child: InkWell(
         onTap: onTap,
         borderRadius: .circular(16),
-        child: Column(
-          crossAxisAlignment: .start,
-          spacing: 12,
-          children: [
-            Row(
-              spacing: 12,
-              children: [
-                CircleAvatar(
-                  backgroundColor: theme.colorScheme.primaryContainer,
-                  child: Icon(
-                    Icons.apartment,
-                    color: theme.colorScheme.onPrimaryContainer,
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: .start,
+            spacing: 12,
+            children: [
+              Row(
+                spacing: 12,
+                children: [
+                  CircleAvatar(
+                    backgroundColor: theme.colorScheme.primaryContainer,
+                    child: Icon(
+                      Icons.apartment,
+                      color: theme.colorScheme.onPrimaryContainer,
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: .start,
-                    children: [
-                      Text(
-                        'Apartamento ${apartment.number}',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: .bold,
-                        ),
-                      ),
-                      if (apartment.tower != null || apartment.floor != null)
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: .start,
+                      children: [
                         Text(
-                          [
-                            if (apartment.tower != null)
-                              'Torre ${apartment.tower}',
-                            if (apartment.floor != null)
-                              'Andar ${apartment.floor}',
-                          ].join(),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                          'Apartamento ${apartment.number}',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: .bold,
                           ),
                         ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              spacing: 8,
-              children: [
-                if (apartment.active != null)
-                  Chip(
-                    avatar: Icon(
-                      apartment.active! ? Icons.check_circle : Icons.cancel,
-                    ),
-                    label: Text(
-                      apartment.active! ? 'Ativo' : 'Inativa',
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                    backgroundColor: apartment.active!
-                        ? theme.colorScheme.primaryContainer
-                        : theme.colorScheme.errorContainer,
-                    materialTapTargetSize: .shrinkWrap,
-                  ),
-                if (apartment.rented != null)
-                  Chip(
-                    avatar: const Icon(Icons.home, size: 16),
-                    label: Text(apartment.rented! ? 'Alugado' : 'Próprio'),
-                  ),
-                if (apartment.createdAt != null)
-                  Chip(
-                    avatar: const Icon(Icons.calendar_today),
-                    label: Text(
-                      'Desde ${dateFormat.format(apartment.createdAt!)}',
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                  ),
-              ],
-            ),
-            if (apartment.residents != null &&
-                apartment.residents!.isNotEmpty) ...[
-              const Divider(),
-              Row(
-                spacing: 4,
-                children: [
-                  Icon(
-                    Icons.people,
-                    size: 16,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  Text(
-                    '${apartment.residents!.length} '
-                    '${apartment.residents!.length == 1 ? 'Morador' : 'Moradores'}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+                        if (apartment.tower != null || apartment.floor != null)
+                          Text(
+                            [
+                              if (apartment.tower != null)
+                                'Torre ${apartment.tower}',
+                              if (apartment.floor != null)
+                                'Andar ${apartment.floor}',
+                            ].join(),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ],
               ),
+              Row(
+                spacing: 8,
+                children: [
+                  if (apartment.active != null)
+                    Chip(
+                      avatar: Icon(
+                        apartment.active! ? Icons.check_circle : Icons.cancel,
+                      ),
+                      label: Text(
+                        apartment.active! ? 'Ativo' : 'Inativa',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                      backgroundColor: apartment.active!
+                          ? theme.colorScheme.primaryContainer
+                          : theme.colorScheme.errorContainer,
+                      materialTapTargetSize: .shrinkWrap,
+                    ),
+                  if (apartment.rented != null)
+                    Chip(
+                      avatar: const Icon(Icons.home, size: 16),
+                      label: Text(apartment.rented! ? 'Alugado' : 'Próprio'),
+                    ),
+                  if (apartment.createdAt != null)
+                    Chip(
+                      avatar: const Icon(Icons.calendar_today),
+                      label: Text(
+                        'Desde ${dateFormat.format(apartment.createdAt!)}',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                ],
+              ),
+              if (apartment.residents != null &&
+                  apartment.residents!.isNotEmpty) ...[
+                const Divider(height: 1),
+                Row(
+                  spacing: 4,
+                  children: [
+                    Icon(
+                      Icons.people,
+                      size: 16,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    Text(
+                      '${apartment.residents!.length} '
+                      '${apartment.residents!.length == 1 ? 'Morador' : 'Moradores'}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

@@ -141,7 +141,7 @@ class FacilityListAppBar extends StatelessWidget
     actions: [
       IconButton(
         onPressed: createCallback,
-        icon: const Icon(Icons.add),
+        icon: const Icon(Icons.add, size: 20),
         tooltip: 'Adicionar Área Comum',
       ),
     ],
@@ -368,13 +368,8 @@ class _FacilityCard extends StatelessWidget {
                 Row(
                   spacing: 8,
                   children: [
-                    Icon(
-                      Icons.attach_money,
-                      size: 16,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
                     Text(
-                      'Taxa: ${currencyFormat.format(facility.tax! / 100)}',
+                      'Taxa: ${currencyFormat.format(facility.tax)}',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                         fontWeight: .w500,

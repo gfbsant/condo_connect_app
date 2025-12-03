@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../../../user/data/models/user_model.dart';
+import '../../../user/domain/entities/user_entity.dart';
 import '../enums/employee_role.dart';
 
 class EmployeeEntity extends Equatable {
@@ -20,7 +20,7 @@ class EmployeeEntity extends Equatable {
   final int condominiumId;
   final String? description;
   final EmployeeRole role;
-  final UserModel? user;
+  final UserEntity? user;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 

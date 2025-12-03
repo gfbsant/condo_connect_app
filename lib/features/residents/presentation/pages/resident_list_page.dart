@@ -141,7 +141,7 @@ class ResidentListAppBar extends StatelessWidget
         onPressed: () async {
           await createCallback();
         },
-        icon: const Icon(Icons.person_add),
+        icon: const Icon(Icons.person_add, size: 20),
         tooltip: 'Adicionar Morador',
       ),
     ],
@@ -165,16 +165,16 @@ class ResidentListAppBar extends StatelessWidget
 class ResidentListBody extends StatelessWidget {
   const ResidentListBody({
     required this.residents,
+    required this.isSearching,
     required this.detailsCallback,
     required this.refreshCallback,
-    required this.isSearching,
     super.key,
   });
 
   final List<ResidentEntity> residents;
+  final bool isSearching;
   final Future<void> Function(int) detailsCallback;
   final Future<void> Function() refreshCallback;
-  final bool isSearching;
 
   @override
   Widget build(final BuildContext context) => SafeArea(
@@ -273,6 +273,7 @@ class _ResidentList extends StatelessWidget {
   Widget build(final BuildContext context) => RefreshIndicator(
     onRefresh: onRefresh,
     child: ListView.builder(
+      itemCount: residents.length,
       itemBuilder: (_, final index) {
         final ResidentEntity resident = residents[index];
         return _ResidentCard(

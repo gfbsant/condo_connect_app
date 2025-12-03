@@ -62,28 +62,11 @@ class _NoticeDetailPageState extends ConsumerState<NoticeDetailPage> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        title: const Text('Detalhes do Aviso'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: notice != null
-            ? [
-                IconButton(
-                  onPressed: () => _navigateToEdit(notice),
-                  icon: const Icon(Icons.edit),
-                ),
-                IconButton(
-                  onPressed: _handleDelete,
-                  icon: const Icon(Icons.delete),
-                ),
-              ]
-            : null,
+      appBar: NoticeDetailAppBar(
+        deleteCallback: _handleDelete,
+        editCallback: _navigateToEdit,
       ),
-      body: SafeArea(
-        child: isLoading || notice == null
-            ? const _LoadingView()
-            : NoticeDetailBody(notice: notice),
-      ),
+      body: NoticeDetailBody(notice: notice, isLoading: isLoading),
     );
   }
 
@@ -156,32 +139,102 @@ class _NoticeDetailPageState extends ConsumerState<NoticeDetailPage> {
   }
 }
 
-class NoticeDetailBody extends StatelessWidget {
-  const NoticeDetailBody({required this.notice, super.key});
+class NoticeDetailAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
+  const NoticeDetailAppBar({
+    required this.deleteCallback,
+    required this.editCallback,
+    super.key,
+    this.notice,
+  });
 
-  final NoticeEntity notice;
+  final NoticeEntity? notice;
+  final Future<void> Function(NoticeEntity) editCallback;
+  final Future<void> Function() deleteCallback;
 
   @override
-  Widget build(final BuildContext context) => SingleChildScrollView(
-    padding: const EdgeInsets.all(16),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 20,
-      children: [
-        _NoticeHeader(notice: notice),
-        if (notice.description != null)
-          _NoticeContent(description: notice.description!),
-        if (notice.typeInfo != null)
-          _NoticeTypeInfo(typeInfo: notice.typeInfo!),
-        _NoticeMetadata(notice: notice),
-      ],
+  Widget build(final BuildContext context) => AppBar(
+    title: const Text('Detalhes do Aviso'),
+    backgroundColor: Colors.transparent,
+    elevation: 0,
+    actions: notice != null
+        ? [
+            IconButton(
+              onPressed: () async {
+                await editCallback(notice!);
+              },
+              icon: const Icon(Icons.edit),
+            ),
+            IconButton(
+              onPressed: () async {
+                await deleteCallback();
+              },
+              icon: const Icon(Icons.delete),
+            ),
+          ]
+        : null,
+  );
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty<NoticeEntity?>('notice', notice))
+      ..add(
+        ObjectFlagProperty<Future<void> Function(NoticeEntity)>.has(
+          'editCallback',
+          editCallback,
+        ),
+      )
+      ..add(
+        ObjectFlagProperty<Future<void> Function()>.has(
+          'deleteCallback',
+          deleteCallback,
+        ),
+      );
+  }
+}
+
+class NoticeDetailBody extends StatelessWidget {
+  const NoticeDetailBody({
+    required this.isLoading,
+    required this.notice,
+    super.key,
+  });
+
+  final NoticeEntity? notice;
+  final bool isLoading;
+
+  @override
+  Widget build(final BuildContext context) => SafeArea(
+    child: SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: isLoading || notice == null
+          ? const _LoadingView()
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 20,
+              children: [
+                _NoticeHeader(notice: notice!),
+                if (notice?.description != null)
+                  _NoticeContent(description: notice!.description!),
+                if (notice?.typeInfo != null)
+                  _NoticeTypeInfo(typeInfo: notice!.typeInfo!),
+                _NoticeMetadata(notice: notice!),
+              ],
+            ),
     ),
   );
 
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<NoticeEntity>('notice', notice));
+    properties
+      ..add(DiagnosticsProperty<NoticeEntity>('notice', notice))
+      ..add(DiagnosticsProperty<bool>('isLoading', isLoading));
   }
 }
 
@@ -228,13 +281,8 @@ class _NoticeHeader extends StatelessWidget {
                 ),
               ],
             ),
-            Row(
-              spacing: 8,
-              children: [
-                NoticeStatusChip(status: notice.status),
-                _NoticeTypeChip(type: notice.noticeType),
-              ],
-            ),
+            _NoticeTypeChip(type: notice.noticeType),
+            NoticeStatusChip(status: notice.status),
           ],
         ),
       ),

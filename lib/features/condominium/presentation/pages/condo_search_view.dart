@@ -56,7 +56,7 @@ class _CondoSearchViewState extends ConsumerState<CondoSearchView> {
     }
 
     if (widget.selectedCondoId != null) {
-      await _showCondoDetails(widget.selectedCondoId!);
+      await _showCondoDetails(widget.selectedCondoId);
     }
   }
 
@@ -90,14 +90,16 @@ class _CondoSearchViewState extends ConsumerState<CondoSearchView> {
     );
   }
 
-  Future<void> _showCondoDetails(final int condoId) async {
-    await ref.read(condoNotifierAccessor).getCondoById(condoId);
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (final context) => CondoDetailsModal(condoId: condoId),
-    );
+  Future<void> _showCondoDetails(final int? condoId) async {
+    if (condoId != null) {
+      await ref.read(condoNotifierAccessor).getCondoById(condoId);
+      await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (final context) => CondoDetailsModal(condoId: condoId),
+      );
+    }
   }
 
   Future<void> _handleSearch() async {
@@ -127,42 +129,14 @@ class _CondoSearchViewState extends ConsumerState<CondoSearchView> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        title: const Text('Pesquisar Condomínios'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            _SearchHeader(
-              searchController: _searchController,
-              isSearching: isSearching,
-              onSearch: _handleSearch,
-            ),
-            Expanded(
-              child: isLoading && condos.isEmpty
-                  ? const _LoadingView()
-                  : condos.isEmpty
-                  ? _EmptyView(hasSearchTerm: _searchController.text.isNotEmpty)
-                  : RefreshIndicator(
-                      onRefresh: () =>
-                          ref.read(condoNotifierAccessor).searchCondos(),
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: condos.length,
-                        itemBuilder: (final context, final index) {
-                          final CondominiumEntity condo = condos[index];
-                          return _CondoListItem(
-                            condo: condo,
-                            onTap: () => _showCondoDetails(condo.id!),
-                          );
-                        },
-                      ),
-                    ),
-            ),
-          ],
-        ),
+      appBar: const CondoSearchAppBar(),
+      body: CondoSearchBody(
+        searchController: _searchController,
+        condos: condos,
+        isSearching: isSearching,
+        isLoading: isLoading,
+        searchCallback: _handleSearch,
+        detailsCallback: _showCondoDetails,
       ),
     );
   }
@@ -171,6 +145,103 @@ class _CondoSearchViewState extends ConsumerState<CondoSearchView> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+}
+
+class CondoSearchAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const CondoSearchAppBar({super.key});
+
+  @override
+  Widget build(final BuildContext context) => AppBar(
+    title: const Text('Pesquisar Condomínios'),
+    backgroundColor: Colors.transparent,
+    elevation: 0,
+  );
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class CondoSearchBody extends StatelessWidget {
+  const CondoSearchBody({
+    required this.searchController,
+    required this.condos,
+    required this.isSearching,
+    required this.isLoading,
+    required this.searchCallback,
+    required this.detailsCallback,
+    super.key,
+  });
+
+  final TextEditingController searchController;
+  final List<CondominiumEntity> condos;
+  final bool isSearching;
+  final bool isLoading;
+  final Future<void> Function() searchCallback;
+  final Future<void> Function(int?) detailsCallback;
+
+  @override
+  Widget build(final BuildContext context) => SafeArea(
+    child: Column(
+      children: [
+        _SearchHeader(
+          searchController: searchController,
+          isSearching: isSearching,
+          onSearch: searchCallback,
+        ),
+        Expanded(
+          child: isLoading && condos.isEmpty
+              ? const _LoadingView()
+              : condos.isEmpty
+              ? _EmptyView(hasSearchTerm: searchController.text.isNotEmpty)
+              : RefreshIndicator(
+                  onRefresh: () async {
+                    await searchCallback();
+                  },
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: condos.length,
+                    itemBuilder: (final context, final index) {
+                      final CondominiumEntity condo = condos[index];
+                      return _CondoListItem(
+                        condo: condo,
+                        onTap: () async {
+                          await detailsCallback(condo.id);
+                        },
+                      );
+                    },
+                  ),
+                ),
+        ),
+      ],
+    ),
+  );
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'searchController',
+          searchController,
+        ),
+      )
+      ..add(IterableProperty<CondominiumEntity>('condos', condos))
+      ..add(DiagnosticsProperty<bool>('isSearching', isSearching))
+      ..add(DiagnosticsProperty<bool>('isLoading', isLoading))
+      ..add(
+        ObjectFlagProperty<Future<void> Function()>.has(
+          'searchCallback',
+          searchCallback,
+        ),
+      )
+      ..add(
+        ObjectFlagProperty<Future<void> Function(int?)>.has(
+          'detailsCallback',
+          detailsCallback,
+        ),
+      );
   }
 }
 

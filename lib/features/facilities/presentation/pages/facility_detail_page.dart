@@ -185,13 +185,13 @@ class FacilityDetailAppBar extends StatelessWidget
               onPressed: () async {
                 await editCallback(facility);
               },
-              icon: const Icon(Icons.edit),
+              icon: const Icon(Icons.edit, size: 20),
             ),
             IconButton(
               onPressed: () async {
                 await deleteCallback();
               },
-              icon: const Icon(Icons.delete),
+              icon: const Icon(Icons.delete, size: 20),
             ),
           ]
         : null,
@@ -239,7 +239,6 @@ class FacilityDetailBody extends StatelessWidget {
         : SingleChildScrollView(
             padding: const .all(16),
             child: Column(
-              crossAxisAlignment: .start,
               spacing: 20,
               children: [
                 _FacilityHeader(facility: facility!),
@@ -318,9 +317,7 @@ class _FacilityHeader extends StatelessWidget {
                 if (facility.tax != null)
                   Chip(
                     avatar: const Icon(Icons.attach_money),
-                    label: Text(
-                      'Taxa ${currencyFormat.format(facility.tax! / 100)}',
-                    ),
+                    label: Text('Taxa ${currencyFormat.format(facility.tax)}'),
                     backgroundColor: theme.colorScheme.secondaryContainer,
                     labelStyle: TextStyle(
                       color: theme.colorScheme.onSecondaryContainer,
@@ -367,12 +364,6 @@ class _FacilityInfo extends StatelessWidget {
                 icon: Icons.description,
                 label: 'Descrição',
                 value: facility.description!,
-              ),
-            if (facility.id != null)
-              _InfoRow(
-                icon: Icons.tag,
-                label: 'ID',
-                value: facility.id.toString(),
               ),
           ],
         ),

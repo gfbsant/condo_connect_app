@@ -98,61 +98,18 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     final isLoading = authState.status == AuthStatus.loading;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Criar Conta'),
-        centerTitle: true,
-        scrolledUnderElevation: 0,
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Form(
-            key: _formKey,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: 16,
-                children: [
-                  const _Header(),
-                  const SizedBox(height: 16),
-                  _NameField(
-                    controller: _nameController,
-                    isEnabled: !isLoading,
-                  ),
-                  _EmailField(
-                    controller: _emailController,
-                    isEnabled: !isLoading,
-                  ),
-                  _CpfField(controller: _cpfController, isEnabled: !isLoading),
-                  _BirthDateController(
-                    controller: _birthDateController,
-                    isEnabled: !isLoading,
-                  ),
-                  _PhoneField(
-                    controller: _phoneController,
-                    isEnabled: !isLoading,
-                  ),
-                  _PasswordField(
-                    controller: _passwordController,
-                    isEnabled: !isLoading,
-                  ),
-                  _ConfirmPasswordField(
-                    controller: _confirmPasswordController,
-                    passwordController: _passwordController,
-                    isEnabled: !isLoading,
-                  ),
-                  const SizedBox(height: 8),
-                  _RegisterButton(
-                    isLoading: isLoading,
-                    onPressed: _handleRegister,
-                  ),
-                  const _LoginLink(),
-                ],
-              ),
-            ),
-          ),
-        ),
+      appBar: const RegisterPageAppBar(),
+      body: RegisterPageBody(
+        formKey: _formKey,
+        nameController: _nameController,
+        emailController: _emailController,
+        cpfController: _cpfController,
+        birthDateController: _birthDateController,
+        phoneController: _phoneController,
+        passwordController: _passwordController,
+        confirmPasswordController: _confirmPasswordController,
+        isLoading: isLoading,
+        onSubmit: _handleRegister,
       ),
     );
   }
@@ -172,6 +129,142 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+}
+
+class RegisterPageAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
+  const RegisterPageAppBar({super.key});
+
+  @override
+  Widget build(final BuildContext context) => AppBar(
+    title: const Text('Criar Conta'),
+    centerTitle: true,
+    scrolledUnderElevation: 0,
+  );
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+class RegisterPageBody extends StatelessWidget {
+  const RegisterPageBody({
+    required this.birthDateController,
+    required this.confirmPasswordController,
+    required this.cpfController,
+    required this.emailController,
+    required this.formKey,
+    required this.isLoading,
+    required this.nameController,
+    required this.onSubmit,
+    required this.passwordController,
+    required this.phoneController,
+    super.key,
+  });
+
+  final GlobalKey<FormState> formKey;
+  final TextEditingController nameController;
+  final TextEditingController emailController;
+  final TextEditingController cpfController;
+  final TextEditingController birthDateController;
+  final TextEditingController phoneController;
+  final TextEditingController passwordController;
+  final TextEditingController confirmPasswordController;
+  final bool isLoading;
+  final Future<void> Function() onSubmit;
+
+  @override
+  Widget build(final BuildContext context) => SafeArea(
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Form(
+        key: formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 16,
+            children: [
+              const _Header(),
+              const SizedBox(height: 4),
+              _NameField(controller: nameController, isEnabled: !isLoading),
+              _EmailField(controller: emailController, isEnabled: !isLoading),
+              _CpfField(controller: cpfController, isEnabled: !isLoading),
+              _BirthDateController(
+                controller: birthDateController,
+                isEnabled: !isLoading,
+              ),
+              _PhoneField(controller: phoneController, isEnabled: !isLoading),
+              _PasswordField(
+                controller: passwordController,
+                isEnabled: !isLoading,
+              ),
+              _ConfirmPasswordField(
+                controller: confirmPasswordController,
+                passwordController: passwordController,
+                isEnabled: !isLoading,
+              ),
+              const SizedBox(height: 4),
+              _RegisterButton(isLoading: isLoading, onPressed: onSubmit),
+              const _LoginLink(),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty<GlobalKey<FormState>>('formKey', formKey))
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'nameController',
+          nameController,
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'emailController',
+          emailController,
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'cpfController',
+          cpfController,
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'birthDateController',
+          birthDateController,
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'phoneController',
+          phoneController,
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'passwordController',
+          passwordController,
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'confirmPasswordController',
+          confirmPasswordController,
+        ),
+      )
+      ..add(DiagnosticsProperty<bool>('isLoading', isLoading))
+      ..add(
+        ObjectFlagProperty<Future<void> Function()>.has('onSubmit', onSubmit),
+      );
   }
 }
 
@@ -452,18 +545,22 @@ class __ConfirmPasswordFieldState extends State<_ConfirmPasswordField> {
 class _RegisterButton extends StatelessWidget {
   const _RegisterButton({required this.isLoading, required this.onPressed});
   final bool isLoading;
-  final VoidCallback onPressed;
+  final Future<void> Function() onPressed;
 
   @override
   Widget build(final BuildContext context) => ElevatedButton(
-    onPressed: isLoading ? null : onPressed,
+    onPressed: isLoading
+        ? null
+        : () async {
+            await onPressed();
+          },
     child: isLoading
         ? const SizedBox(
             height: 20,
             width: 20,
             child: CircularProgressIndicator(strokeWidth: 2),
           )
-        : const Text('CRIAR CONTA'),
+        : const Text('Criar Conta', style: TextStyle(fontWeight: .bold)),
   );
 
   @override
@@ -487,7 +584,7 @@ class _LoginLink extends StatelessWidget {
         const Text('Já tem uma conta?'),
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Fazer logim'),
+          child: const Text('Fazer login'),
         ),
       ],
     ),

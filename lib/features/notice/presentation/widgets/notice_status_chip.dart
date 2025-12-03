@@ -1,18 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widget_previews.dart';
 
 import '../../domain/enums/notice_status.dart';
-
-@Preview(group: 'Notice Status Chip')
-Widget noticeStatusChipPreview() => Column(
-  spacing: 12,
-  children: [
-    ...NoticeStatus.values.map(
-      (final status) => NoticeStatusChip(status: status),
-    ),
-  ],
-);
 
 class NoticeStatusChip extends StatelessWidget {
   const NoticeStatusChip({required this.status, super.key});

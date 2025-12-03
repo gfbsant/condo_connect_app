@@ -501,7 +501,7 @@ class _RentedSwitch extends StatelessWidget {
       child: SwitchListTile(
         value: isRented,
         onChanged: isEnabled ? onChanged : null,
-        title: const Text('Apartamento Alugado'),
+        title: const Text('Aluguel'),
         subtitle: Text(
           isRented
               ? 'Este apartamento está alugado'
@@ -546,27 +546,24 @@ class _SubmitButton extends StatelessWidget {
         : () async {
             await onPressed();
           },
-    style: ElevatedButton.styleFrom(padding: const .symmetric(vertical: 16)),
-    child: SizedBox(
-      height: 16,
-      child: isLoading
-          ? Center(
-              child: SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 3,
-                  valueColor: AlwaysStoppedAnimation(
-                    Theme.of(context).colorScheme.primary,
-                  ),
+    style: ElevatedButton.styleFrom(padding: const .symmetric(vertical: 8)),
+    child: isLoading
+        ? Center(
+            child: SizedBox(
+              height: 24,
+              width: 24,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                valueColor: AlwaysStoppedAnimation(
+                  Theme.of(context).colorScheme.primary,
                 ),
               ),
-            )
-          : Text(
-              isEditing ? 'Atualizar' : 'Criar',
-              style: const TextStyle(fontWeight: .bold, fontSize: 16),
             ),
-    ),
+          )
+        : Text(
+            isEditing ? 'Atualizar' : 'Criar',
+            style: const TextStyle(fontWeight: .bold, fontSize: 12),
+          ),
   );
 
   @override

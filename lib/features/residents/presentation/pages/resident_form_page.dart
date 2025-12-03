@@ -402,27 +402,24 @@ class _SubmitButton extends StatelessWidget {
         : () async {
             await onPressed();
           },
-    style: ElevatedButton.styleFrom(padding: const .symmetric(vertical: 16)),
-    child: SizedBox(
-      height: 16,
-      child: isLoading
-          ? Center(
-              child: SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 3,
-                  valueColor: AlwaysStoppedAnimation(
-                    Theme.of(context).colorScheme.primary,
-                  ),
+    style: ElevatedButton.styleFrom(padding: const .symmetric(vertical: 12)),
+    child: isLoading
+        ? Center(
+            child: SizedBox(
+              height: 24,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                valueColor: AlwaysStoppedAnimation(
+                  Theme.of(context).colorScheme.primary,
                 ),
               ),
-            )
-          : Text(
-              isEditing ? 'Atualizar' : 'Adicionar',
-              style: const TextStyle(fontWeight: .bold, fontSize: 16),
             ),
-    ),
+          )
+        : Text(
+            isEditing ? 'Atualizar' : 'Adicionar',
+            style: const TextStyle(fontWeight: .bold, fontSize: 12),
+          ),
   );
 
   @override

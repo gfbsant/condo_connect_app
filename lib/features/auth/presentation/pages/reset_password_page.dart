@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -25,31 +26,6 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
   var _isTokenStep = false;
 
   AuthNotifier get _notifierAccessor => ref.read(authNotifierAccessor);
-
-  Future<void> _handleRequestReset() async {
-    FocusScope.of(context).unfocus();
-
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    await _notifierAccessor.requestPasswordReset(
-      email: _emailController.text.trim(),
-    );
-  }
-
-  Future<void> _handleConfirmReset() async {
-    FocusScope.of(context).unfocus();
-
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    await _notifierAccessor.confirmPasswordReset(
-      token: _tokenController.text.trim(),
-      newPassword: _passwordController.text,
-    );
-  }
 
   void _showSuccessSnackBar(final String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -129,7 +105,7 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
   @override
   Widget build(final BuildContext context) {
     final AuthState authState = ref.watch(authNotifierProvider);
-    final stateIsLoading = authState.status == AuthStatus.loading;
+    final isLoading = authState.status == AuthStatus.loading;
     ref.listen<AuthState>(authNotifierProvider, (
       final previous,
       final next,
@@ -155,72 +131,53 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
     });
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        title: Text(_isTokenStep ? 'Nova Senha' : 'Recuperar Senha'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: ResetPasswordAppBar(tokenStep: _isTokenStep),
+      body: ResetPasswordBody(
+        formKey: _formKey,
+        emailController: _emailController,
+        passwordController: _passwordController,
+        confirmPasswordController: _confirmPasswordController,
+        tokenController: _tokenController,
+        isLoading: isLoading,
+        isTokenStep: _isTokenStep,
+        requestResetCallback: _handleRequestReset,
+        confirmResetCallback: _handleConfirmReset,
+        returnCallback: _clearItems,
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: Form(
-            key: _formKey,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _Header(isTokenStep: _isTokenStep),
-                const SizedBox(height: 40),
-                if (!_isTokenStep) ...[
-                  _EmailField(
-                    controller: _emailController,
-                    isEnabled: !stateIsLoading,
-                  ),
-                  const SizedBox(height: 24),
-                  _RequestResetButton(
-                    isLoading: stateIsLoading,
-                    onPressed: _handleRequestReset,
-                  ),
-                ] else ...[
-                  _TokenField(
-                    controller: _tokenController,
-                    isEnabled: !stateIsLoading,
-                  ),
-                  const SizedBox(height: 16),
-                  _PasswordField(
-                    controller: _passwordController,
-                    isEnabled: !stateIsLoading,
-                  ),
-                  const SizedBox(height: 16),
-                  _ConfirmPasswordField(
-                    controller: _confirmPasswordController,
-                    passwordController: _passwordController,
-                    isEnabled: !stateIsLoading,
-                  ),
-                  const SizedBox(height: 24),
-                  _ConfirmResetButton(
-                    isLoading: stateIsLoading,
-                    onPressed: _handleConfirmReset,
-                  ),
-                  const SizedBox(height: 12),
-                  _BackToEmailButton(
-                    onPressed: () {
-                      setState(() {
-                        _isTokenStep = false;
-                        _tokenController.clear();
-                        _passwordController.clear();
-                        _confirmPasswordController.clear();
-                      });
-                    },
-                  ),
-                ],
-                const SizedBox(height: 24),
-                const _BackToLoginLink(),
-              ],
-            ),
-          ),
-        ),
-      ),
+    );
+  }
+
+  void _clearItems() {
+    setState(() {
+      _isTokenStep = false;
+      _tokenController.clear();
+      _passwordController.clear();
+      _confirmPasswordController.clear();
+    });
+  }
+
+  Future<void> _handleRequestReset() async {
+    FocusScope.of(context).unfocus();
+
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    await _notifierAccessor.requestPasswordReset(
+      email: _emailController.text.trim(),
+    );
+  }
+
+  Future<void> _handleConfirmReset() async {
+    FocusScope.of(context).unfocus();
+
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    await _notifierAccessor.confirmPasswordReset(
+      token: _tokenController.text.trim(),
+      newPassword: _passwordController.text,
     );
   }
 
@@ -231,6 +188,152 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+}
+
+class ResetPasswordAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
+  const ResetPasswordAppBar({required this.tokenStep, super.key});
+
+  final bool tokenStep;
+
+  @override
+  Widget build(final BuildContext context) => AppBar(
+    title: Text(tokenStep ? 'Nova Senha' : 'Recuperar Senha'),
+    backgroundColor: Colors.transparent,
+    elevation: 0,
+  );
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<bool>('tokenStep', tokenStep));
+  }
+}
+
+class ResetPasswordBody extends StatelessWidget {
+  const ResetPasswordBody({
+    required this.formKey,
+    required this.emailController,
+    required this.passwordController,
+    required this.confirmPasswordController,
+    required this.tokenController,
+    required this.isLoading,
+    required this.isTokenStep,
+    required this.requestResetCallback,
+    required this.confirmResetCallback,
+    required this.returnCallback,
+    super.key,
+  });
+
+  final GlobalKey<FormState> formKey;
+  final TextEditingController emailController;
+  final TextEditingController tokenController;
+  final TextEditingController passwordController;
+  final TextEditingController confirmPasswordController;
+  final bool isTokenStep;
+  final bool isLoading;
+  final Future<void> Function() requestResetCallback;
+  final Future<void> Function() confirmResetCallback;
+  final VoidCallback returnCallback;
+
+  @override
+  Widget build(final BuildContext context) => SafeArea(
+    child: SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: Form(
+        key: formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _Header(isTokenStep: isTokenStep),
+            const SizedBox(height: 40),
+            if (!isTokenStep) ...[
+              _EmailField(controller: emailController, isEnabled: !isLoading),
+              const SizedBox(height: 24),
+              _RequestResetButton(
+                isLoading: isLoading,
+                onPressed: requestResetCallback,
+              ),
+            ] else ...[
+              _TokenField(controller: tokenController, isEnabled: !isLoading),
+              const SizedBox(height: 16),
+              _PasswordField(
+                controller: passwordController,
+                isEnabled: !isLoading,
+              ),
+              const SizedBox(height: 16),
+              _ConfirmPasswordField(
+                controller: confirmPasswordController,
+                passwordController: passwordController,
+                isEnabled: !isLoading,
+              ),
+              const SizedBox(height: 24),
+              _ConfirmResetButton(
+                isLoading: isLoading,
+                onPressed: confirmResetCallback,
+              ),
+              const SizedBox(height: 12),
+              _BackToEmailButton(onPressed: returnCallback),
+            ],
+            const SizedBox(height: 24),
+            const _BackToLoginLink(),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty<GlobalKey<FormState>>('formKey', formKey))
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'emailController',
+          emailController,
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'tokenController',
+          tokenController,
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'passwordController',
+          passwordController,
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'confirmPasswordController',
+          confirmPasswordController,
+        ),
+      )
+      ..add(DiagnosticsProperty<bool>('isTokenStep', isTokenStep))
+      ..add(DiagnosticsProperty<bool>('isLoading', isLoading))
+      ..add(
+        ObjectFlagProperty<Future<void> Function()>.has(
+          'requestResetCallback',
+          requestResetCallback,
+        ),
+      )
+      ..add(
+        ObjectFlagProperty<Future<void> Function()>.has(
+          'confirmResetCallback',
+          confirmResetCallback,
+        ),
+      )
+      ..add(
+        ObjectFlagProperty<VoidCallback>.has('returnCallback', returnCallback),
+      );
   }
 }
 
@@ -453,28 +556,25 @@ class _RequestResetButton extends StatelessWidget {
   Widget build(final BuildContext context) => ElevatedButton(
     onPressed: isLoading ? null : onPressed,
     style: ElevatedButton.styleFrom(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 12),
     ),
-    child: SizedBox(
-      height: 24,
-      child: isLoading
-          ? Center(
-              child: SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 3,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    Theme.of(context).colorScheme.onPrimary,
-                  ),
+    child: isLoading
+        ? Center(
+            child: SizedBox(
+              height: 24,
+              width: 24,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
-            )
-          : const Text(
-              'Enviar Código',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
-    ),
+          )
+        : const Text(
+            'Enviar Código',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+          ),
   );
 
   @override
@@ -496,7 +596,7 @@ class _ConfirmResetButton extends StatelessWidget {
   Widget build(final BuildContext context) => ElevatedButton(
     onPressed: isLoading ? null : onPressed,
     style: ElevatedButton.styleFrom(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 8),
     ),
     child: SizedBox(
       height: 24,
@@ -515,7 +615,7 @@ class _ConfirmResetButton extends StatelessWidget {
             )
           : const Text(
               'Redefinir Senha',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
     ),
   );
@@ -538,11 +638,11 @@ class _BackToEmailButton extends StatelessWidget {
   Widget build(final BuildContext context) => OutlinedButton(
     onPressed: onPressed,
     style: OutlinedButton.styleFrom(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 8),
     ),
     child: const Text(
       'Voltar para Email',
-      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+      style: TextStyle(fontWeight: FontWeight.bold),
     ),
   );
 

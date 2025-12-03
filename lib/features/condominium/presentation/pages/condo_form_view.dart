@@ -133,78 +133,19 @@ class _CondoFormPageState extends ConsumerState<CondoFormPage> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        title: Text(_isEditing ? 'Editar Condomínio' : 'Novo Condomínio'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: Form(
-            key: _formKey,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            child: Column(
-              spacing: 16,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _Header(isEditing: _isEditing),
-                const SizedBox(height: 16),
-                _NameField(controller: _nameController, isEnabled: !isLoading),
-                Row(
-                  spacing: 12,
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: _CityField(
-                        controller: _cityController,
-                        isEnabled: !isLoading,
-                      ),
-                    ),
-                    Expanded(
-                      child: _StateField(
-                        controller: _stateController,
-                        isEnabled: !isLoading,
-                      ),
-                    ),
-                  ],
-                ),
-                _NeighborhoodField(
-                  controller: _neighborhoodController,
-                  isEnabled: !isLoading,
-                ),
-                _ZipcodeField(
-                  controller: _zipcodeController,
-                  isEnabled: !isLoading,
-                ),
-                Row(
-                  spacing: 12,
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: _AddressField(
-                        controller: _addressController,
-                        isEnabled: !isLoading,
-                      ),
-                    ),
-                    Expanded(
-                      child: _NumberField(
-                        controller: _numberController,
-                        isEnabled: !isLoading,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                _SubmitButton(
-                  isLoading: isLoading,
-                  isEditing: _isEditing,
-                  onPressed: _handleSubmit,
-                ),
-              ],
-            ),
-          ),
-        ),
+      appBar: CondorFormAppBar(isEditing: _isEditing),
+      body: CondoFormBody(
+        formKey: _formKey,
+        nameController: _nameController,
+        cityController: _cityController,
+        stateController: _stateController,
+        neighborhoodController: _neighborhoodController,
+        zipcodeController: _zipcodeController,
+        addressController: _addressController,
+        numberController: _numberController,
+        isEditing: _isEditing,
+        isLoading: isLoading,
+        onSubmit: _handleSubmit,
       ),
     );
   }
@@ -219,6 +160,180 @@ class _CondoFormPageState extends ConsumerState<CondoFormPage> {
     _addressController.dispose();
     _numberController.dispose();
     super.dispose();
+  }
+}
+
+class CondorFormAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const CondorFormAppBar({required this.isEditing, super.key});
+
+  final bool isEditing;
+
+  @override
+  Widget build(final BuildContext context) => AppBar(
+    title: Text(isEditing ? 'Editar Condomínio' : 'Novo Condomínio'),
+    backgroundColor: Colors.transparent,
+    elevation: 0,
+  );
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<bool>('isEditing', isEditing));
+  }
+}
+
+class CondoFormBody extends StatelessWidget {
+  const CondoFormBody({
+    required this.formKey,
+    required this.nameController,
+    required this.cityController,
+    required this.stateController,
+    required this.neighborhoodController,
+    required this.zipcodeController,
+    required this.addressController,
+    required this.numberController,
+    required this.isEditing,
+    required this.isLoading,
+    required this.onSubmit,
+    super.key,
+  });
+
+  final GlobalKey<FormState> formKey;
+  final TextEditingController nameController;
+  final TextEditingController cityController;
+  final TextEditingController stateController;
+  final TextEditingController neighborhoodController;
+  final TextEditingController zipcodeController;
+  final TextEditingController addressController;
+  final TextEditingController numberController;
+  final bool isEditing;
+  final bool isLoading;
+  final Future<void> Function() onSubmit;
+
+  @override
+  Widget build(final BuildContext context) => SafeArea(
+    child: SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: Form(
+        key: formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: Column(
+          spacing: 16,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _Header(isEditing: isEditing),
+            const SizedBox(height: 16),
+            _NameField(controller: nameController, isEnabled: !isLoading),
+            Row(
+              spacing: 12,
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: _CityField(
+                    controller: cityController,
+                    isEnabled: !isLoading,
+                  ),
+                ),
+                Expanded(
+                  child: _StateField(
+                    controller: stateController,
+                    isEnabled: !isLoading,
+                  ),
+                ),
+              ],
+            ),
+            _NeighborhoodField(
+              controller: neighborhoodController,
+              isEnabled: !isLoading,
+            ),
+            _ZipcodeField(controller: zipcodeController, isEnabled: !isLoading),
+            _AddressField(controller: addressController, isEnabled: !isLoading),
+            Row(
+              spacing: 12,
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: _AddressField(
+                    controller: addressController,
+                    isEnabled: !isLoading,
+                  ),
+                ),
+                Expanded(
+                  child: _NumberField(
+                    controller: numberController,
+                    isEnabled: !isLoading,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            _SubmitButton(
+              isLoading: isLoading,
+              isEditing: isEditing,
+              onPressed: onSubmit,
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(
+      DiagnosticsProperty<GlobalKey<FormState>>('formKey', formKey),
+    );
+    properties.add(
+      DiagnosticsProperty<TextEditingController>(
+        'nameController',
+        nameController,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TextEditingController>(
+        'cityController',
+        cityController,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TextEditingController>(
+        'stateController',
+        stateController,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TextEditingController>(
+        'neighborhoodController',
+        neighborhoodController,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TextEditingController>(
+        'zipcodeController',
+        zipcodeController,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TextEditingController>(
+        'addressController',
+        addressController,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TextEditingController>(
+        'numberController',
+        numberController,
+      ),
+    );
+    properties.add(DiagnosticsProperty<bool>('isEditing', isEditing));
+    properties.add(DiagnosticsProperty<bool>('isLoading', isLoading));
+    properties.add(
+      ObjectFlagProperty<Future<void> Function()>.has('onSubmit', onSubmit),
+    );
   }
 }
 
@@ -334,6 +449,7 @@ class _StateField extends StatelessWidget {
       prefixIcon: Icon(Icons.map),
       labelText: 'Estado',
       hintText: 'PR',
+      counterText: '',
     ),
     textInputAction: TextInputAction.next,
     textCapitalization: TextCapitalization.characters,
@@ -488,13 +604,17 @@ class _SubmitButton extends StatelessWidget {
 
   final bool isLoading;
   final bool isEditing;
-  final VoidCallback onPressed;
+  final Future<void> Function() onPressed;
 
   @override
   Widget build(final BuildContext context) => ElevatedButton(
-    onPressed: isLoading ? null : onPressed,
+    onPressed: isLoading
+        ? null
+        : () async {
+            await onPressed();
+          },
     style: ElevatedButton.styleFrom(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 12),
     ),
     child: SizedBox(
       height: 16,
@@ -513,7 +633,7 @@ class _SubmitButton extends StatelessWidget {
             )
           : Text(
               isEditing ? 'Atualizar' : 'Criar',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
             ),
     ),
   );
