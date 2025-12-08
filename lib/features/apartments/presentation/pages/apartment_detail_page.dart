@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../reservations/presentation/pages/reservation_list_page.dart';
 import '../../../residents/domain/entities/resident_entity.dart';
 import '../../../residents/presentation/pages/resident_list_page.dart';
 import '../../domain/entities/apartment_entity.dart';
@@ -77,6 +78,7 @@ class _ApartmentDetailPageState extends ConsumerState<ApartmentDetailPage> {
         apartment: selectedApartment,
         isLoading: isLoading,
         residentsCallback: _navigateToResidents,
+        reservationsCallback: _navigateToReservations,
       ),
     );
   }
@@ -130,6 +132,20 @@ class _ApartmentDetailPageState extends ConsumerState<ApartmentDetailPage> {
       await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => ResidentListPage(apartmentId: apartmentId),
+        ),
+      );
+    }
+  }
+
+  Future<void> _navigateToReservations(final ApartmentEntity apartment) async {
+    final int? apartmentId = apartment.id;
+    if (apartmentId != null) {
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ReservationListPage(
+            apartmentId: apartmentId,
+            condominiumId: apartment.condominiumId,
+          ),
         ),
       );
     }
@@ -285,12 +301,14 @@ class ApartmentDetailBody extends StatelessWidget {
     required this.apartment,
     required this.isLoading,
     required this.residentsCallback,
+    required this.reservationsCallback,
     super.key,
   });
 
   final ApartmentEntity? apartment;
   final bool isLoading;
   final Future<void> Function(ApartmentEntity) residentsCallback;
+  final Future<void> Function(ApartmentEntity) reservationsCallback;
 
   @override
   Widget build(final BuildContext context) => SafeArea(
@@ -309,6 +327,10 @@ class ApartmentDetailBody extends StatelessWidget {
                     apartment: apartment!,
                     onPressed: residentsCallback,
                   ),
+                _ReservationsSection(
+                  apartment: apartment!,
+                  onPressed: reservationsCallback,
+                ),
                 _ApartmentMetadata(apartment: apartment!),
               ],
             ),
@@ -325,6 +347,12 @@ class ApartmentDetailBody extends StatelessWidget {
         ObjectFlagProperty<Future<void> Function(ApartmentEntity)>.has(
           'residentsListCallback',
           residentsCallback,
+        ),
+      )
+      ..add(
+        ObjectFlagProperty<Future<void> Function(ApartmentEntity)>.has(
+          'reservationsCallback',
+          reservationsCallback,
         ),
       );
   }
@@ -543,6 +571,82 @@ class _ResidentsSection extends StatelessWidget {
       ..add(
         ObjectFlagProperty<Future<void> Function(ApartmentEntity)>.has(
           'residentsListCallback',
+          onPressed,
+        ),
+      );
+  }
+}
+
+class _ReservationsSection extends StatelessWidget {
+  const _ReservationsSection({
+    required this.apartment,
+    required this.onPressed,
+  });
+
+  final ApartmentEntity apartment;
+  final Future<void> Function(ApartmentEntity) onPressed;
+
+  @override
+  Widget build(final BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
+    return Card(
+      child: InkWell(
+        onTap: () async {
+          await onPressed(apartment);
+        },
+        borderRadius: .circular(12),
+        child: Padding(
+          padding: const .all(12),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: theme.colorScheme.tertiaryContainer,
+                child: Icon(
+                  Icons.event,
+                  color: theme.colorScheme.onTertiaryContainer,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    Text(
+                      'Reservas de Áreas Comuns',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: .bold,
+                      ),
+                    ),
+                    Text(
+                      'Ver reservas dester apartamento',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty<ApartmentEntity>('apartment', apartment))
+      ..add(
+        ObjectFlagProperty<Future<void> Function(ApartmentEntity)>.has(
+          'onPressed',
           onPressed,
         ),
       );

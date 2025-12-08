@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../reservations/presentation/pages/reservation_list_page.dart';
 import '../../domain/entities/facility_entity.dart';
 import '../providers/facility_providers.dart';
 import '../providers/facility_state.dart';
@@ -80,6 +82,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> {
         facility: facility,
         isLoading: isLoading,
         onRefresh: _loadFacility,
+        reservationsCallback: _navigateToReservations,
       ),
     );
   }
@@ -114,19 +117,6 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> {
     );
   }
 
-  Future<void> _navigateToEdit(final FacilityEntity? facility) async {
-    if (facility != null) {
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => FacilityFormPage(
-            condominiumId: widget.condominiumId,
-            facility: facility,
-          ),
-        ),
-      );
-    }
-  }
-
   Future<void> _handleDelete() async {
     final bool? confirmed = await showDialog<bool?>(
       context: context,
@@ -159,6 +149,28 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> {
       }
     }
   }
+
+  Future<void> _navigateToEdit(final FacilityEntity facility) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => FacilityFormPage(
+          condominiumId: widget.condominiumId,
+          facility: facility,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _navigateToReservations(final FacilityEntity facility) async {
+    final int? facilityId = facility.id;
+    if (facilityId != null) {
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ReservationListPage(facilityId: facilityId),
+        ),
+      );
+    }
+  }
 }
 
 class FacilityDetailAppBar extends StatelessWidget
@@ -171,7 +183,7 @@ class FacilityDetailAppBar extends StatelessWidget
   });
 
   final FacilityEntity? facility;
-  final Future<void> Function(FacilityEntity?) editCallback;
+  final Future<void> Function(FacilityEntity) editCallback;
   final Future<void> Function() deleteCallback;
 
   @override
@@ -183,7 +195,7 @@ class FacilityDetailAppBar extends StatelessWidget
         ? [
             IconButton(
               onPressed: () async {
-                await editCallback(facility);
+                await editCallback(facility!);
               },
               icon: const Icon(Icons.edit, size: 20),
             ),
@@ -206,7 +218,7 @@ class FacilityDetailAppBar extends StatelessWidget
     properties
       ..add(DiagnosticsProperty<FacilityEntity?>('facility', facility))
       ..add(
-        ObjectFlagProperty<Future<void> Function(FacilityEntity?)>.has(
+        ObjectFlagProperty<Future<void> Function(FacilityEntity)>.has(
           'editCallback',
           editCallback,
         ),
@@ -223,13 +235,15 @@ class FacilityDetailAppBar extends StatelessWidget
 class FacilityDetailBody extends StatelessWidget {
   const FacilityDetailBody({
     required this.facility,
-    required this.isLoading,
     required this.onRefresh,
+    required this.reservationsCallback,
+    required this.isLoading,
     super.key,
   });
 
   final FacilityEntity? facility;
   final Future<void> Function() onRefresh;
+  final Future<void> Function(FacilityEntity) reservationsCallback;
   final bool isLoading;
 
   @override
@@ -243,6 +257,10 @@ class FacilityDetailBody extends StatelessWidget {
               children: [
                 _FacilityHeader(facility: facility!),
                 _FacilityInfo(facility: facility!),
+                _ReservationsSection(
+                  facility: facility!,
+                  onPressed: reservationsCallback,
+                ),
               ],
             ),
           ),
@@ -256,7 +274,13 @@ class FacilityDetailBody extends StatelessWidget {
       ..add(
         ObjectFlagProperty<Future<void> Function()>.has('onRefresh', onRefresh),
       )
-      ..add(DiagnosticsProperty<bool>('isLoading', isLoading));
+      ..add(DiagnosticsProperty<bool>('isLoading', isLoading))
+      ..add(
+        ObjectFlagProperty<Future<void> Function(FacilityEntity)>.has(
+          'reservationsCallback',
+          reservationsCallback,
+        ),
+      );
   }
 }
 
@@ -424,5 +448,76 @@ class _InfoRow extends StatelessWidget {
       ..add(DiagnosticsProperty<IconData>('icon', icon))
       ..add(StringProperty('label', label))
       ..add(StringProperty('value', value));
+  }
+}
+
+class _ReservationsSection extends StatelessWidget {
+  const _ReservationsSection({required this.facility, required this.onPressed});
+
+  final FacilityEntity facility;
+  final Future<void> Function(FacilityEntity) onPressed;
+
+  @override
+  Widget build(final BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
+    return Card(
+      child: InkWell(
+        onTap: () async {
+          await onPressed(facility);
+        },
+        borderRadius: .circular(12),
+        child: Padding(
+          padding: const .all(16),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: theme.colorScheme.tertiaryContainer,
+                child: Icon(
+                  Icons.event,
+                  color: theme.colorScheme.onTertiaryContainer,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    Text(
+                      'Reservas',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: .bold,
+                      ),
+                    ),
+                    Text(
+                      'Ver reservas desta área comum',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(
+      ObjectFlagProperty<Future<void> Function(FacilityEntity)>.has(
+        'onPressed',
+        onPressed,
+      ),
+    );
   }
 }

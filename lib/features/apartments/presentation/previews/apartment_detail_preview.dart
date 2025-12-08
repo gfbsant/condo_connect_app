@@ -43,6 +43,7 @@ Widget apartmentDetailPreview() => const SizedBox(
       apartment: _apartment,
       isLoading: false,
       residentsCallback: _placeholderCallbackForApartment,
+      reservationsCallback: _placeholderCallbackForApartment,
     ),
   ),
 );

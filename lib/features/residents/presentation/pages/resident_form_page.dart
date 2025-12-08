@@ -325,7 +325,7 @@ class _UserNameField extends StatelessWidget {
     return Card(
       margin: const .all(4),
       child: Padding(
-        padding: .all(16),
+        padding: const .all(16),
         child: Column(
           spacing: 8,
           crossAxisAlignment: .start,

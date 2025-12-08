@@ -14,18 +14,19 @@ const _facility = FacilityEntity(
 
 Future<void> _emptyCallback() async {}
 
-Future<void> _editCallback(final FacilityEntity? facility) async {}
+Future<void> _emptyCallbackWithParam(_) async {}
 
 @Preview(group: 'Facility Detail')
 Widget facilityDetailPreview() => const PreviewWrapper(
   appBar: FacilityDetailAppBar(
     facility: _facility,
-    editCallback: _editCallback,
+    editCallback: _emptyCallbackWithParam,
     deleteCallback: _emptyCallback,
   ),
   body: FacilityDetailBody(
     facility: _facility,
     isLoading: false,
     onRefresh: _emptyCallback,
+    reservationsCallback: _emptyCallbackWithParam,
   ),
 );
