@@ -29,6 +29,10 @@ abstract class BaseHttpDataSource {
 
   String get condominiaPath => '/condominia';
 
+  String get reservationsPath => '/reservations';
+
+  String get facilitiesPath => '/facilities';
+
   Map<String, String> get _jsonContentHeader => {
     'Content-Type': 'application/json',
   };

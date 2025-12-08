@@ -42,6 +42,7 @@ facilityNotifierProvider =
       FacilityNotifier.new,
     );
 
+// Helpers
 final Provider<FacilityNotifier> facilityNotifierAccessor =
     Provider.autoDispose<FacilityNotifier>(
       (final ref) => ref.watch(facilityNotifierProvider.notifier),

@@ -127,6 +127,22 @@ import 'package:condo_connect/features/notice/domain/usecases/get_notices_by_con
     as _i952;
 import 'package:condo_connect/features/notice/domain/usecases/update_notice_usecase.dart'
     as _i85;
+import 'package:condo_connect/features/reservations/data/datasources/reservation_remote_datasource_impl.dart'
+    as _i316;
+import 'package:condo_connect/features/reservations/data/repositories/reservation_repository_impl.dart'
+    as _i275;
+import 'package:condo_connect/features/reservations/domain/datasources/reservation_remote_datasource.dart'
+    as _i843;
+import 'package:condo_connect/features/reservations/domain/repositories/reservation_repository.dart'
+    as _i274;
+import 'package:condo_connect/features/reservations/domain/usecases/create_reservation_usecase.dart'
+    as _i429;
+import 'package:condo_connect/features/reservations/domain/usecases/delete_reservation_usecase.dart'
+    as _i110;
+import 'package:condo_connect/features/reservations/domain/usecases/get_reservations_by_apartment_usecase.dart'
+    as _i335;
+import 'package:condo_connect/features/reservations/domain/usecases/get_reservations_by_facility_usecase.dart'
+    as _i878;
 import 'package:condo_connect/features/residents/data/datasources/resident_remote_datasource_impl.dart'
     as _i617;
 import 'package:condo_connect/features/residents/data/repositories/resident_repository_impl.dart'
@@ -167,6 +183,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i335.FacilityRemoteDataSource>(
       () => _i389.FacilityRemoteDataSourceImpl(),
+    );
+    gh.factory<_i843.ReservationRemoteDataSource>(
+      () => _i316.ReservationRemoteDataSourceImpl(),
     );
     gh.factory<_i445.EmployeeRemoteDataSource>(
       () => _i584.EmployeeRemoteDataSourceImpl(),
@@ -216,6 +235,11 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i483.RequestPasswordResetUseCase>(
       () => _i483.RequestPasswordResetUseCase(gh<_i520.AuthRepository>()),
+    );
+    gh.factory<_i274.ReservationRepository>(
+      () => _i275.ReservationRepositoryImpl(
+        gh<_i843.ReservationRemoteDataSource>(),
+      ),
     );
     gh.factory<_i285.CreateEmployeeUseCase>(
       () => _i285.CreateEmployeeUseCase(gh<_i384.EmployeeRepository>()),
@@ -268,6 +292,22 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i718.UpdateResidentUseCase>(
       () => _i718.UpdateResidentUseCase(gh<_i105.ResidentRepository>()),
+    );
+    gh.factory<_i429.CreateReservationUseCase>(
+      () => _i429.CreateReservationUseCase(gh<_i274.ReservationRepository>()),
+    );
+    gh.factory<_i110.DeleteReservationUseCase>(
+      () => _i110.DeleteReservationUseCase(gh<_i274.ReservationRepository>()),
+    );
+    gh.factory<_i335.GetReservationsByApartmentUseCase>(
+      () => _i335.GetReservationsByApartmentUseCase(
+        gh<_i274.ReservationRepository>(),
+      ),
+    );
+    gh.factory<_i878.GetReservationsByFacilityUseCase>(
+      () => _i878.GetReservationsByFacilityUseCase(
+        gh<_i274.ReservationRepository>(),
+      ),
     );
     gh.factory<_i221.ApproveApartmentUseCase>(
       () => _i221.ApproveApartmentUseCase(gh<_i270.ApartmentRepository>()),
