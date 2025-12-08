@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 
 import '../../../../shared/previews/preview_wrapper.dart';
-import '../pages/condo_form_view.dart';
+import '../pages/condo_form_page.dart';
 
 Future<void> _emptyCallback() async {}
 

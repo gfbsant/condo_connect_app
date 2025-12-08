@@ -6,7 +6,9 @@ import '../../../../shared/exceptions/api_exception.dart';
 import '../../../user/data/models/user_model.dart';
 import '../../../user/domain/entities/user_entity.dart';
 import '../../domain/datasources/auth_remote_datasource.dart';
+import '../../domain/entities/permission_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../models/permission_model.dart';
 
 @Injectable(as: AuthRepository)
 class AuthRepositoryImpl implements AuthRepository {
@@ -27,6 +29,20 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(ServerFailure(message: e.message));
     } on Exception catch (e) {
       return Left(ServerFailure(message: 'Erro no login: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<PermissionEntity>>> getUserPermissions() async {
+    try {
+      final List<PermissionModel> response = await remoteDataSource
+          .getUserPermissions();
+
+      return Right(response);
+    } on ApiException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on Exception catch (e) {
+      return Left(ServerFailure(message: 'Erro ao obter permissoes: $e'));
     }
   }
 

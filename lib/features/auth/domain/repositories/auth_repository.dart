@@ -2,12 +2,16 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../shared/errors/failures.dart';
 import '../../../user/domain/entities/user_entity.dart';
+import '../entities/permission_entity.dart';
 
 abstract class AuthRepository {
   Future<Either<Failure, UserEntity>> login({
     required final String email,
     required final String password,
   });
+
+  Future<Either<Failure, List<PermissionEntity>>> getUserPermissions();
+
   Future<Either<Failure, void>> logout();
 
   Future<Either<Failure, UserEntity>> register({

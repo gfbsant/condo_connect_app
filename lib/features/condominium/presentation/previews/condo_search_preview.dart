@@ -5,7 +5,7 @@ import 'package:flutter/widget_previews.dart';
 
 import '../../../../shared/previews/preview_wrapper.dart';
 import '../../domain/entities/condominium_entity.dart';
-import '../pages/condo_search_view.dart';
+import '../pages/condo_search_page.dart';
 
 final condos = List<CondominiumEntity>.generate(5, (final index) {
   final int value = index + 1;

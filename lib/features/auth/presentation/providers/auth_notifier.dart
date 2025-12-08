@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/services/storage/secure_storage_service.dart';
 import '../../../../shared/errors/failures.dart';
 import '../../../user/domain/entities/user_entity.dart';
+import '../../domain/entities/permission_entity.dart';
 import '../../domain/usecases/confirm_password_reset_usecase.dart';
+import '../../domain/usecases/get_user_permissions_usecase.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
 import '../../domain/usecases/register_usecase.dart';
@@ -14,17 +16,19 @@ import 'auth_state.dart';
 
 class AuthNotifier extends Notifier<AuthState> {
   late final LoginUseCase _loginUseCase;
+  late final GetUserPermissionsUseCase _getUserPermissionsUseCase;
   late final LogoutUseCase _logoutUseCase;
   late final RegisterUseCase _registerUseCase;
   late final RequestPasswordResetUseCase _requestPasswordResetUseCase;
   late final ConfirmPasswordResetUseCase _confirmPasswordResetUseCase;
   late final SecureStorageService _secureStorageService;
 
-  bool get stateIsLoading => state.status == AuthStatus.loading;
+  bool get _isLoading => state.status == .loading;
 
   @override
   AuthState build() {
     _loginUseCase = ref.read(loginUseCaseProvider);
+    _getUserPermissionsUseCase = ref.read(getUserPermissionsUseCaseProvider);
     _logoutUseCase = ref.read(logoutUseCaseProvider);
     _registerUseCase = ref.read(registerUseCaseProvider);
     _requestPasswordResetUseCase = ref.read(
@@ -70,6 +74,29 @@ class AuthNotifier extends Notifier<AuthState> {
     );
   }
 
+  Future<void> getUserPermissions() async {
+    if (_isLoading) {
+      return;
+    }
+
+    _setLoadingState();
+
+    final Either<Failure, List<PermissionEntity>> result =
+        await _getUserPermissionsUseCase();
+
+    result.fold(
+      (final failure) {
+        state = state.copyWith(status: .error, errorMessage: failure.message);
+      },
+      (final permissions) {
+        state = state.copyWith(
+          permissions: permissions,
+          status: .authenticated,
+        );
+      },
+    );
+  }
+
   Future<void> register({
     required final String name,
     required final String email,
@@ -78,7 +105,7 @@ class AuthNotifier extends Notifier<AuthState> {
     required final String birthDate,
     final String? phone,
   }) async {
-    if (stateIsLoading) {
+    if (_isLoading) {
       return;
     }
 
@@ -114,7 +141,7 @@ class AuthNotifier extends Notifier<AuthState> {
   }
 
   Future<void> logout() async {
-    if (stateIsLoading) {
+    if (_isLoading) {
       return;
     }
 
@@ -139,7 +166,7 @@ class AuthNotifier extends Notifier<AuthState> {
   }
 
   Future<void> requestPasswordReset({required final String email}) async {
-    if (stateIsLoading) {
+    if (_isLoading) {
       return;
     }
 
@@ -162,7 +189,7 @@ class AuthNotifier extends Notifier<AuthState> {
     required final String token,
     required final String newPassword,
   }) async {
-    if (stateIsLoading) {
+    if (_isLoading) {
       return;
     }
 

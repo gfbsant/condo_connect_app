@@ -8,8 +8,8 @@ import '../../domain/entities/condominium_entity.dart';
 import '../providers/condo_providers.dart';
 import '../widgets/condo_details_modal.dart';
 
-class CondoSearchView extends ConsumerStatefulWidget {
-  const CondoSearchView({
+class CondoSearchPage extends ConsumerStatefulWidget {
+  const CondoSearchPage({
     super.key,
     this.initialSearchTerm,
     this.selectedCondoId,
@@ -19,7 +19,7 @@ class CondoSearchView extends ConsumerStatefulWidget {
   final int? selectedCondoId;
 
   @override
-  ConsumerState<CondoSearchView> createState() => _CondoSearchViewState();
+  ConsumerState<CondoSearchPage> createState() => _CondoSearchPageState();
 
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
@@ -30,7 +30,7 @@ class CondoSearchView extends ConsumerStatefulWidget {
   }
 }
 
-class _CondoSearchViewState extends ConsumerState<CondoSearchView> {
+class _CondoSearchPageState extends ConsumerState<CondoSearchPage> {
   final _searchController = TextEditingController();
 
   @override
