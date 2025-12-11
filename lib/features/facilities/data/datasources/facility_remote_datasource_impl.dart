@@ -23,8 +23,9 @@ class FacilityRemoteDataSourceImpl extends BaseHttpDataSource
       final ApiResponse<FacilityModel> response = await makeRequest(
         RequestType.POST,
         '$_condominiaPath/$condominiumId$_facilitiesPath',
+        jsonBody: facility.toJson(),
         fromJson: (final json) =>
-            FacilityModel.froJson(json as Map<String, dynamic>),
+            FacilityModel.fromJson(json as Map<String, dynamic>),
       );
       if (response.success && response.data != null) {
         return response.data!;
@@ -53,7 +54,7 @@ class FacilityRemoteDataSourceImpl extends BaseHttpDataSource
           return items
               .map(
                 (final json) =>
-                    FacilityModel.froJson(json as Map<String, dynamic>),
+                    FacilityModel.fromJson(json as Map<String, dynamic>),
               )
               .toList();
         },
@@ -79,7 +80,7 @@ class FacilityRemoteDataSourceImpl extends BaseHttpDataSource
         RequestType.GET,
         '$_facilitiesPath/$facilityId',
         fromJson: (final json) =>
-            FacilityModel.froJson(json as Map<String, dynamic>),
+            FacilityModel.fromJson(json as Map<String, dynamic>),
       );
       if (response.success && response.data != null) {
         return response.data!;
@@ -106,7 +107,7 @@ class FacilityRemoteDataSourceImpl extends BaseHttpDataSource
         '$_facilitiesPath/$facilityId',
         jsonBody: facility.toJson(),
         fromJson: (final json) =>
-            FacilityModel.froJson(json as Map<String, dynamic>),
+            FacilityModel.fromJson(json as Map<String, dynamic>),
       );
       if (response.success && response.data != null) {
         return response.data!;

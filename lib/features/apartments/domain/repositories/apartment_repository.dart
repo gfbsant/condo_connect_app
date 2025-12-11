@@ -5,6 +5,7 @@ import '../entities/apartment_entity.dart';
 
 abstract class ApartmentRepository {
   Future<Either<Failure, ApartmentEntity>> createApartment(
+    final int condominiumId,
     final ApartmentEntity apartment,
   );
 

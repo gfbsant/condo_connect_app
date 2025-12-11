@@ -13,7 +13,6 @@ EmployeeModel _$EmployeeModelFromJson(Map<String, dynamic> json) =>
       email: json['email'] as String?,
       userId: (json['userId'] as num?)?.toInt(),
       id: (json['id'] as num?)?.toInt(),
-      description: json['description'] as String?,
       user: EmployeeModel._userFromJson(json['user'] as Map<String, dynamic>?),
       createdAt: json['createdAt'] == null
           ? null
@@ -28,11 +27,10 @@ Map<String, dynamic> _$EmployeeModelToJson(EmployeeModel instance) =>
       'condominiumId': instance.condominiumId,
       'userId': instance.userId,
       'email': instance.email,
-      'description': instance.description,
       'role': _$EmployeeRoleEnumMap[instance.role]!,
     };
 
 const _$EmployeeRoleEnumMap = {
   EmployeeRole.admin: 'admin',
-  EmployeeRole.colaborator: 'colaborator',
+  EmployeeRole.collaborator: 'collaborator',
 };

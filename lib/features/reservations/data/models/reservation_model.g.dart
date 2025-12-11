@@ -21,6 +21,15 @@ ReservationModel _$ReservationModelFromJson(Map<String, dynamic> json) =>
       updatedAt: json['updatedAt'] == null
           ? null
           : DateTime.parse(json['updatedAt'] as String),
+      apartment: ReservationModel._apartmentFromJson(
+        json['apartment'] as Map<String, dynamic>?,
+      ),
+      creator: ReservationModel._creatorFromJson(
+        json['creator'] as Map<String, dynamic>?,
+      ),
+      facility: ReservationModel._facilityFromJson(
+        json['facility'] as Map<String, dynamic>?,
+      ),
     );
 
 Map<String, dynamic> _$ReservationModelToJson(ReservationModel instance) =>

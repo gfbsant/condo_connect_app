@@ -47,5 +47,11 @@ class FacilityState extends Equatable {
   );
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [
+    status,
+    facilities,
+    selectedFacility,
+    errorMessage,
+    successMessage,
+  ];
 }

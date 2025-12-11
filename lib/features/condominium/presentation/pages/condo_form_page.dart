@@ -65,11 +65,14 @@ class _CondoFormPageState extends ConsumerState<CondoFormPage> {
   void _showSuccessSnackBar(final String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Row(
+        content: Row(
           spacing: 8,
-          children: [Icon(Icons.check_circle, color: Colors.white, size: 20)],
+          children: [
+            const Icon(Icons.check_circle, color: Colors.white, size: 20),
+            Expanded(child: Text(message)),
+          ],
         ),
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.green[600],
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -106,7 +109,7 @@ class _CondoFormPageState extends ConsumerState<CondoFormPage> {
 
     if (success) {
       await HapticFeedback.lightImpact();
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(seconds: 1));
       if (mounted) {
         Navigator.of(context).pop();
       }
@@ -116,18 +119,24 @@ class _CondoFormPageState extends ConsumerState<CondoFormPage> {
   @override
   Widget build(final BuildContext context) {
     ref
-      ..listen<String?>(errorMessageProvider, (_, final errorMessage) {
-        if (errorMessage != null) {
-          _showErrorSnackBar(errorMessage);
-          ref.read(condoNotifierAccessor).clearMessages();
-        }
-      })
-      ..listen<String?>(successMessageProvider, (_, final successMessage) {
-        if (successMessage != null) {
-          _showSuccessSnackBar(successMessage);
-          ref.read(condoNotifierAccessor).clearMessages();
-        }
-      });
+      ..listen<String?>(
+        condoNotifierProvider.select((final state) => state.errorMessage),
+        (_, final errorMessage) {
+          if (errorMessage != null) {
+            _showErrorSnackBar(errorMessage);
+            ref.read(condoNotifierAccessor).clearMessages();
+          }
+        },
+      )
+      ..listen<String?>(
+        condoNotifierProvider.select((final state) => state.successMessage),
+        (_, final successMessage) {
+          if (successMessage != null) {
+            _showSuccessSnackBar(successMessage);
+            ref.read(condoNotifierAccessor).clearMessages();
+          }
+        },
+      );
 
     final bool isLoading = ref.watch(isLoadingProvider);
 
@@ -251,24 +260,7 @@ class CondoFormBody extends StatelessWidget {
             ),
             _ZipcodeField(controller: zipcodeController, isEnabled: !isLoading),
             _AddressField(controller: addressController, isEnabled: !isLoading),
-            Row(
-              spacing: 12,
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: _AddressField(
-                    controller: addressController,
-                    isEnabled: !isLoading,
-                  ),
-                ),
-                Expanded(
-                  child: _NumberField(
-                    controller: numberController,
-                    isEnabled: !isLoading,
-                  ),
-                ),
-              ],
-            ),
+            _NumberField(controller: numberController, isEnabled: !isLoading),
             const SizedBox(height: 16),
             _SubmitButton(
               isLoading: isLoading,
@@ -284,56 +276,55 @@ class CondoFormBody extends StatelessWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(
-      DiagnosticsProperty<GlobalKey<FormState>>('formKey', formKey),
-    );
-    properties.add(
-      DiagnosticsProperty<TextEditingController>(
-        'nameController',
-        nameController,
-      ),
-    );
-    properties.add(
-      DiagnosticsProperty<TextEditingController>(
-        'cityController',
-        cityController,
-      ),
-    );
-    properties.add(
-      DiagnosticsProperty<TextEditingController>(
-        'stateController',
-        stateController,
-      ),
-    );
-    properties.add(
-      DiagnosticsProperty<TextEditingController>(
-        'neighborhoodController',
-        neighborhoodController,
-      ),
-    );
-    properties.add(
-      DiagnosticsProperty<TextEditingController>(
-        'zipcodeController',
-        zipcodeController,
-      ),
-    );
-    properties.add(
-      DiagnosticsProperty<TextEditingController>(
-        'addressController',
-        addressController,
-      ),
-    );
-    properties.add(
-      DiagnosticsProperty<TextEditingController>(
-        'numberController',
-        numberController,
-      ),
-    );
-    properties.add(DiagnosticsProperty<bool>('isEditing', isEditing));
-    properties.add(DiagnosticsProperty<bool>('isLoading', isLoading));
-    properties.add(
-      ObjectFlagProperty<Future<void> Function()>.has('onSubmit', onSubmit),
-    );
+    properties
+      ..add(DiagnosticsProperty<GlobalKey<FormState>>('formKey', formKey))
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'nameController',
+          nameController,
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'cityController',
+          cityController,
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'stateController',
+          stateController,
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'neighborhoodController',
+          neighborhoodController,
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'zipcodeController',
+          zipcodeController,
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'addressController',
+          addressController,
+        ),
+      )
+      ..add(
+        DiagnosticsProperty<TextEditingController>(
+          'numberController',
+          numberController,
+        ),
+      )
+      ..add(DiagnosticsProperty<bool>('isEditing', isEditing))
+      ..add(DiagnosticsProperty<bool>('isLoading', isLoading))
+      ..add(
+        ObjectFlagProperty<Future<void> Function()>.has('onSubmit', onSubmit),
+      );
   }
 }
 

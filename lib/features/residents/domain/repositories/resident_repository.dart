@@ -13,10 +13,7 @@ abstract class ResidentRepository {
     final int apartmentId,
   );
 
-  Future<Either<Failure, ResidentEntity>> getResidentById(
-    final int apartmentId,
-    final int residentId,
-  );
+  Future<Either<Failure, ResidentEntity>> getResidentById(final int residentId);
 
   Future<Either<Failure, ResidentEntity>> updateResident(
     final int apartmentId,

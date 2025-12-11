@@ -45,6 +45,8 @@ import 'package:condo_connect/features/auth/domain/repositories/auth_repository.
     as _i520;
 import 'package:condo_connect/features/auth/domain/usecases/confirm_password_reset_usecase.dart'
     as _i231;
+import 'package:condo_connect/features/auth/domain/usecases/get_user_permissions_usecase.dart'
+    as _i463;
 import 'package:condo_connect/features/auth/domain/usecases/login_usecase.dart'
     as _i25;
 import 'package:condo_connect/features/auth/domain/usecases/logout_usecase.dart'
@@ -216,6 +218,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i714.NoticeRemoteDataSource>(
       () => _i164.NoticeRemoteDataSourceImpl(),
+    );
+    gh.factory<_i463.GetUserPermissionsUseCase>(
+      () => _i463.GetUserPermissionsUseCase(gh<_i520.AuthRepository>()),
     );
     gh.factory<_i270.ApartmentRepository>(
       () =>

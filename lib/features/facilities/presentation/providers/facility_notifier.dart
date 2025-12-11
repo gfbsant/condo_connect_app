@@ -77,10 +77,12 @@ class FacilityNotifier extends Notifier<FacilityState> {
         );
 
     result.fold(
-      (final failure) =>
-          state = state.copyWith(status: .error, errorMessage: failure.message),
-      (final facilities) =>
-          state = state.copyWith(facilities: facilities, status: .initial),
+      (final failure) {
+        state = state.copyWith(status: .error, errorMessage: failure.message);
+      },
+      (final facilities) {
+        state = state.copyWith(facilities: facilities, status: .initial);
+      },
     );
   }
 
@@ -97,10 +99,12 @@ class FacilityNotifier extends Notifier<FacilityState> {
         );
 
     result.fold(
-      (final failure) =>
-          state.copyWith(status: .error, errorMessage: failure.message),
-      (final facility) =>
-          state = state.copyWith(selectedFacility: facility, status: .initial),
+      (final failure) {
+        state = state.copyWith(status: .error, errorMessage: failure.message);
+      },
+      (final facility) {
+        state = state.copyWith(selectedFacility: facility, status: .initial);
+      },
     );
   }
 

@@ -1,7 +1,10 @@
 import '../../data/models/apartment_model.dart';
 
 abstract class ApartmentRemoteDataSource {
-  Future<ApartmentModel> createApartment(final ApartmentModel apartment);
+  Future<ApartmentModel> createApartment(
+    final int condominiumId,
+    final ApartmentModel apartment,
+  );
 
   Future<List<ApartmentModel>> getApartmentsByCondo(
     final int condominiumId,

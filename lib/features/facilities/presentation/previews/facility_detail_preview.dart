@@ -9,6 +9,7 @@ const _facility = FacilityEntity(
   id: 2,
   name: 'Salão de Festas',
   description: 'Disponível das 12 as 22 horas',
+  schedulable: true,
   tax: 250,
 );
 

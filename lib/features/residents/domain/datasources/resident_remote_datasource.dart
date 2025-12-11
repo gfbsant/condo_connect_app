@@ -8,10 +8,7 @@ abstract class ResidentRemoteDataSource {
 
   Future<List<ResidentModel>> getResidentsByApartment(final int apartmentId);
 
-  Future<ResidentModel> getResidentById(
-    final int apartmentId,
-    final int residentId,
-  );
+  Future<ResidentModel> getResidentById(final int residentId);
 
   Future<ResidentModel> updateResident(
     final int apartmentId,

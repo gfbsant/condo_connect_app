@@ -19,6 +19,7 @@ class NoticeRemoteDataSourceImpl extends BaseHttpDataSource
       final ApiResponse<NoticeModel> response = await makeRequest(
         RequestType.POST,
         '$apartmentsPath/$apartmentId$noticesPath',
+        jsonBody: notice.toJson(),
         fromJson: (final json) =>
             NoticeModel.fromJson(json as Map<String, dynamic>),
       );

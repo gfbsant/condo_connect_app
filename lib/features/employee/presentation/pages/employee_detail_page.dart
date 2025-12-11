@@ -225,8 +225,6 @@ class EmployeeDetailBody extends StatelessWidget {
               spacing: 20,
               children: [
                 _EmployeeHeader(employee: employee!),
-                if (employee!.description != null)
-                  _EmployeeDescription(description: employee!.description!),
                 _EmployeeMetadata(employee: employee!),
               ],
             ),
@@ -291,9 +289,9 @@ class _EmployeeHeader extends StatelessWidget {
                   ),
                   textAlign: .center,
                 ),
-                if (employee.user != null)
+                if (employee.user?.email != null)
                   Text(
-                    employee.user!.email,
+                    employee.user!.email!,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -323,7 +321,7 @@ class _RoleChip extends StatelessWidget {
 
   String get _label => switch (role) {
     .admin => 'Administrador',
-    .colaborator => 'Funcionário',
+    .collaborator => 'Funcionário',
   };
 
   @override
@@ -352,39 +350,6 @@ class _RoleChip extends StatelessWidget {
   }
 }
 
-class _EmployeeDescription extends StatelessWidget {
-  const _EmployeeDescription({required this.description});
-
-  final String description;
-
-  @override
-  Widget build(final BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: const .all(16),
-        child: Column(
-          crossAxisAlignment: .start,
-          spacing: 8,
-          children: [
-            Text(
-              'Descrição',
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: .bold),
-            ),
-            Text(description, style: theme.textTheme.bodyLarge),
-          ],
-        ),
-      ),
-    );
-  }
-
-  @override
-  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(StringProperty('description', description));
-  }
-}
-
 class _EmployeeMetadata extends StatelessWidget {
   const _EmployeeMetadata({required this.employee});
 
@@ -410,11 +375,6 @@ class _EmployeeMetadata extends StatelessWidget {
               icon: Icons.apartment,
               label: 'ID do Condominio',
               value: employee.condominiumId.toString(),
-            ),
-            _InfoRow(
-              icon: Icons.person,
-              label: 'ID do Usuário',
-              value: employee.userId.toString(),
             ),
             if (employee.user?.phone != null)
               _InfoRow(

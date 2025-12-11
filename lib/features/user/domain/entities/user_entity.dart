@@ -5,7 +5,7 @@ class UserEntity extends Equatable {
     required this.email,
     required this.name,
     required this.cpf,
-    required this.birthDate,
+    required this.birthdate,
     required this.password,
     this.id,
     this.phone,
@@ -14,11 +14,11 @@ class UserEntity extends Equatable {
   });
 
   final int? id;
-  final String email;
+  final String? email;
   final String name;
-  final String cpf;
-  final String birthDate;
-  final String password;
+  final String? cpf;
+  final String? birthdate;
+  final String? password;
   final String? phone;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -29,7 +29,7 @@ class UserEntity extends Equatable {
     email,
     name,
     cpf,
-    birthDate,
+    birthdate,
     password,
     phone,
     createdAt,

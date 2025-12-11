@@ -141,7 +141,7 @@ class ResidentListAppBar extends StatelessWidget
         onPressed: () async {
           await createCallback();
         },
-        icon: const Icon(Icons.person_add, size: 20),
+        icon: const Icon(Icons.person_add, size: 24),
         tooltip: 'Adicionar Morador',
       ),
     ],
@@ -232,28 +232,30 @@ class _EmptyView extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    return Column(
-      mainAxisAlignment: .center,
-      spacing: 16,
-      children: [
-        Icon(
-          Icons.people_outline,
-          size: 80,
-          color: theme.colorScheme.onSurfaceVariant.withAlpha(128),
-        ),
-        Text(
-          'Nenhum morado cadastrado',
-          style: theme.textTheme.titleMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+    return Center(
+      child: Column(
+        mainAxisAlignment: .center,
+        spacing: 12,
+        children: [
+          Icon(
+            Icons.people_outline,
+            size: 80,
+            color: theme.colorScheme.onSurfaceVariant.withAlpha(128),
           ),
-        ),
-        Text(
-          'Toque no botão + para adicionar',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant.withAlpha(176),
+          Text(
+            'Nenhum morador cadastrado',
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
-        ),
-      ],
+          Text(
+            'Toque no botão + para adicionar',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant.withAlpha(176),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -279,7 +281,7 @@ class _ResidentList extends StatelessWidget {
         return _ResidentCard(
           resident: resident,
           onTap: () async {
-            await onTap(resident.id);
+            await onTap(resident.id!);
           },
         );
       },
@@ -322,7 +324,7 @@ class _ResidentCard extends StatelessWidget {
           ),
         ),
         title: Text(
-          resident.userName,
+          resident.userName ?? 'Morador',
           style: theme.textTheme.titleMedium?.copyWith(fontWeight: .bold),
         ),
         subtitle: resident.owner

@@ -118,7 +118,10 @@ class _ApartmentListPageState extends ConsumerState<ApartmentListPage> {
   Future<void> _navigateToDetail(final int apartmentId) async {
     await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => ApartmentDetailPage(apartmentId: apartmentId),
+        builder: (_) => ApartmentDetailPage(
+          apartmentId: apartmentId,
+          condominiumId: widget.condominiumId,
+        ),
       ),
     );
   }
@@ -140,7 +143,7 @@ class ApartmentListAppBar extends StatelessWidget
         onPressed: () async {
           await createCallback();
         },
-        icon: const Icon(Icons.add_home, size: 20),
+        icon: const Icon(Icons.add_home, size: 24),
         tooltip: 'Adicionar Apartamento',
       ),
     ],
@@ -405,6 +408,8 @@ class _ApartmentCard extends StatelessWidget {
                     ),
                     Text(
                       '${apartment.residents!.length} '
+                      //
+                      // ignore: lines_longer_than_80_chars
                       '${apartment.residents!.length == 1 ? 'Morador' : 'Moradores'}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,

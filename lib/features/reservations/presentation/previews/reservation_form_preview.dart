@@ -9,7 +9,11 @@ void _onFacilitySelectCallback(_) {}
 
 Future<void> _emptyCallback() async {}
 
-const _facility = FacilityEntity(id: 1, name: 'Salão de Festas');
+const _facility = FacilityEntity(
+  id: 1,
+  name: 'Salão de Festas',
+  schedulable: true,
+);
 
 @Preview(group: 'Reservation Form')
 Widget reservationFormPreview() => PreviewWrapper(

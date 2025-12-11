@@ -16,15 +16,11 @@ class GetResidentByIdUseCase
   @override
   Future<Either<Failure, ResidentEntity>> call(
     final GetResidentByIdParams params,
-  ) => _repository.getResidentById(params.apartmentId, params.residentId);
+  ) => _repository.getResidentById(params.residentId);
 }
 
 class GetResidentByIdParams {
-  const GetResidentByIdParams({
-    required this.apartmentId,
-    required this.residentId,
-  });
+  const GetResidentByIdParams({required this.residentId});
 
-  final int apartmentId;
   final int residentId;
 }

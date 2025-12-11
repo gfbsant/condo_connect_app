@@ -18,32 +18,50 @@ class AuthState extends Equatable {
     this.permissions = const [],
     this.user,
     this.errorMessage,
+    this.successMessage,
+    this.isLoadingPermissions = false,
   });
 
   const AuthState.initial()
     : status = AuthStatus.initial,
       permissions = const [],
       user = null,
-      errorMessage = null;
+      errorMessage = null,
+      successMessage = null,
+      isLoadingPermissions = false;
 
   AuthState copyWith({
     final AuthStatus? status,
     final UserEntity? user,
     final List<PermissionEntity>? permissions,
     final String? errorMessage,
-    final bool clearMessage = false,
+    final String? successMessage,
+    final bool? isLoadingPermissions,
+    final bool clearMessages = false,
   }) => AuthState(
     status: status ?? this.status,
     user: user ?? this.user,
     permissions: permissions ?? this.permissions,
-    errorMessage: clearMessage ? null : (errorMessage ?? this.errorMessage),
+    errorMessage: clearMessages ? null : errorMessage ?? this.errorMessage,
+    successMessage: clearMessages
+        ? null
+        : successMessage ?? this.successMessage,
+    isLoadingPermissions: isLoadingPermissions ?? this.isLoadingPermissions,
   );
 
   final AuthStatus status;
   final UserEntity? user;
   final List<PermissionEntity> permissions;
   final String? errorMessage;
+  final String? successMessage;
+  final bool isLoadingPermissions;
 
   @override
-  List<Object?> get props => [status, user, errorMessage];
+  List<Object?> get props => [
+    status,
+    user,
+    permissions,
+    errorMessage,
+    successMessage,
+  ];
 }

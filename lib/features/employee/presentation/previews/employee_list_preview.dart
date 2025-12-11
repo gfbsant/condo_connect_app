@@ -17,12 +17,12 @@ final _employees = List<EmployeeEntity>.generate(8, (final index) {
   return EmployeeEntity(
     userId: index + 1,
     condominiumId: index + 1,
-    role: index.isEven ? .admin : .colaborator,
+    role: index.isEven ? .admin : .collaborator,
     user: UserEntity(
       email: 'email$randomValue@email.com',
       name: 'Funcionário $randomValue',
       cpf: randomValue.toString(),
-      birthDate: '$index/$randomValue/$randomValue',
+      birthdate: '$index/$randomValue/$randomValue',
       password: 'pass',
     ),
   );

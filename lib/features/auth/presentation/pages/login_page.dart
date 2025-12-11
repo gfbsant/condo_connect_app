@@ -21,15 +21,43 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _emailController.addListener(_clearErrorOnInteraction);
-    _passwordController.addListener(_clearErrorOnInteraction);
   }
 
-  void _clearErrorOnInteraction() {
-    final AuthState authState = ref.read(authNotifierProvider);
-    if (authState.errorMessage != null) {
-      ref.read(authNotifierAccessor).clearError();
+  @override
+  Widget build(final BuildContext context) {
+    final AuthState state = ref.watch(authNotifierProvider);
+    final isLoading = state.status == .loading;
+
+    if (state.errorMessage != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showErrorSnackBar(state.errorMessage!);
+        _clearMessages();
+      });
     }
+
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      body: LoginPageBody(
+        formKey: _formKey,
+        emailController: _emailController,
+        passwordController: _passwordController,
+        isLoading: isLoading,
+        onSubmit: _handleLogin,
+      ),
+    );
+  }
+
+  void _clearMessages() {
+    ref.read(authNotifierAccessor).clearMessages();
+  }
+
+  void _showErrorSnackBar(final String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Theme.of(context).colorScheme.error,
+      ),
+    );
   }
 
   Future<void> _handleLogin() async {
@@ -48,46 +76,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   @override
-  Widget build(final BuildContext context) {
-    final AuthState authState = ref.watch(authNotifierProvider);
-
-    ref.listen<AuthState>(authNotifierProvider, (
-      final previous,
-      final next,
-    ) async {
-      if (next.status == AuthStatus.authenticated && mounted) {
-        await Navigator.pushReplacementNamed(context, '/dashboard');
-      } else if (next.status == AuthStatus.error &&
-          next.errorMessage != null &&
-          mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(next.errorMessage!),
-            backgroundColor: Theme.of(context).colorScheme.error,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        await Future.microtask(
-          () => ref.read(authNotifierAccessor).clearError(),
-        );
-      }
-    });
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: LoginPageBody(
-        formKey: _formKey,
-        emailController: _emailController,
-        passwordController: _passwordController,
-        isLoading: authState.status != AuthStatus.loading,
-        onSubmit: _handleLogin,
-      ),
-    );
-  }
-
-  @override
   void dispose() {
-    _emailController.removeListener(_clearErrorOnInteraction);
-    _passwordController.removeListener(_clearErrorOnInteraction);
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();

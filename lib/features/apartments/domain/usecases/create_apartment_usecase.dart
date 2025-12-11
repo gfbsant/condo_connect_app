@@ -9,18 +9,22 @@ import '../repositories/apartment_repository.dart';
 @injectable
 class CreateApartmentUseCase
     implements UseCase<ApartmentEntity, CreateApartmentParams> {
-  CreateApartmentUseCase(this._repository);
+  const CreateApartmentUseCase(this._repository);
 
   final ApartmentRepository _repository;
 
   @override
   Future<Either<Failure, ApartmentEntity>> call(
     final CreateApartmentParams params,
-  ) => _repository.createApartment(params.apartment);
+  ) => _repository.createApartment(params.condominiumId, params.apartment);
 }
 
 class CreateApartmentParams {
-  const CreateApartmentParams({required this.apartment});
+  const CreateApartmentParams({
+    required this.condominiumId,
+    required this.apartment,
+  });
 
+  final int condominiumId;
   final ApartmentEntity apartment;
 }

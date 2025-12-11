@@ -63,11 +63,3 @@ final Provider<bool> isSearchingProvider = Provider.autoDispose<bool>(
   (final ref) =>
       ref.watch(condoNotifierProvider).status == CondoStatus.searching,
 );
-
-final Provider<String?> errorMessageProvider = Provider.autoDispose<String?>(
-  (final ref) => ref.watch(condoNotifierProvider).errorMessage,
-);
-
-final Provider<String?> successMessageProvider = Provider.autoDispose<String?>(
-  (final ref) => ref.watch(condoNotifierProvider).successMessage,
-);

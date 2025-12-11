@@ -511,13 +511,15 @@ class _ReservationsSection extends StatelessWidget {
   }
 
   @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(
-      ObjectFlagProperty<Future<void> Function(FacilityEntity)>.has(
-        'onPressed',
-        onPressed,
-      ),
-    );
+    properties
+      ..add(
+        ObjectFlagProperty<Future<void> Function(FacilityEntity)>.has(
+          'onPressed',
+          onPressed,
+        ),
+      )
+      ..add(DiagnosticsProperty<FacilityEntity>('facility', facility));
   }
 }

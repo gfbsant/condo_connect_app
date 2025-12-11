@@ -20,11 +20,12 @@ class EmployeeRemoteDataSourceImpl extends BaseHttpDataSource
     final EmployeeModel employee,
   ) async {
     try {
+      final Map<String, dynamic> employeeJson = employee.toJson();
       final ApiResponse<EmployeeModel> response =
           await makeRequest<EmployeeModel>(
             RequestType.POST,
             '$_condominiaPath/$condominiumId$_employeesPath',
-            jsonBody: employee.toJson(),
+            jsonBody: {'employee': employeeJson},
             fromJson: (final json) =>
                 EmployeeModel.fromJson(json as Map<String, dynamic>),
           );

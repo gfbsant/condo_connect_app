@@ -151,6 +151,7 @@ class NoticeListAppBar extends StatelessWidget implements PreferredSizeWidget {
     ),
     backgroundColor: Colors.transparent,
     elevation: 0,
+    actions: const [],
   );
 
   @override

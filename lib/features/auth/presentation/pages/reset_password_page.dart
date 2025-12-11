@@ -120,13 +120,13 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
 
           setState(() => _isTokenStep = true);
 
-          await Future.microtask(() => _notifierAccessor.clearError());
+          await Future.microtask(() => _notifierAccessor.clearMessages());
         } else {
           await _showSuccessDialog();
         }
       } else if (next.status == AuthStatus.error && next.errorMessage != null) {
         _showErrorSnackBar(next.errorMessage!);
-        await Future.microtask(() => _notifierAccessor.clearError());
+        await Future.microtask(() => _notifierAccessor.clearMessages());
       }
     });
     return Scaffold(

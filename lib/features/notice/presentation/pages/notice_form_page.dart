@@ -4,11 +4,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../shared/utils/validators.dart';
+import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../domain/entities/notice_entity.dart';
 import '../../domain/enums/notice_status.dart';
 import '../../domain/enums/notice_type.dart';
 import '../providers/notice_notifier.dart';
-import '../providers/notice_providers.dart';
+import '../providers/notice_providers.dart' as notice;
 
 class NoticeFormPage extends ConsumerStatefulWidget {
   const NoticeFormPage({required this.apartmentId, super.key, this.notice});
@@ -60,7 +61,9 @@ class _NoticeFormPageState extends ConsumerState<NoticeFormPage> {
   Widget build(final BuildContext context) {
     ref
       ..listen<String?>(
-        noticeNotifierProvider.select((final state) => state.errorMessage),
+        notice.noticeNotifierProvider.select(
+          (final state) => state.errorMessage,
+        ),
         (_, final errorMessage) {
           if (errorMessage != null) {
             _showErrorSnackBar(errorMessage);
@@ -69,7 +72,9 @@ class _NoticeFormPageState extends ConsumerState<NoticeFormPage> {
         },
       )
       ..listen<String?>(
-        noticeNotifierProvider.select((final state) => state.successMessage),
+        notice.noticeNotifierProvider.select(
+          (final state) => state.successMessage,
+        ),
         (_, final successMessage) {
           if (successMessage != null) {
             _showSuccessSnackBar(successMessage);
@@ -78,7 +83,7 @@ class _NoticeFormPageState extends ConsumerState<NoticeFormPage> {
         },
       );
 
-    final bool isLoading = ref.read(isLoadingProvider);
+    final bool isLoading = ref.watch(notice.isLoadingProvider);
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -99,7 +104,8 @@ class _NoticeFormPageState extends ConsumerState<NoticeFormPage> {
     );
   }
 
-  void _clearMessages() => ref.read(noticeNotifierAccessor).clearMessages();
+  void _clearMessages() =>
+      ref.read(notice.noticeNotifierAccessor).clearMessages();
 
   void _showErrorSnackBar(final String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -137,11 +143,14 @@ class _NoticeFormPageState extends ConsumerState<NoticeFormPage> {
     final String descriptionText = _descriptionController.text.trim();
     final String typeInfoText = _typeInfoController.text.trim();
 
-    final notice = NoticeEntity(
+    final int? userId = ref.read(currentUserProvider)?.id;
+    if (userId == null) {
+      return;
+    }
+
+    final noticeEntity = NoticeEntity(
       id: _isEditing ? widget.notice?.id : null,
-      creatorId: _isEditing
-          ? widget.notice!.creatorId
-          : 1, // TODO(gfbsant): Get from auth
+      creatorId: _isEditing ? widget.notice!.creatorId : userId,
       title: _titleController.text.trim(),
       description: descriptionText.isNotEmpty ? descriptionText : null,
       noticeType: _selectedType,
@@ -152,17 +161,17 @@ class _NoticeFormPageState extends ConsumerState<NoticeFormPage> {
       createdAt: widget.notice?.createdAt,
     );
 
-    final NoticeNotifier notifier = ref.read(noticeNotifierAccessor);
+    final NoticeNotifier notifier = ref.read(notice.noticeNotifierAccessor);
 
     var success = false;
 
     if (_isEditing) {
       final int? id = widget.notice?.id;
       if (id != null) {
-        success = await notifier.updateNotice(id, notice);
+        success = await notifier.updateNotice(id, noticeEntity);
       }
     } else {
-      success = await notifier.createNotice(widget.apartmentId, notice);
+      success = await notifier.createNotice(widget.apartmentId, noticeEntity);
     }
 
     if (success) {

@@ -10,16 +10,15 @@ import '../models/apartment_model.dart';
 @Injectable(as: ApartmentRemoteDataSource)
 class ApartmentRemoteDataSourceImpl extends BaseHttpDataSource
     implements ApartmentRemoteDataSource {
-  String get _apartmentsPath => '/apartments';
-
-  String get _condominiaPath => '/condominia';
-
   @override
-  Future<ApartmentModel> createApartment(final ApartmentModel apartment) async {
+  Future<ApartmentModel> createApartment(
+    final int condominiumId,
+    final ApartmentModel apartment,
+  ) async {
     try {
       final ApiResponse<ApartmentModel> response = await makeRequest(
         RequestType.POST,
-        _apartmentsPath,
+        '$condominiaPath/$condominiumId$apartmentsPath',
         jsonBody: apartment.toJson(),
         fromJson: (final json) =>
             ApartmentModel.fromJson(json as Map<String, dynamic>),
@@ -51,7 +50,7 @@ class ApartmentRemoteDataSourceImpl extends BaseHttpDataSource
       final ApiResponse<List<ApartmentModel>> response =
           await makeRequest<List<ApartmentModel>>(
             RequestType.GET,
-            '$_condominiaPath/$condominiumId$_apartmentsPath',
+            '$condominiaPath/$condominiumId$apartmentsPath',
             queryParams: query,
             fromJson: (final data) {
               final items = data as List<dynamic>;
@@ -83,7 +82,7 @@ class ApartmentRemoteDataSourceImpl extends BaseHttpDataSource
       final ApiResponse<ApartmentModel> response =
           await makeRequest<ApartmentModel>(
             RequestType.GET,
-            '$_apartmentsPath/$apartmentId',
+            '$apartmentsPath/$apartmentId',
             fromJson: (final json) =>
                 ApartmentModel.fromJson(json as Map<String, dynamic>),
           );
@@ -113,7 +112,7 @@ class ApartmentRemoteDataSourceImpl extends BaseHttpDataSource
       final ApiResponse<ApartmentModel> response =
           await makeRequest<ApartmentModel>(
             RequestType.PUT,
-            '$_apartmentsPath/$apartmentId',
+            '$apartmentsPath/$apartmentId',
             jsonBody: apartment.toJson(),
             fromJson: (final json) =>
                 ApartmentModel.fromJson(json as Map<String, dynamic>),
@@ -140,7 +139,7 @@ class ApartmentRemoteDataSourceImpl extends BaseHttpDataSource
     try {
       final ApiResponse<ApartmentModel> response = await makeRequest(
         RequestType.PATCH,
-        '$_apartmentsPath/$apartmentId/approve',
+        '$apartmentsPath/$apartmentId/approve',
         fromJson: (final json) =>
             ApartmentModel.fromJson(json as Map<String, dynamic>),
       );
@@ -163,7 +162,7 @@ class ApartmentRemoteDataSourceImpl extends BaseHttpDataSource
     try {
       final ApiResponse response = await makeRequest(
         RequestType.DELETE,
-        '$_apartmentsPath/$apartmentId',
+        '$apartmentsPath/$apartmentId',
       );
       if (response.success) {
         return;

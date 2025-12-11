@@ -10,7 +10,6 @@ class EmployeeEntity extends Equatable {
     this.email,
     this.userId,
     this.id,
-    this.description,
     this.user,
     this.createdAt,
     this.updatedAt,
@@ -20,7 +19,6 @@ class EmployeeEntity extends Equatable {
   final int condominiumId;
   final int? userId;
   final String? email;
-  final String? description;
   final EmployeeRole role;
   final UserEntity? user;
   final DateTime? createdAt;
@@ -33,7 +31,6 @@ class EmployeeEntity extends Equatable {
     id,
     userId,
     condominiumId,
-    description,
     role,
     user,
     createdAt,

@@ -43,7 +43,7 @@ class AuthNotifier extends Notifier<AuthState> {
 
   Future<void> checkAuthStatus() async {
     final String? token = await _secureStorageService.getAccessToken();
-    if (token == null) {
+    if (token != null) {
       state = state.copyWith(status: AuthStatus.authenticated);
     } else {
       state = state.copyWith(status: AuthStatus.initial);
@@ -75,38 +75,41 @@ class AuthNotifier extends Notifier<AuthState> {
   }
 
   Future<void> getUserPermissions() async {
-    if (_isLoading) {
+    if (state.isLoadingPermissions) {
       return;
     }
 
-    _setLoadingState();
+    state = state.copyWith(isLoadingPermissions: true);
 
     final Either<Failure, List<PermissionEntity>> result =
         await _getUserPermissionsUseCase();
 
     result.fold(
       (final failure) {
-        state = state.copyWith(status: .error, errorMessage: failure.message);
+        state = state.copyWith(
+          errorMessage: failure.message,
+          isLoadingPermissions: false,
+        );
       },
       (final permissions) {
         state = state.copyWith(
           permissions: permissions,
-          status: .authenticated,
+          isLoadingPermissions: false,
         );
       },
     );
   }
 
-  Future<void> register({
+  Future<bool> register({
     required final String name,
     required final String email,
     required final String password,
     required final String cpf,
-    required final String birthDate,
+    required final String birthdate,
     final String? phone,
   }) async {
     if (_isLoading) {
-      return;
+      return false;
     }
 
     _setLoadingState();
@@ -117,26 +120,36 @@ class AuthNotifier extends Notifier<AuthState> {
         name: name,
         cpf: cpf,
         password: password,
-        birthDate: birthDate,
+        phone: phone,
+        birthdate: birthdate,
       );
 
       final Either<Failure, UserEntity> result = await _registerUseCase.call(
         RegisterParams(user: user),
       );
 
-      result.fold(
-        (final failure) => state = state.copyWith(
-          status: AuthStatus.error,
-          errorMessage: failure.message,
-        ),
-        (final user) =>
-            state = state.copyWith(status: AuthStatus.initial, user: user),
+      return result.fold(
+        (final failure) {
+          state = state.copyWith(
+            status: AuthStatus.error,
+            errorMessage: failure.message,
+          );
+          return false;
+        },
+        (_) {
+          state = state.copyWith(
+            status: AuthStatus.initial,
+            successMessage: 'Usuário criado com sucesso!',
+          );
+          return true;
+        },
       );
     } on Exception catch (e) {
       state = state.copyWith(
         status: AuthStatus.error,
         errorMessage: 'Erro ao registrar: $e',
       );
+      return false;
     }
   }
 
@@ -208,9 +221,9 @@ class AuthNotifier extends Notifier<AuthState> {
     );
   }
 
-  void clearError() {
+  void clearMessages() {
     if (state.errorMessage != null) {
-      state = state.copyWith(clearMessage: true);
+      state = state.copyWith(clearMessages: true);
     }
   }
 

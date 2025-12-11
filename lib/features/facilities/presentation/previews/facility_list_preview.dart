@@ -13,13 +13,17 @@ final _facilities = List<FacilityEntity>.generate(5, (final index) {
     id: value,
     name: 'Área Comum $value',
     description: '#$value',
+    schedulable: true,
     tax: value * 100,
   );
 });
 
 @Preview(group: 'Facility List')
 Widget facilityListPreview() => PreviewWrapper(
-  appBar: const FacilityListAppBar(createCallback: _emptyCallback),
+  appBar: const FacilityListAppBar(
+    createCallback: _emptyCallback,
+    createAllowed: true,
+  ),
   body: FacilityListBody(
     facilities: _facilities,
     detailsCallback: (final value) async {},

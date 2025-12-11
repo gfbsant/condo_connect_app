@@ -19,6 +19,7 @@ class CondoRemoteDataSourceImpl extends BaseHttpDataSource
           await makeRequest<CondominiumModel>(
             RequestType.POST,
             '/condominia',
+            jsonBody: condo.toJson,
             fromJson: (final data) =>
                 CondominiumModel.fromJson(data as Map<String, dynamic>),
           );

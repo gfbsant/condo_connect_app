@@ -34,9 +34,8 @@ class EmployeeFormPage extends ConsumerStatefulWidget {
 class _EmployeeFormPageState extends ConsumerState<EmployeeFormPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  final _descriptionController = TextEditingController();
 
-  EmployeeRole _selectedRole = EmployeeRole.colaborator;
+  EmployeeRole _selectedRole = EmployeeRole.collaborator;
 
   bool get _isEditing => widget.employee != null;
 
@@ -50,7 +49,6 @@ class _EmployeeFormPageState extends ConsumerState<EmployeeFormPage> {
     final EmployeeEntity? employee = widget.employee;
     if (employee != null) {
       _emailController.text = employee.userId.toString();
-      _descriptionController.text = employee.description ?? '';
       _selectedRole = employee.role;
     }
   }
@@ -77,7 +75,7 @@ class _EmployeeFormPageState extends ConsumerState<EmployeeFormPage> {
         },
       );
 
-    final bool isLoading = ref.read(isLoadingProvider);
+    final bool isLoading = ref.watch(isLoadingProvider);
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -85,7 +83,6 @@ class _EmployeeFormPageState extends ConsumerState<EmployeeFormPage> {
       body: EmployeeFormBody(
         formKey: _formKey,
         emailController: _emailController,
-        descriptionController: _descriptionController,
         selectedRole: _selectedRole,
         isLoading: isLoading,
         isEditing: _isEditing,
@@ -132,7 +129,6 @@ class _EmployeeFormPageState extends ConsumerState<EmployeeFormPage> {
       return;
     }
 
-    final String descriptionText = _descriptionController.text.trim();
     final String email = _emailController.text.trim();
 
     final employee = EmployeeEntity(
@@ -140,7 +136,6 @@ class _EmployeeFormPageState extends ConsumerState<EmployeeFormPage> {
       email: email,
       condominiumId: widget.condominiumId,
       role: _selectedRole,
-      description: descriptionText.isNotEmpty ? descriptionText : null,
       user: widget.employee?.user,
     );
 
@@ -199,7 +194,6 @@ class EmployeeFormAppBar extends StatelessWidget
 class EmployeeFormBody extends StatelessWidget {
   const EmployeeFormBody({
     required this.formKey,
-    required this.descriptionController,
     required this.emailController,
     required this.selectedRole,
     required this.isLoading,
@@ -210,7 +204,6 @@ class EmployeeFormBody extends StatelessWidget {
   });
 
   final GlobalKey<FormState> formKey;
-  final TextEditingController descriptionController;
   final TextEditingController emailController;
   final EmployeeRole selectedRole;
   final bool isLoading;
@@ -241,10 +234,6 @@ class EmployeeFormBody extends StatelessWidget {
               selectedRole: selectedRole,
               isEnabled: !isLoading,
             ),
-            _DescriptionField(
-              controller: descriptionController,
-              isEnabled: !isLoading,
-            ),
             const SizedBox(height: 16),
             _SubmitButton(
               isEditing: isEditing,
@@ -262,12 +251,6 @@ class EmployeeFormBody extends StatelessWidget {
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty<GlobalKey<FormState>>('formKey', formKey))
-      ..add(
-        DiagnosticsProperty<TextEditingController>(
-          'descriptionController',
-          descriptionController,
-        ),
-      )
       ..add(
         DiagnosticsProperty<TextEditingController>(
           'userIdContoller',
@@ -369,7 +352,7 @@ class _RoleDropdown extends StatelessWidget {
 
   String get _label => switch (selectedRole) {
     .admin => 'Administrador',
-    .colaborator => 'Funcionário',
+    .collaborator => 'Funcionário',
   };
 
   @override
@@ -401,36 +384,6 @@ class _RoleDropdown extends StatelessWidget {
           'onChanged',
           onChanged,
         ),
-      )
-      ..add(DiagnosticsProperty<bool>('isEnabled', isEnabled));
-  }
-}
-
-class _DescriptionField extends StatelessWidget {
-  const _DescriptionField({required this.controller, required this.isEnabled});
-
-  final TextEditingController controller;
-  final bool isEnabled;
-
-  @override
-  Widget build(final BuildContext context) => TextFormField(
-    controller: controller,
-    enabled: isEnabled,
-    decoration: const InputDecoration(
-      prefixIcon: Icon(Icons.description),
-      labelText: 'Descricao (Opcional)',
-      hintText: 'Adicione informações adicionais',
-    ),
-    textInputAction: .done,
-    textCapitalization: .sentences,
-  );
-
-  @override
-  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(
-        DiagnosticsProperty<TextEditingController>('controller', controller),
       )
       ..add(DiagnosticsProperty<bool>('isEnabled', isEnabled));
   }

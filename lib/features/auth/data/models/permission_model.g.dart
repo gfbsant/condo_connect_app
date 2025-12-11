@@ -9,15 +9,8 @@ part of 'permission_model.dart';
 PermissionModel _$PermissionModelFromJson(Map<String, dynamic> json) =>
     PermissionModel(
       condominiumId: (json['condominiumId'] as num).toInt(),
-      role: json['role'] as String,
-      permissions: (json['permissions'] as List<dynamic>)
-          .map((e) => e as String)
-          .toList(),
+      role: PermissionModel._roleFromJson(json['role'] as String),
+      permissions: PermissionModel._permissionsFromJson(
+        json['permissions'] as List,
+      ),
     );
-
-Map<String, dynamic> _$PermissionModelToJson(PermissionModel instance) =>
-    <String, dynamic>{
-      'condominiumId': instance.condominiumId,
-      'role': instance.role,
-      'permissions': instance.permissions,
-    };

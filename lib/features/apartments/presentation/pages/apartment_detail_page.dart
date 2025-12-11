@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../notice/presentation/pages/notice_list_page.dart';
 import '../../../reservations/presentation/pages/reservation_list_page.dart';
 import '../../../residents/domain/entities/resident_entity.dart';
 import '../../../residents/presentation/pages/resident_list_page.dart';
@@ -12,9 +13,14 @@ import '../providers/apartment_state.dart';
 import 'apartment_form_page.dart';
 
 class ApartmentDetailPage extends ConsumerStatefulWidget {
-  const ApartmentDetailPage({required this.apartmentId, super.key});
+  const ApartmentDetailPage({
+    required this.apartmentId,
+    required this.condominiumId,
+    super.key,
+  });
 
   final int apartmentId;
+  final int condominiumId;
 
   @override
   ConsumerState<ApartmentDetailPage> createState() =>
@@ -23,7 +29,9 @@ class ApartmentDetailPage extends ConsumerStatefulWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(IntProperty('apartmentId', apartmentId));
+    properties
+      ..add(IntProperty('apartmentId', apartmentId))
+      ..add(IntProperty('condominiumId', condominiumId));
   }
 }
 
@@ -79,6 +87,7 @@ class _ApartmentDetailPageState extends ConsumerState<ApartmentDetailPage> {
         isLoading: isLoading,
         residentsCallback: _navigateToResidents,
         reservationsCallback: _navigateToReservations,
+        noticesCallback: _navigateToNotices,
       ),
     );
   }
@@ -114,16 +123,14 @@ class _ApartmentDetailPageState extends ConsumerState<ApartmentDetailPage> {
   }
 
   Future<void> _navigateToEdit(final ApartmentEntity? apartment) async {
-    if (apartment != null) {
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => ApartmentFormPage(
-            condominiumId: apartment.condominiumId,
-            apartment: apartment,
-          ),
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ApartmentFormPage(
+          condominiumId: widget.condominiumId,
+          apartment: apartment,
         ),
-      );
-    }
+      ),
+    );
   }
 
   Future<void> _navigateToResidents(final ApartmentEntity apartment) async {
@@ -144,7 +151,21 @@ class _ApartmentDetailPageState extends ConsumerState<ApartmentDetailPage> {
         MaterialPageRoute(
           builder: (_) => ReservationListPage(
             apartmentId: apartmentId,
-            condominiumId: apartment.condominiumId,
+            condominiumId: widget.condominiumId,
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _navigateToNotices(final ApartmentEntity apartment) async {
+    final int? apartmentId = apartment.id;
+    if (apartmentId != null) {
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => NoticeListPage(
+            apartmentId: apartmentId,
+            condoId: widget.condominiumId,
           ),
         ),
       );
@@ -302,6 +323,7 @@ class ApartmentDetailBody extends StatelessWidget {
     required this.isLoading,
     required this.residentsCallback,
     required this.reservationsCallback,
+    required this.noticesCallback,
     super.key,
   });
 
@@ -309,6 +331,7 @@ class ApartmentDetailBody extends StatelessWidget {
   final bool isLoading;
   final Future<void> Function(ApartmentEntity) residentsCallback;
   final Future<void> Function(ApartmentEntity) reservationsCallback;
+  final Future<void> Function(ApartmentEntity) noticesCallback;
 
   @override
   Widget build(final BuildContext context) => SafeArea(
@@ -330,6 +353,10 @@ class ApartmentDetailBody extends StatelessWidget {
                 _ReservationsSection(
                   apartment: apartment!,
                   onPressed: reservationsCallback,
+                ),
+                _NoticesSection(
+                  apartment: apartment!,
+                  onPressed: noticesCallback,
                 ),
                 _ApartmentMetadata(apartment: apartment!),
               ],
@@ -353,6 +380,12 @@ class ApartmentDetailBody extends StatelessWidget {
         ObjectFlagProperty<Future<void> Function(ApartmentEntity)>.has(
           'reservationsCallback',
           reservationsCallback,
+        ),
+      )
+      ..add(
+        ObjectFlagProperty<Future<void> Function(ApartmentEntity)>.has(
+          'noticesCallback',
+          noticesCallback,
         ),
       );
   }
@@ -498,7 +531,7 @@ class _ApartmentInfo extends StatelessWidget {
               _InfoRow(
                 icon: Icons.layers,
                 label: 'Andar',
-                value: apartment.floor!,
+                value: apartment.floor!.toString(),
               ),
             if (apartment.door != null)
               _InfoRow(
@@ -532,32 +565,31 @@ class _ResidentsSection extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final List<ResidentEntity> residents = apartment.residents ?? [];
 
-    return Card(
-      child: Padding(
-        padding: const .all(16),
-        child: Column(
-          crossAxisAlignment: .start,
-          spacing: 12,
-          children: [
-            Row(
-              mainAxisAlignment: .spaceBetween,
-              children: [
-                Text(
-                  'Moradores (${residents.length})',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: .bold,
+    return InkWell(
+      onTap: () async {
+        await onPressed(apartment);
+      },
+      child: Card(
+        child: Padding(
+          padding: const .all(16),
+          child: Column(
+            crossAxisAlignment: .start,
+            spacing: 12,
+            children: [
+              Row(
+                mainAxisAlignment: .spaceBetween,
+                children: [
+                  Text(
+                    'Moradores (${residents.length})',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: .bold,
+                    ),
                   ),
-                ),
-                IconButton(
-                  onPressed: () async {
-                    await onPressed(apartment);
-                  },
-                  icon: const Icon(Icons.arrow_forward),
-                  tooltip: 'Ver todos',
-                ),
-              ],
-            ),
-          ],
+                  const Icon(Icons.arrow_forward),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -653,6 +685,79 @@ class _ReservationsSection extends StatelessWidget {
   }
 }
 
+class _NoticesSection extends StatelessWidget {
+  const _NoticesSection({required this.apartment, required this.onPressed});
+
+  final ApartmentEntity apartment;
+  final Future<void> Function(ApartmentEntity) onPressed;
+
+  @override
+  Widget build(final BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
+    return Card(
+      child: InkWell(
+        onTap: () async {
+          await onPressed(apartment);
+        },
+        borderRadius: .circular(12),
+        child: Padding(
+          padding: const .all(12),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: theme.colorScheme.secondary,
+                child: Icon(
+                  Icons.notifications,
+                  color: theme.colorScheme.onSecondary,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    Text(
+                      'Avisos',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: .bold,
+                      ),
+                    ),
+                    Text(
+                      'Ver avisos deste apartamento',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty<ApartmentEntity>('apartment', apartment))
+      ..add(
+        ObjectFlagProperty<Future<void> Function(ApartmentEntity)>.has(
+          'onPressed',
+          onPressed,
+        ),
+      );
+  }
+}
+
 class _ApartmentMetadata extends StatelessWidget {
   const _ApartmentMetadata({required this.apartment});
 
@@ -673,11 +778,6 @@ class _ApartmentMetadata extends StatelessWidget {
             Text(
               'Informações do Sistema',
               style: theme.textTheme.titleMedium?.copyWith(fontWeight: .bold),
-            ),
-            _InfoRow(
-              icon: Icons.apartment,
-              label: 'ID do Condominio',
-              value: apartment.condominiumId.toString(),
             ),
             if (apartment.createdAt != null)
               _InfoRow(

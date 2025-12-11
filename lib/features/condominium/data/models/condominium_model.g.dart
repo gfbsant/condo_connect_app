@@ -26,7 +26,6 @@ CondominiumModel _$CondominiumModelFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$CondominiumModelToJson(CondominiumModel instance) =>
     <String, dynamic>{
-      'id': instance.id,
       'name': instance.name,
       'address': instance.address,
       'city': instance.city,
@@ -34,6 +33,4 @@ Map<String, dynamic> _$CondominiumModelToJson(CondominiumModel instance) =>
       'neighborhood': instance.neighborhood,
       'zipcode': instance.zipcode,
       'number': instance.number,
-      'createdAt': instance.createdAt?.toIso8601String(),
-      'updatedAt': instance.updatedAt?.toIso8601String(),
     };

@@ -4,7 +4,6 @@ import 'package:injectable/injectable.dart';
 
 import '../../../../core/clients/http_client.dart';
 import '../../../../core/services/base_http_datasource.dart';
-import '../../../../shared/constants/api_constants.dart';
 import '../../../../shared/exceptions/api_exception.dart';
 import '../../../../shared/models/api_response.dart';
 import '../../../user/data/models/user_model.dart';
@@ -15,39 +14,33 @@ import '../models/permission_model.dart';
 @Injectable(as: AuthRemoteDataSource)
 class AuthRemoteDataSourceImpl extends BaseHttpDataSource
     implements AuthRemoteDataSource {
-  AuthRemoteDataSourceImpl() : super(baseUrl: ApiConstants.baseUrl);
-
   @override
   Future<UserModel> login(final String email, final String password) async {
     try {
-      final ApiResponse response = await makeRequest<LoginResponseModel>(
-        RequestType.POST,
-        '/user/login',
-        jsonBody: {'email': email, 'password': password},
-      );
+      final ApiResponse<LoginResponseModel> response =
+          await makeRequest<LoginResponseModel>(
+            RequestType.POST,
+            '/user/login',
+            jsonBody: {'email': email, 'password': password},
+            fromJson: (final json) =>
+                LoginResponseModel.fromJson(json as Map<String, dynamic>),
+          );
 
       if (response.success && response.data != null) {
         final String? accessToken = response.headers?['authorization']
             ?.replaceAll('Authorization ', '');
-        final userJson =
-            (response.data as Map<String, dynamic>)['user']
-                as Map<String, dynamic>?;
-
-        if (accessToken == null || userJson == null) {
-          throw ApiException(
-            message: 'Token e Usuário não podem ser vazios',
-            statusCode: 0,
-          );
+        if (accessToken == null) {
+          throw ApiException(message: 'Token não disponível', statusCode: 0);
         }
 
         await persistAuthHeader(accessToken);
-        return UserModel.fromJson(userJson);
+        return response.data!.user;
       }
       throw ApiException(
         message: response.message ?? 'Erro no login',
         statusCode: response.statusCode ?? 0,
       );
-    } on ApiException catch (_) {
+    } on ApiException {
       rethrow;
     } on Exception catch (e) {
       throw Exception('Erro ao fazer login: $e');
@@ -59,7 +52,7 @@ class AuthRemoteDataSourceImpl extends BaseHttpDataSource
     try {
       final ApiResponse<List<PermissionModel>> response = await makeRequest(
         RequestType.GET,
-        'user/me/permissions',
+        '/users/me/permissions',
         fromJson: (final data) {
           final items = data as List<dynamic>;
           return items
@@ -84,22 +77,20 @@ class AuthRemoteDataSourceImpl extends BaseHttpDataSource
   @override
   Future<UserModel> register({required final UserModel user}) async {
     try {
-      final ApiResponse<Map<String, dynamic>> response =
-          await makeRequest<Map<String, dynamic>>(
-            RequestType.POST,
-            '/users',
-            jsonBody: {'user': user.toJson()},
-            fromJson: (final data) => data as Map<String, dynamic>,
-          );
+      final ApiResponse<UserModel> response = await makeRequest<UserModel>(
+        RequestType.POST,
+        '/users',
+        jsonBody: {'user': user.toJson()},
+        fromJson: (final json) =>
+            UserModel.fromJson(json as Map<String, dynamic>),
+      );
 
       if (response.success && response.data != null) {
-        return UserModel.fromJson(
-          response.data!['user'] as Map<String, dynamic>,
-        );
+        return response.data!;
       } else {
-        final String message = _getRegisterErrorMessage(response.statusCode);
         throw ApiException(
-          message: response.message ?? message,
+          message:
+              response.message ?? _getRegisterErrorMessage(response.statusCode),
           statusCode: response.statusCode ?? 0,
         );
       }
@@ -124,7 +115,7 @@ class AuthRemoteDataSourceImpl extends BaseHttpDataSource
     try {
       final ApiResponse response = await makeRequest(
         RequestType.POST,
-        '/users/password',
+        '/user/password',
         jsonBody: {'email': email},
         headers: {'Content-Type': 'application/json'},
       );
@@ -150,10 +141,10 @@ class AuthRemoteDataSourceImpl extends BaseHttpDataSource
     try {
       final ApiResponse response = await makeRequest(
         RequestType.PUT,
-        '/users/password',
+        '/user/password',
         jsonBody: {
           'user': {
-            'token': token,
+            'resetPasswordToken': token,
             'password': newPassword,
             'passwordConfirmation': newPassword,
           },

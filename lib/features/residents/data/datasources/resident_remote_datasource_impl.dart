@@ -10,10 +10,6 @@ import '../models/resident_model.dart';
 @Injectable(as: ResidentRemoteDataSource)
 class ResidentRemoteDataSourceImpl extends BaseHttpDataSource
     implements ResidentRemoteDataSource {
-  String get _residentsPath => '/residents';
-
-  String get _apartmentsPath => '/apartment';
-
   @override
   Future<ResidentModel> createResident(
     final int apartmentId,
@@ -22,7 +18,7 @@ class ResidentRemoteDataSourceImpl extends BaseHttpDataSource
     try {
       final ApiResponse<ResidentModel> response = await makeRequest(
         RequestType.POST,
-        '$_apartmentsPath/$apartmentId$_residentsPath',
+        '$apartmentsPath/$apartmentId$residentsPath',
         jsonBody: {'email': email},
         fromJson: (final json) =>
             ResidentModel.fromJson(json as Map<String, dynamic>),
@@ -48,7 +44,7 @@ class ResidentRemoteDataSourceImpl extends BaseHttpDataSource
     try {
       final ApiResponse<List<ResidentModel>> response = await makeRequest(
         RequestType.GET,
-        '$_apartmentsPath/$apartmentId$_residentsPath',
+        '$apartmentsPath/$apartmentId$residentsPath',
         fromJson: (final data) {
           final items = data as List<dynamic>;
           return items
@@ -74,14 +70,11 @@ class ResidentRemoteDataSourceImpl extends BaseHttpDataSource
   }
 
   @override
-  Future<ResidentModel> getResidentById(
-    final int apartmentId,
-    final int residentId,
-  ) async {
+  Future<ResidentModel> getResidentById(final int residentId) async {
     try {
       final ApiResponse<ResidentModel> response = await makeRequest(
         RequestType.GET,
-        '$_apartmentsPath/$apartmentId$_residentsPath/$residentId',
+        '$residentsPath/$residentId',
         fromJson: (final json) =>
             ResidentModel.fromJson(json as Map<String, dynamic>),
       );
@@ -109,7 +102,7 @@ class ResidentRemoteDataSourceImpl extends BaseHttpDataSource
     try {
       final ApiResponse<ResidentModel> response = await makeRequest(
         RequestType.PUT,
-        '$_apartmentsPath/$apartmentId$_residentsPath/$residentId',
+        '$apartmentsPath/$apartmentId$residentsPath/$residentId',
         jsonBody: resident.toJson(),
         fromJson: (final json) =>
             ResidentModel.fromJson(json as Map<String, dynamic>),
@@ -137,7 +130,7 @@ class ResidentRemoteDataSourceImpl extends BaseHttpDataSource
     try {
       final ApiResponse response = await makeRequest(
         RequestType.DELETE,
-        '$_apartmentsPath/$apartmentId$_residentsPath/$residentId',
+        '$apartmentsPath/$apartmentId$residentsPath/$residentId',
       );
       if (response.success) {
         return;

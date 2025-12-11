@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../apartments/presentation/pages/apartment_form_page.dart';
 import '../../domain/entities/condominium_entity.dart';
 import '../providers/condo_providers.dart';
 import '../providers/condo_state.dart';
@@ -41,9 +42,9 @@ class _CondoDetailsModalState extends ConsumerState<CondoDetailsModal> {
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
         children: [
@@ -62,7 +63,7 @@ class _CondoDetailsModalState extends ConsumerState<CondoDetailsModal> {
                     hasJoinRequest: condoState.hasJoinRequest,
                     isRequestingJoin:
                         condoState.status == CondoStatus.requestingJoin,
-                    onRequestJoin: () => _handleRequestJoin(context),
+                    onRequestJoin: _handleRequestJoin,
                   )
                 : const _ErrorContent(),
           ),
@@ -71,11 +72,41 @@ class _CondoDetailsModalState extends ConsumerState<CondoDetailsModal> {
     );
   }
 
-  Future<void> _handleRequestJoin(final BuildContext context) async {
+  Future<void> _handleRequestJoin() async {
     await HapticFeedback.lightImpact();
-    if (context.mounted) {
+
+    final CondominiumEntity? selectedCondo = ref.read(selectedCondoProvider);
+
+    if (!context.mounted || selectedCondo == null) {
+      return;
+    }
+
+    ref.read(condoNotifierAccessor).clearSelectedCondo();
+    Navigator.of(context).pop();
+
+    final bool? result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ApartmentFormPage(condominiumId: selectedCondo.id!),
+      ),
+    );
+
+    if (result != null && result && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Funcionalidade em desenvolvimento')),
+        SnackBar(
+          content: const Row(
+            spacing: 8,
+            children: [
+              Icon(Icons.info_outline, color: Colors.white),
+              Expanded(
+                child: Text(
+                  'Solicitação enviada! O administrador irá aprovar seu apartamento.',
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.blue[700],
+          behavior: SnackBarBehavior.floating,
+        ),
       );
     }
   }
@@ -154,7 +185,7 @@ class _DetailsContent extends StatelessWidget {
   final CondominiumEntity condo;
   final bool? hasJoinRequest;
   final bool isRequestingJoin;
-  final VoidCallback onRequestJoin;
+  final Future<void> Function() onRequestJoin;
 
   @override
   Widget build(final BuildContext context) => SingleChildScrollView(
@@ -358,7 +389,7 @@ class _JoinRequestButton extends StatelessWidget {
 
   final bool? hasJoinRequest;
   final bool isRequestingJoin;
-  final VoidCallback onPressed;
+  final Future<void> Function() onPressed;
 
   @override
   Widget build(final BuildContext context) {
@@ -367,7 +398,11 @@ class _JoinRequestButton extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: isPending || isRequestingJoin ? null : onPressed,
+        onPressed: isPending || isRequestingJoin
+            ? null
+            : () async {
+                await onPressed();
+              },
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           backgroundColor: isPending

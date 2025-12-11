@@ -340,7 +340,7 @@ class _EmployeeCard extends StatelessWidget {
                         ),
                         if (employee.user?.email != null)
                           Text(
-                            employee.user!.email,
+                            employee.user!.email!,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
@@ -365,15 +365,6 @@ class _EmployeeCard extends StatelessWidget {
                     ),
                 ],
               ),
-              if (employee.description != null) ...[
-                const Divider(),
-                Text(
-                  employee.description!,
-                  style: theme.textTheme.bodyMedium,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
             ],
           ),
         ),
@@ -399,7 +390,7 @@ class _RoleChip extends StatelessWidget {
 
   String get _label => switch (role) {
     .admin => 'Administrador',
-    .colaborator => 'Funcionário',
+    .collaborator => 'Funcionário',
   };
 
   @override

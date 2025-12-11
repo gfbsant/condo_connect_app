@@ -153,6 +153,7 @@ class _FacilityFormPageState extends ConsumerState<FacilityFormPage> {
       id: _isEditing ? widget.facility?.id : null,
       name: nameText,
       description: descriptionText,
+      schedulable: true,
       tax: taxValue,
     );
 

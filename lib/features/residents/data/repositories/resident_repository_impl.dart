@@ -51,12 +51,10 @@ class ResidentRepositoryImpl implements ResidentRepository {
 
   @override
   Future<Either<Failure, ResidentEntity>> getResidentById(
-    final int apartmentId,
     final int residentId,
   ) async {
     try {
       final ResidentModel response = await _remoteDataSource.getResidentById(
-        apartmentId,
         residentId,
       );
 

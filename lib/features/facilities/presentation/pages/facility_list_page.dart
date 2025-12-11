@@ -10,9 +10,14 @@ import 'facility_detail_page.dart';
 import 'facility_form_page.dart';
 
 class FacilityListPage extends ConsumerStatefulWidget {
-  const FacilityListPage({required this.condominiumId, super.key});
+  const FacilityListPage({
+    required this.createAllowed,
+    required this.condominiumId,
+    super.key,
+  });
 
   final int condominiumId;
+  final bool createAllowed;
 
   @override
   ConsumerState<FacilityListPage> createState() => _FacilityListPageState();
@@ -20,7 +25,9 @@ class FacilityListPage extends ConsumerStatefulWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(IntProperty('condominiumId', condominiumId));
+    properties
+      ..add(IntProperty('condominiumId', condominiumId))
+      ..add(DiagnosticsProperty<bool>('createAllowed', createAllowed));
   }
 }
 
@@ -67,7 +74,10 @@ class _FacilityListPageState extends ConsumerState<FacilityListPage> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: FacilityListAppBar(createCallback: _navigateToCreate),
+      appBar: FacilityListAppBar(
+        createCallback: _navigateToCreate,
+        createAllowed: widget.createAllowed,
+      ),
       body: FacilityListBody(
         facilities: facilities,
         detailsCallback: _navigateToDetail,
@@ -129,22 +139,29 @@ class _FacilityListPageState extends ConsumerState<FacilityListPage> {
 
 class FacilityListAppBar extends StatelessWidget
     implements PreferredSizeWidget {
-  const FacilityListAppBar({required this.createCallback, super.key});
+  const FacilityListAppBar({
+    required this.createAllowed,
+    required this.createCallback,
+    super.key,
+  });
 
   final Future<void> Function() createCallback;
+  final bool createAllowed;
 
   @override
   Widget build(final BuildContext context) => AppBar(
     title: const Text('Áreas Comuns'),
     backgroundColor: Colors.transparent,
     elevation: 0,
-    actions: [
-      IconButton(
-        onPressed: createCallback,
-        icon: const Icon(Icons.add, size: 20),
-        tooltip: 'Adicionar Área Comum',
-      ),
-    ],
+    actions: createAllowed
+        ? [
+            IconButton(
+              onPressed: createCallback,
+              icon: const Icon(Icons.add, size: 24),
+              tooltip: 'Adicionar Área Comum',
+            ),
+          ]
+        : null,
   );
 
   @override
@@ -159,6 +176,7 @@ class FacilityListAppBar extends StatelessWidget
         createCallback,
       ),
     );
+    properties.add(DiagnosticsProperty<bool>('canCreate', createAllowed));
   }
 }
 

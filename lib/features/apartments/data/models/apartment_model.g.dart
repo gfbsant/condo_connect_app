@@ -9,9 +9,8 @@ part of 'apartment_model.dart';
 ApartmentModel _$ApartmentModelFromJson(Map<String, dynamic> json) =>
     ApartmentModel(
       number: json['number'] as String,
-      condominiumId: (json['condominiumId'] as num).toInt(),
       id: (json['id'] as num?)?.toInt(),
-      floor: json['floor'] as String?,
+      floor: (json['floor'] as num?)?.toInt(),
       door: json['door'] as String?,
       tower: json['tower'] as String?,
       rented: json['rented'] as bool?,
@@ -34,7 +33,6 @@ Map<String, dynamic> _$ApartmentModelToJson(ApartmentModel instance) =>
       'tower': instance.tower,
       'rented': instance.rented,
       'active': instance.active,
-      'condominiumId': instance.condominiumId,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
       'residents': ApartmentModel._residentsToJson(instance.residents),

@@ -81,7 +81,7 @@ class _ResidentFormPageState extends ConsumerState<ResidentFormPage> {
         isLoading: isLoading,
         isOwner: _isOwner,
         emailController: _emailController,
-        userName: widget.resident?.userName,
+        userName: widget.resident?.user?.name,
         onOwnerChanged: _updateOwner,
         onSubmit: _handleSubmit,
       ),
@@ -134,11 +134,7 @@ class _ResidentFormPageState extends ConsumerState<ResidentFormPage> {
     if (_isEditing) {
       final int? residentId = widget.resident?.id;
       if (residentId != null) {
-        final resident = ResidentEntity(
-          id: residentId,
-          userName: widget.resident!.userName,
-          owner: _isOwner,
-        );
+        final resident = ResidentEntity(id: residentId, owner: _isOwner);
         success = await notifier.updateResident(
           widget.apartmentId,
           residentId,
@@ -373,7 +369,7 @@ class _EmailField extends StatelessWidget {
     decoration: const InputDecoration(
       prefixIcon: Icon(Icons.email_outlined),
       labelText: 'Email',
-      hintText: 'morado@exemplo.com',
+      hintText: 'morador@exemplo.com',
     ),
     textInputAction: .done,
   );

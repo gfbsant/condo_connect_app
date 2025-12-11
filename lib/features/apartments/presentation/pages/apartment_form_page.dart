@@ -53,7 +53,7 @@ class _ApartmentFormPageState extends ConsumerState<ApartmentFormPage> {
     final ApartmentEntity? apartment = widget.apartment;
     if (apartment != null) {
       _numberController.text = apartment.number;
-      _floorController.text = apartment.floor ?? '';
+      _floorController.text = apartment.floor.toString();
       _doorController.text = apartment.door ?? '';
       _towerController.text = apartment.tower ?? '';
       _isRented = apartment.rented ?? false;
@@ -140,8 +140,8 @@ class _ApartmentFormPageState extends ConsumerState<ApartmentFormPage> {
     }
 
     final String numberText = _numberController.text.trim();
-    final String? floorText = _floorController.text.trim().isNotEmpty
-        ? _floorController.text.trim()
+    final int? floorText = _floorController.text.trim().isNotEmpty
+        ? int.tryParse(_floorController.text.trim())
         : null;
     final String? doorText = _doorController.text.trim().isNotEmpty
         ? _doorController.text.trim()
@@ -157,7 +157,6 @@ class _ApartmentFormPageState extends ConsumerState<ApartmentFormPage> {
       door: doorText,
       tower: towerText,
       rented: _isRented,
-      condominiumId: widget.condominiumId,
       active: widget.apartment?.active,
       residents: widget.apartment?.residents,
     );
@@ -172,14 +171,14 @@ class _ApartmentFormPageState extends ConsumerState<ApartmentFormPage> {
         success = await notifier.updateApartment(id, apartment);
       }
     } else {
-      success = await notifier.createApartment(apartment);
+      success = await notifier.createApartment(widget.condominiumId, apartment);
     }
 
     if (success) {
       await HapticFeedback.lightImpact();
       await Future.delayed(const Duration(milliseconds: 500));
       if (mounted) {
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(true);
       }
     }
   }
@@ -410,6 +409,7 @@ class _FloorField extends StatelessWidget {
       hintText: 'Ex: 1, 2, 10',
     ),
     textInputAction: .next,
+    keyboardType: .number,
   );
 
   @override
@@ -435,8 +435,7 @@ class _DoorField extends StatelessWidget {
     enabled: isEnabled,
     decoration: const InputDecoration(
       prefixIcon: Icon(Icons.door_front_door),
-      labelText: 'Porta (Opcionao)',
-      hintText: 'Ex: A, B, 1',
+      labelText: 'Porta (Opcional)',
     ),
     textInputAction: .next,
     textCapitalization: .characters,

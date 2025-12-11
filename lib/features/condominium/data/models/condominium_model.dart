@@ -1,3 +1,6 @@
+//
+// ignore_for_file: overridden_fields
+
 import 'package:json_annotation/json_annotation.dart';
 
 import '../../domain/entities/condominium_entity.dart';
@@ -14,10 +17,10 @@ class CondominiumModel extends CondominiumEntity {
     required super.zipcode,
     required super.address,
     required super.number,
-    super.id,
-    super.createdAt,
-    super.updatedAt,
-  });
+    this.id,
+    this.createdAt,
+    this.updatedAt,
+  }) : super(id: id, createdAt: createdAt, updatedAt: updatedAt);
 
   factory CondominiumModel.fromEntity(final CondominiumEntity entity) =>
       CondominiumModel(
@@ -35,6 +38,18 @@ class CondominiumModel extends CondominiumEntity {
 
   factory CondominiumModel.fromJson(final Map<String, dynamic> json) =>
       _$CondominiumModelFromJson(json);
+
+  @override
+  @JsonKey(includeToJson: false)
+  final int? id;
+
+  @override
+  @JsonKey(includeToJson: false)
+  final DateTime? createdAt;
+
+  @override
+  @JsonKey(includeToJson: false)
+  final DateTime? updatedAt;
 
   Map<String, dynamic> get toJson => _$CondominiumModelToJson(this);
 

@@ -19,7 +19,10 @@ class ReservationRemoteDataSourceImpl extends BaseHttpDataSource
       final ApiResponse<ReservationModel> response =
           await makeRequest<ReservationModel>(
             RequestType.POST,
+            jsonBody: reservation.toJson(),
             '$facilitiesPath/$facilityId$reservationsPath',
+            fromJson: (final json) =>
+                ReservationModel.fromJson(json as Map<String, dynamic>),
           );
 
       if (response.success && response.data != null) {

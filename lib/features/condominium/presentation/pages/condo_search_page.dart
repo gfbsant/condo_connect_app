@@ -110,18 +110,24 @@ class _CondoSearchPageState extends ConsumerState<CondoSearchPage> {
   @override
   Widget build(final BuildContext context) {
     ref
-      ..listen<String?>(errorMessageProvider, (_, final errorMessage) {
-        if (errorMessage != null) {
-          _showErrorSnackBar(errorMessage);
-          ref.read(condoNotifierAccessor).clearMessages();
-        }
-      })
-      ..listen<String?>(successMessageProvider, (_, final successMessage) {
-        if (successMessage != null) {
-          _showSuccessSnackBar(successMessage);
-          ref.read(condoNotifierAccessor).clearMessages();
-        }
-      });
+      ..listen<String?>(
+        condoNotifierProvider.select((final state) => state.errorMessage),
+        (_, final errorMessage) {
+          if (errorMessage != null) {
+            _showErrorSnackBar(errorMessage);
+            ref.read(condoNotifierAccessor).clearMessages();
+          }
+        },
+      )
+      ..listen<String?>(
+        condoNotifierProvider.select((final state) => state.successMessage),
+        (_, final successMessage) {
+          if (successMessage != null) {
+            _showSuccessSnackBar(successMessage);
+            ref.read(condoNotifierAccessor).clearMessages();
+          }
+        },
+      );
 
     final List<CondominiumEntity> condos = ref.watch(condosProvider);
     final bool isLoading = ref.watch(isLoadingProvider);

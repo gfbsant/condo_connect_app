@@ -14,26 +14,14 @@ class AuthWrapper extends ConsumerStatefulWidget {
 
 class _AuthWrapperState extends ConsumerState<AuthWrapper> {
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((final _) async {
-      await _checkInitialAuthStatus();
-    });
-  }
-
-  Future<void> _checkInitialAuthStatus() async {
-    await ref.read(authNotifierAccessor).checkAuthStatus();
-  }
-
-  @override
   Widget build(final BuildContext context) {
-    final AuthState authState = ref.watch(authNotifierProvider);
+    final AuthStatus authStatus = ref.watch(authStatusProvider);
 
-    return switch (authState.status) {
+    return switch (authStatus) {
       AuthStatus.loading => const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       ),
-      AuthStatus.authenticated => const DashgboardPage(),
+      AuthStatus.authenticated => const DashBoardPage(),
       AuthStatus.unauthenticated ||
       AuthStatus.initial ||
       AuthStatus.error ||

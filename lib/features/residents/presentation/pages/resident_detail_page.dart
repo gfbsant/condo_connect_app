@@ -298,7 +298,7 @@ class _ResidentHeader extends StatelessWidget {
               spacing: 8,
               children: [
                 Text(
-                  resident.userName,
+                  resident.user?.name ?? 'Morador',
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: .bold,
                   ),
@@ -353,11 +353,12 @@ class _ResidentInfo extends StatelessWidget {
               label: 'ID',
               value: resident.id.toString(),
             ),
-            _InfoRow(
-              icon: Icons.person,
-              label: 'Nome do Usuário',
-              value: resident.userName,
-            ),
+            if (resident.user != null)
+              _InfoRow(
+                icon: Icons.person,
+                label: 'Nome do Usuário',
+                value: resident.user!.name,
+              ),
             _InfoRow(
               icon: resident.owner ? Icons.star : Icons.people,
               label: 'Tipo',

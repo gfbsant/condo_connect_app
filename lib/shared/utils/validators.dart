@@ -58,6 +58,9 @@ class Validators {
     if (value.length < 2) {
       return 'Nome deve ter pelo menos 2 caracteres!';
     }
+    if (value.split(' ').length < 2) {
+      return 'Nome deve ter ao menos um sobrenome!';
+    }
     return null;
   }
 

@@ -198,7 +198,7 @@ class ReservationListAppBar extends StatelessWidget
               onPressed: () async {
                 await createCallback();
               },
-              icon: const Icon(Icons.add, size: 20),
+              icon: const Icon(Icons.add, size: 24),
               tooltip: 'Nova Reserva',
             ),
           ]
@@ -295,7 +295,7 @@ class _EmptyView extends StatelessWidget {
     return Center(
       child: Column(
         mainAxisAlignment: .center,
-        spacing: 16,
+        spacing: 12,
         children: [
           Icon(
             Icons.event_busy_outlined,
@@ -308,7 +308,6 @@ class _EmptyView extends StatelessWidget {
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: 8),
           Text(
             'Crie uma nova reserva',
             style: theme.textTheme.bodyMedium?.copyWith(
@@ -398,12 +397,21 @@ class _ReservationCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: .start,
               children: [
-                Text(
-                  'Apartamento ${reservation.apartmentId}',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: .bold,
+                if (reservation.facility != null)
+                  Text(
+                    reservation.facility!.name,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: .bold,
+                    ),
                   ),
-                ),
+                if (reservation.creator != null)
+                  Text(
+                    reservation.creator!.name,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: .bold,
+                    ),
+                  ),
+                const SizedBox(height: 8),
                 if (reservation.scheduledDate != null)
                   Text(
                     dateFormat.format(reservation.scheduledDate!),

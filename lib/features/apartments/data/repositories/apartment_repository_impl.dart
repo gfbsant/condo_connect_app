@@ -16,11 +16,13 @@ class ApartmentRepositoryImpl implements ApartmentRepository {
 
   @override
   Future<Either<Failure, ApartmentEntity>> createApartment(
+    final int condominiumId,
     final ApartmentEntity apartment,
   ) async {
     try {
       final apartmentModel = ApartmentModel.fromEntity(apartment);
       final ApartmentModel result = await _remoteDataSource.createApartment(
+        condominiumId,
         apartmentModel,
       );
 

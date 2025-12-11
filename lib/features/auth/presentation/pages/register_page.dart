@@ -25,74 +25,26 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   final _confirmPasswordController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    _nameController.addListener(_clearErrorOnInteraction);
-    _emailController.addListener(_clearErrorOnInteraction);
-    _cpfController.addListener(_clearErrorOnInteraction);
-    _birthDateController.addListener(_clearErrorOnInteraction);
-    _phoneController.addListener(_clearErrorOnInteraction);
-    _passwordController.addListener(_clearErrorOnInteraction);
-    _confirmPasswordController.addListener(_clearErrorOnInteraction);
-  }
-
-  void _clearErrorOnInteraction() {
-    final AuthState authState = ref.read(authNotifierProvider);
-    if (authState.errorMessage != null) {
-      ref.read(authNotifierAccessor).clearError();
-    }
-  }
-
-  void _showErrorSnackBar(final String errorMessage) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(errorMessage),
-        backgroundColor: Theme.of(context).colorScheme.error,
-      ),
-    );
-  }
-
-  void _showSuccessSnackBar() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Cadastro realizado com sucesso!'),
-        backgroundColor: Colors.green,
-      ),
-    );
-  }
-
-  Future<void> _handleRegister() async {
-    if (_formKey.currentState != null && !_formKey.currentState!.validate()) {
-      return;
-    }
-
-    final String phone = _phoneController.text.trim();
-
-    await ref
-        .read(authNotifierAccessor)
-        .register(
-          name: _nameController.text.trim(),
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-          cpf: _cpfController.text,
-          birthDate: _birthDateController.text.trim(),
-          phone: phone.isEmpty ? null : phone,
-        );
-  }
-
-  @override
   Widget build(final BuildContext context) {
-    ref.listen<AuthState>(authNotifierProvider, (
-      final previous,
-      final current,
-    ) {
-      if (current.status == AuthStatus.error && current.errorMessage != null) {
-        _showErrorSnackBar(current.errorMessage!);
-      } else if (current.status == AuthStatus.success) {
-        _showSuccessSnackBar();
-        Navigator.of(context).pop();
-      }
-    });
+    ref
+      ..listen(
+        authNotifierProvider.select((final state) => state.errorMessage),
+        (_, final errorMessage) {
+          if (errorMessage != null) {
+            _showErrorSnackBar(errorMessage);
+            _clearMessages();
+          }
+        },
+      )
+      ..listen(
+        authNotifierProvider.select((final state) => state.successMessage),
+        (_, final successMessage) {
+          if (successMessage != null) {
+            _showSuccessSnackBar(successMessage);
+            _clearMessages();
+          }
+        },
+      );
 
     final AuthState authState = ref.watch(authNotifierProvider);
     final isLoading = authState.status == AuthStatus.loading;
@@ -114,14 +66,65 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     );
   }
 
+  void _clearMessages() {
+    ref.read(authNotifierAccessor).clearMessages();
+  }
+
+  void _showErrorSnackBar(final String errorMessage) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(errorMessage),
+        backgroundColor: Theme.of(context).colorScheme.error,
+        behavior: .floating,
+      ),
+    );
+  }
+
+  void _showSuccessSnackBar(final String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.green[600],
+        behavior: .floating,
+      ),
+    );
+  }
+
+  Future<void> _handleRegister() async {
+    FocusScope.of(context).unfocus();
+
+    if (_formKey.currentState != null && !_formKey.currentState!.validate()) {
+      return;
+    }
+
+    final String phone = _phoneController.text.trim().replaceAll(
+      RegExp(r'\D'),
+      '',
+    );
+    final String cpf = _cpfController.text.trim().replaceAll(RegExp(r'\D'), '');
+
+    final bool success = await ref
+        .read(authNotifierAccessor)
+        .register(
+          name: _nameController.text.trim(),
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          cpf: cpf,
+          birthdate: _birthDateController.text.trim(),
+          phone: phone.isEmpty ? null : phone,
+        );
+
+    if (success) {
+      await HapticFeedback.lightImpact();
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    }
+  }
+
   @override
   void dispose() {
-    _nameController.removeListener(_clearErrorOnInteraction);
-    _emailController.removeListener(_clearErrorOnInteraction);
-    _cpfController.removeListener(_clearErrorOnInteraction);
-    _phoneController.removeListener(_clearErrorOnInteraction);
-    _passwordController.removeListener(_clearErrorOnInteraction);
-    _confirmPasswordController.removeListener(_clearErrorOnInteraction);
     _nameController.dispose();
     _emailController.dispose();
     _cpfController.dispose();

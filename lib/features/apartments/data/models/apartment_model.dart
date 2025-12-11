@@ -12,7 +12,6 @@ part 'apartment_model.g.dart';
 class ApartmentModel extends ApartmentEntity {
   const ApartmentModel({
     required super.number,
-    required super.condominiumId,
     super.id,
     super.floor,
     super.door,
@@ -33,7 +32,6 @@ class ApartmentModel extends ApartmentEntity {
         tower: entity.tower,
         rented: entity.rented,
         active: entity.active,
-        condominiumId: entity.condominiumId,
         residents: entity.residents,
         createdAt: entity.createdAt,
         updatedAt: entity.updatedAt,
@@ -52,7 +50,6 @@ class ApartmentModel extends ApartmentEntity {
     tower: tower,
     rented: rented,
     active: active,
-    condominiumId: condominiumId,
     residents: residents,
     createdAt: createdAt,
     updatedAt: updatedAt,

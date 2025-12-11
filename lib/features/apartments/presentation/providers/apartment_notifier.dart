@@ -35,7 +35,10 @@ class ApartmentNotifier extends Notifier<ApartmentState> {
     return const ApartmentState.initial();
   }
 
-  Future<bool> createApartment(final ApartmentEntity apartment) async {
+  Future<bool> createApartment(
+    final int condominiumId,
+    final ApartmentEntity apartment,
+  ) async {
     if (_isLoading) {
       return false;
     }
@@ -44,7 +47,10 @@ class ApartmentNotifier extends Notifier<ApartmentState> {
 
     final Either<Failure, ApartmentEntity> result =
         await _createApartmentUseCase(
-          CreateApartmentParams(apartment: apartment),
+          CreateApartmentParams(
+            condominiumId: condominiumId,
+            apartment: apartment,
+          ),
         );
 
     return result.fold(

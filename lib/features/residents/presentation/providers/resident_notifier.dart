@@ -79,7 +79,7 @@ class ResidentNotifier extends Notifier<ResidentState> {
     result.fold(
       (final failure) => state = state.copyWith(status: .error),
       (final residents) =>
-          state.copyWith(residents: residents, status: .initial),
+          state = state.copyWith(residents: residents, status: .initial),
     );
   }
 
@@ -95,10 +95,7 @@ class ResidentNotifier extends Notifier<ResidentState> {
 
     final Either<Failure, ResidentEntity> result =
         await _getResidentByIdUseCase(
-          GetResidentByIdParams(
-            apartmentId: apartmentId,
-            residentId: residentId,
-          ),
+          GetResidentByIdParams(residentId: residentId),
         );
 
     result.fold(

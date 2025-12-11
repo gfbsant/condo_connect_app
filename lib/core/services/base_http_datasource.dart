@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../../shared/constants/api_constants.dart';
 import '../../shared/models/api_response.dart';
 import '../clients/http_client.dart';
 import '../clients/http_client_impl.dart';
@@ -14,7 +13,7 @@ abstract class BaseHttpDataSource {
     final String? baseUrl,
     final HttpCaller? httpClient,
     final SecureStorageService? secureStorageService,
-  }) : _baseUrl = baseUrl ?? ApiConstants.baseUrl,
+  }) : _baseUrl = baseUrl ?? 'https://dd7b4e381a97.ngrok-free.app',
        _httpClient = httpClient ?? HttpCallerImpl(),
        _secureStorageService =
            secureStorageService ?? SecureStorageServiceImpl();
@@ -32,6 +31,8 @@ abstract class BaseHttpDataSource {
   String get reservationsPath => '/reservations';
 
   String get facilitiesPath => '/facilities';
+
+  String get residentsPath => '/residents';
 
   Map<String, String> get _jsonContentHeader => {
     'Content-Type': 'application/json',
@@ -52,10 +53,22 @@ abstract class BaseHttpDataSource {
       final Uri uri = buildUri(path, queryParams: queryParams);
       final String? body = jsonBody != null ? jsonEncode(jsonBody) : null;
 
+      final Map<String, String> requestHeaders = {
+        ..._jsonContentHeader,
+        ..._camelCaseHeader,
+        ...?headers,
+      };
+
+      if (includeAuth) {
+        final Map<String, String> authHeader =
+            await buildAuthHeaderFromStorage();
+        requestHeaders.addAll(authHeader);
+      }
+
       final http.Response response = await _httpClient.call(
         type,
         uri,
-        headers: {...?headers, ..._jsonContentHeader, ..._camelCaseHeader},
+        headers: requestHeaders,
         body: body,
       );
 
@@ -85,7 +98,7 @@ abstract class BaseHttpDataSource {
   }
 
   Map<String, String> buildAuthHeader(final String? token) => {
-    'Authorization': 'Bearer $token',
+    'Authorization': '$token',
   };
 
   Future<void> persistAuthHeader(final String token) async {
@@ -104,6 +117,14 @@ abstract class BaseHttpDataSource {
         response.statusCode == 201 ||
         response.statusCode == 204) {
       try {
+        if (response.body.isEmpty) {
+          return ApiResponse<T>(
+            success: true,
+            statusCode: response.statusCode,
+            headers: response.headers,
+          );
+        }
+
         final dynamic decodedJson = jsonDecode(response.body);
 
         T? data;
@@ -136,13 +157,37 @@ abstract class BaseHttpDataSource {
   }
 
   String _getErrorMessage(final http.Response response) {
+    try {
+      if (response.body.isNotEmpty) {
+        final dynamic decodedBody = jsonDecode(response.body);
+        if (decodedBody is Map<String, dynamic> &&
+            decodedBody.containsKey('message')) {
+          return decodedBody['message'] as String;
+        }
+      }
+    } on Exception catch (_) {}
+
     switch (response.statusCode) {
+      case 400:
+        return 'Bad Request: ${response.statusCode}';
+      case 401:
+        return 'Unauthorized: ${response.statusCode}';
+      case 403:
+        return 'Forbidden: ${response.statusCode}';
       case 404:
         return 'Not found: ${response.statusCode}';
+      case 422:
+        return 'Unprocessable Entity: ${response.statusCode}';
+      case 500:
+        return 'Internal Server Error: ${response.statusCode}';
+      case 502:
+        return 'Bad Gateway: ${response.statusCode}';
+      case 503:
+        return 'Service Unavailable: ${response.statusCode}';
       case 504:
         return 'Timeout: ${response.statusCode}';
       default:
-        return 'HTTP Error: ${response.statusCode} - ${response.body}';
+        return 'HTTP Error: ${response.statusCode}';
     }
   }
 }
